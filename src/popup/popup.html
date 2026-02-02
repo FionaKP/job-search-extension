@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Application Tracker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <h1>Job Tracker</h1>
+      <div class="header-actions">
+        <button id="popoutBtn" class="btn-icon" title="Open in new tab (stays open while you copy/paste)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </button>
+        <button id="dashboardBtn" class="btn-icon" title="Open Dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Current URL Display -->
+    <div class="current-url">
+      <span class="url-label">Saving from:</span>
+      <span class="url-text" id="urlDisplay" title=""></span>
+    </div>
+
+    <!-- Already Saved Notice -->
+    <div id="alreadySaved" class="notice notice-info hidden">
+      <span>This job is already saved</span>
+      <button id="viewExisting" class="btn-link">View in Dashboard</button>
+    </div>
+
+    <!-- Main Form -->
+    <form id="jobForm" class="job-form">
+      <input type="hidden" id="url" name="url">
+
+      <!-- Job Title -->
+      <div class="form-group">
+        <label for="title">Job Title *</label>
+        <input type="text" id="title" name="title" placeholder="e.g., Software Engineer" required>
+      </div>
+
+      <!-- Company -->
+      <div class="form-group">
+        <label for="company">Company *</label>
+        <input type="text" id="company" name="company" placeholder="e.g., Acme Corp" required>
+      </div>
+
+      <!-- Location & Salary Row -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location" placeholder="e.g., Remote">
+        </div>
+        <div class="form-group">
+          <label for="salary">Salary</label>
+          <input type="text" id="salary" name="salary" placeholder="e.g., $100k">
+        </div>
+      </div>
+
+      <!-- Interest Rating -->
+      <div class="form-group">
+        <label>Interest Level</label>
+        <div class="star-rating" id="interestRating">
+          <button type="button" class="star-btn" data-value="1" title="1 star">★</button>
+          <button type="button" class="star-btn" data-value="2" title="2 stars">★</button>
+          <button type="button" class="star-btn" data-value="3" title="3 stars">★</button>
+          <button type="button" class="star-btn" data-value="4" title="4 stars">★</button>
+          <button type="button" class="star-btn" data-value="5" title="5 stars">★</button>
+          <span class="star-label" id="starLabel">Not rated</span>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="form-group">
+        <label for="tags">Tags</label>
+        <input type="text" id="tags" name="tags" placeholder="e.g., remote, startup, fintech">
+      </div>
+
+      <!-- Notes -->
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" rows="2" placeholder="Any notes about this position..."></textarea>
+      </div>
+
+      <!-- Save Button -->
+      <div class="form-actions">
+        <button type="submit" id="saveBtn" class="btn btn-primary">
+          Save Application
+        </button>
+      </div>
+
+      <!-- Additional URLs (below save button) -->
+      <details class="additional-urls">
+        <summary>Additional Links (optional)</summary>
+        <div class="form-group">
+          <label for="companyUrl">Company Website</label>
+          <input type="url" id="companyUrl" name="companyUrl" placeholder="e.g., https://company.com">
+        </div>
+        <div class="form-group">
+          <label for="portalUrl">Application Portal</label>
+          <input type="url" id="portalUrl" name="portalUrl" placeholder="e.g., https://workday.company.com">
+        </div>
+      </details>
+    </form>
+
+    <!-- Quick Stats -->
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-value" id="statTotal">0</span>
+        <span class="stat-label">Tracked</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="statApplied">0</span>
+        <span class="stat-label">Applied</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value" id="statInterviewing">0</span>
+        <span class="stat-label">Interviewing</span>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+      <span>Scanning page...</span>
+    </div>
+
+    <!-- Success Message -->
+    <div id="success" class="notice notice-success hidden">
+      Job saved successfully!
+    </div>
+
+    <!-- Error Message -->
+    <div id="error" class="notice notice-error hidden">
+      <span id="errorMessage">Something went wrong</span>
+    </div>
+  </div>
+
+  <script src="../utils/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Application Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>📋 Job Tracker</h1>
+      </div>
+      
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card stat-total">
+          <span class="stat-value" id="statTotal">0</span>
+          <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-card stat-saved">
+          <span class="stat-value" id="statSaved">0</span>
+          <span class="stat-label">Saved</span>
+        </div>
+        <div class="stat-card stat-applied">
+          <span class="stat-value" id="statApplied">0</span>
+          <span class="stat-label">Applied</span>
+        </div>
+        <div class="stat-card stat-interviewing">
+          <span class="stat-value" id="statInterviewing">0</span>
+          <span class="stat-label">Interviewing</span>
+        </div>
+        <div class="stat-card stat-offer">
+          <span class="stat-value" id="statOffer">0</span>
+          <span class="stat-label">Offers</span>
+        </div>
+        <div class="stat-card stat-rejected">
+          <span class="stat-value" id="statRejected">0</span>
+          <span class="stat-label">Rejected</span>
+        </div>
+      </div>
+
+      <!-- Filter by Status -->
+      <nav class="filter-nav">
+        <h3>Filter by Status</h3>
+        <button class="filter-btn active" data-status="all">All Applications</button>
+        <button class="filter-btn" data-status="saved">Saved</button>
+        <button class="filter-btn" data-status="applied">Applied</button>
+        <button class="filter-btn" data-status="interviewing">Interviewing</button>
+        <button class="filter-btn" data-status="offer">Offer</button>
+        <button class="filter-btn" data-status="rejected">Rejected</button>
+        <button class="filter-btn" data-status="withdrawn">Withdrawn</button>
+      </nav>
+
+      <!-- Actions -->
+      <div class="sidebar-actions">
+        <button id="exportBtn" class="btn btn-secondary">
+          📥 Export Data
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="content-header">
+        <div class="search-box">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search by company or job title...">
+        </div>
+        
+        <div class="sort-controls">
+          <label for="sortBy">Sort by:</label>
+          <select id="sortBy">
+            <option value="dateAdded-desc">Newest First</option>
+            <option value="dateAdded-asc">Oldest First</option>
+            <option value="company-asc">Company A-Z</option>
+            <option value="company-desc">Company Z-A</option>
+            <option value="interest-desc">Interest (High to Low)</option>
+            <option value="interest-asc">Interest (Low to High)</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+
+        <div class="view-toggle">
+          <button id="viewListBtn" class="view-btn active" title="List View">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <button id="viewThumbnailBtn" class="view-btn" title="Thumbnail View">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="8" height="8" rx="1"></rect>
+              <rect x="13" y="3" width="8" height="8" rx="1"></rect>
+              <rect x="3" y="13" width="8" height="8" rx="1"></rect>
+              <rect x="13" y="13" width="8" height="8" rx="1"></rect>
+            </svg>
+          </button>
+          <button id="viewGroupedBtn" class="view-btn" title="Group by Company">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"></path>
+              <line x1="7" y1="7" x2="7" y2="7"></line>
+              <line x1="17" y1="7" x2="17" y2="7"></line>
+              <line x1="7" y1="17" x2="7" y2="17"></line>
+              <line x1="17" y1="17" x2="17" y2="17"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Job List -->
+      <div id="jobList" class="job-list">
+        <!-- Jobs will be rendered here -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">📋</div>
+        <h2>No applications yet</h2>
+        <p>Start tracking your job search by clicking the extension icon on any job posting page.</p>
+      </div>
+
+      <!-- No Results State -->
+      <div id="noResults" class="empty-state hidden">
+        <div class="empty-icon">🔍</div>
+        <h2>No matches found</h2>
+        <p>Try adjusting your search or filters.</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Job Detail Modal -->
+  <div id="jobModal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Job Details</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="editForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editTitle">Job Title</label>
+              <input type="text" id="editTitle" required>
+            </div>
+            <div class="form-group">
+              <label for="editCompany">Company</label>
+              <input type="text" id="editCompany" required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editLocation">Location</label>
+              <input type="text" id="editLocation">
+            </div>
+            <div class="form-group">
+              <label for="editSalary">Salary</label>
+              <input type="text" id="editSalary">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="editStatus">Status</label>
+              <select id="editStatus">
+                <option value="saved">Saved</option>
+                <option value="applied">Applied</option>
+                <option value="interviewing">Interviewing</option>
+                <option value="offer">Offer</option>
+                <option value="rejected">Rejected</option>
+                <option value="withdrawn">Withdrawn</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Interest Level</label>
+              <div class="star-rating" id="editInterest">
+                <button type="button" class="star-btn" data-value="1" title="1 star">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 stars">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 stars">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 stars">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 stars">★</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="editTags">Tags (comma separated)</label>
+            <input type="text" id="editTags">
+          </div>
+          
+          <div class="form-group">
+            <label for="editNotes">Notes</label>
+            <textarea id="editNotes" rows="4"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>Job Posting</label>
+            <a id="editUrl" href="#" target="_blank" class="job-url">View Original Posting</a>
+          </div>
+
+          <div class="form-group">
+            <label for="editCompanyUrl">Company Website</label>
+            <input type="url" id="editCompanyUrl" placeholder="Company website URL (optional)">
+          </div>
+
+          <div class="form-group link-row" id="companyLinkRow">
+            <a id="editCompanyLink" href="#" target="_blank" class="job-url">Visit Company Website</a>
+          </div>
+
+          <div class="form-group">
+            <label for="editPortalUrl">Application Portal</label>
+            <input type="url" id="editPortalUrl" placeholder="Portal URL (optional)">
+          </div>
+
+          <div class="form-group link-row" id="portalLinkRow">
+            <a id="editPortalLink" href="#" target="_blank" class="job-url portal-link">Open Application Portal</a>
+          </div>
+
+          <div class="form-group">
+            <label>Added</label>
+            <span id="editDateAdded" class="meta-text"></span>
+          </div>
+          
+          <div class="modal-actions">
+            <button type="button" id="deleteBtn" class="btn btn-danger">Delete</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="../utils/storage.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
