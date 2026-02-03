@@ -42,8 +42,14 @@
         </div>
       </div>
 
+      <!-- Section Navigation -->
+      <nav class="section-nav">
+        <button class="section-btn active" data-section="jobs">Jobs</button>
+        <button class="section-btn" data-section="connections">Connections</button>
+      </nav>
+
       <!-- Filter by Status -->
-      <nav class="filter-nav">
+      <nav class="filter-nav" id="jobFilters">
         <h3>Filter by Status</h3>
         <button class="filter-btn active" data-status="all">All Applications</button>
         <button class="filter-btn" data-status="saved">Saved</button>
@@ -52,6 +58,17 @@
         <button class="filter-btn" data-status="offer">Offer</button>
         <button class="filter-btn" data-status="rejected">Rejected</button>
         <button class="filter-btn" data-status="withdrawn">Withdrawn</button>
+      </nav>
+
+      <!-- Connection Filters -->
+      <nav class="filter-nav hidden" id="connectionFilters">
+        <h3>Filter by Relationship</h3>
+        <button class="filter-btn active" data-relationship="all">All Connections</button>
+        <button class="filter-btn" data-relationship="recruiter">Recruiter</button>
+        <button class="filter-btn" data-relationship="referral">Referral</button>
+        <button class="filter-btn" data-relationship="colleague">Colleague</button>
+        <button class="filter-btn" data-relationship="mentor">Mentor</button>
+        <button class="filter-btn" data-relationship="other">Other</button>
       </nav>
 
       <!-- Actions -->
@@ -65,7 +82,7 @@
     <!-- Main Content -->
     <main class="main-content">
       <!-- Header -->
-      <header class="content-header">
+      <header class="content-header" id="jobsHeader">
         <div class="search-box">
           <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"></circle>
@@ -132,6 +149,45 @@
         <div class="empty-icon">🔍</div>
         <h2>No matches found</h2>
         <p>Try adjusting your search or filters.</p>
+      </div>
+
+      <!-- Connections Section (hidden by default) -->
+      <div id="connectionsSection" class="hidden">
+        <header class="content-header">
+          <div class="search-box">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="connectionSearchInput" placeholder="Search connections by name, company, or role...">
+          </div>
+          <div class="sort-controls">
+            <label for="connectionSortBy">Sort by:</label>
+            <select id="connectionSortBy">
+              <option value="dateAdded-desc">Newest First</option>
+              <option value="dateAdded-asc">Oldest First</option>
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+              <option value="company-asc">Company A-Z</option>
+              <option value="lastContactedDate-desc">Last Contacted</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="addConnectionBtn">+ Add Connection</button>
+        </header>
+
+        <div id="connectionList" class="connection-list"></div>
+
+        <div id="connectionsEmpty" class="empty-state hidden">
+          <div class="empty-icon">👤</div>
+          <h2>No connections yet</h2>
+          <p>Start building your network by adding contacts related to your job search.</p>
+        </div>
+
+        <div id="connectionsNoResults" class="empty-state hidden">
+          <div class="empty-icon">🔍</div>
+          <h2>No matches found</h2>
+          <p>Try adjusting your search or filters.</p>
+        </div>
       </div>
     </main>
   </div>
@@ -229,10 +285,117 @@
             <label>Added</label>
             <span id="editDateAdded" class="meta-text"></span>
           </div>
-          
+
+          <!-- Linked Connections -->
+          <div class="form-group">
+            <label>Linked Connections</label>
+            <div id="jobLinkedConnections" class="linked-items-list"></div>
+            <div class="link-job-controls">
+              <select id="jobLinkConnectionSelect">
+                <option value="">-- Link a connection --</option>
+              </select>
+              <button type="button" id="jobLinkConnectionBtn" class="btn btn-inline-add">Link</button>
+            </div>
+          </div>
+
           <div class="modal-actions">
             <button type="button" id="deleteBtn" class="btn btn-danger">Delete</button>
             <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connection Detail Modal -->
+  <div id="connectionModal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="connectionModalTitle">Connection Details</h2>
+        <button class="modal-close" id="closeConnectionModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="connectionEditForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="connName">Name *</label>
+              <input type="text" id="connName" required>
+            </div>
+            <div class="form-group">
+              <label for="connRelationship">Relationship</label>
+              <select id="connRelationship">
+                <option value="recruiter">Recruiter</option>
+                <option value="referral">Referral</option>
+                <option value="colleague">Colleague</option>
+                <option value="mentor">Mentor</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="connCompany">Company</label>
+              <input type="text" id="connCompany">
+            </div>
+            <div class="form-group">
+              <label for="connRole">Role / Title</label>
+              <input type="text" id="connRole">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="connEmail">Email</label>
+              <input type="email" id="connEmail">
+            </div>
+            <div class="form-group">
+              <label for="connPhone">Phone</label>
+              <input type="tel" id="connPhone">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="connLinkedin">LinkedIn URL</label>
+            <input type="url" id="connLinkedin" placeholder="https://linkedin.com/in/...">
+          </div>
+
+          <div class="form-group">
+            <label for="connIndustry">Industry</label>
+            <input type="text" id="connIndustry">
+          </div>
+
+          <div class="form-group">
+            <label for="connTags">Tags (comma separated)</label>
+            <input type="text" id="connTags">
+          </div>
+
+          <div class="form-group">
+            <label for="connLastContacted">Last Contacted</label>
+            <input type="date" id="connLastContacted">
+          </div>
+
+          <div class="form-group">
+            <label for="connNotes">Notes</label>
+            <textarea id="connNotes" rows="3"></textarea>
+          </div>
+
+          <!-- Linked Jobs -->
+          <div class="form-group">
+            <label>Linked Jobs</label>
+            <div id="connLinkedJobs" class="linked-items-list"></div>
+            <div class="link-job-controls">
+              <select id="connLinkJobSelect">
+                <option value="">-- Link a job --</option>
+              </select>
+              <button type="button" id="connLinkJobBtn" class="btn btn-inline-add">Link</button>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" id="deleteConnectionBtn" class="btn btn-danger">Delete</button>
+            <button type="submit" class="btn btn-primary">Save</button>
           </div>
         </form>
       </div>

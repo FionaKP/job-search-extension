@@ -4,6 +4,7 @@
  */
 
 const STORAGE_KEY = 'jobApplications';
+const CONNECTIONS_KEY = 'connections';
 
 /**
  * Generate a unique ID for each application
@@ -185,6 +186,90 @@ async function clearAllApplications() {
   await chrome.storage.local.set({ [STORAGE_KEY]: [] });
 }
 
+// ===== Connection Storage Functions =====
+
+function generateConnectionId() {
+  return `conn_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+}
+
+async function getAllConnections() {
+  try {
+    const result = await chrome.storage.local.get(CONNECTIONS_KEY);
+    return result[CONNECTIONS_KEY] || [];
+  } catch (error) {
+    console.error('Error getting connections:', error);
+    return [];
+  }
+}
+
+async function saveConnection(data) {
+  const connections = await getAllConnections();
+
+  const newConnection = {
+    id: generateConnectionId(),
+    name: data.name || '',
+    email: data.email || '',
+    phone: data.phone || '',
+    linkedinUrl: data.linkedinUrl || '',
+    company: data.company || '',
+    role: data.role || '',
+    industry: data.industry || '',
+    relationship: data.relationship || 'other',
+    notes: data.notes || '',
+    tags: data.tags || [],
+    dateAdded: new Date().toISOString(),
+    lastContactedDate: data.lastContactedDate || '',
+    linkedJobIds: data.linkedJobIds || []
+  };
+
+  connections.unshift(newConnection);
+  await chrome.storage.local.set({ [CONNECTIONS_KEY]: connections });
+  return newConnection;
+}
+
+async function updateConnection(id, updates) {
+  const connections = await getAllConnections();
+  const index = connections.findIndex(c => c.id === id);
+
+  if (index === -1) {
+    console.error('Connection not found:', id);
+    return null;
+  }
+
+  connections[index] = { ...connections[index], ...updates };
+  await chrome.storage.local.set({ [CONNECTIONS_KEY]: connections });
+  return connections[index];
+}
+
+async function deleteConnection(id) {
+  const connections = await getAllConnections();
+  const filtered = connections.filter(c => c.id !== id);
+
+  if (filtered.length === connections.length) return false;
+
+  await chrome.storage.local.set({ [CONNECTIONS_KEY]: filtered });
+  return true;
+}
+
+async function getConnection(id) {
+  const connections = await getAllConnections();
+  return connections.find(c => c.id === id) || null;
+}
+
+async function getConnectionsForJob(jobId) {
+  const connections = await getAllConnections();
+  return connections.filter(c => c.linkedJobIds && c.linkedJobIds.includes(jobId));
+}
+
+async function getConnectionStats() {
+  const connections = await getAllConnections();
+  const relationships = {};
+  connections.forEach(c => {
+    relationships[c.relationship] = (relationships[c.relationship] || 0) + 1;
+  });
+  return { total: connections.length, relationships };
+}
+
 // Export for use in other files
 // Note: In content scripts, these will be available globally
 // In modules, use: export { ... }
@@ -199,6 +284,13 @@ if (typeof window !== 'undefined') {
     getByStatus,
     getStats,
     exportData,
-    clearAllApplications
+    clearAllApplications,
+    getAllConnections,
+    saveConnection,
+    updateConnection,
+    deleteConnection,
+    getConnection,
+    getConnectionsForJob,
+    getConnectionStats
   };
 }

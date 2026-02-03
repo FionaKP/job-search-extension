@@ -12,6 +12,14 @@ let currentViewMode = 'list'; // 'list' or 'grouped'
 let expandedCompanies = new Set();
 let editingCardId = null;
 
+// Connections state
+let allConnections = [];
+let currentSection = 'jobs'; // 'jobs' or 'connections'
+let connectionFilter = 'all';
+let connectionSearch = '';
+let connectionSort = 'dateAdded-desc';
+let selectedConnectionId = null;
+
 // DOM Elements
 const elements = {
   jobList: document.getElementById('jobList'),
@@ -52,7 +60,44 @@ const elements = {
   editPortalLink: document.getElementById('editPortalLink'),
   portalLinkRow: document.getElementById('portalLinkRow'),
   editDateAdded: document.getElementById('editDateAdded'),
-  modalTitle: document.getElementById('modalTitle')
+  modalTitle: document.getElementById('modalTitle'),
+  // Linked connections in job modal
+  jobLinkedConnections: document.getElementById('jobLinkedConnections'),
+  jobLinkConnectionSelect: document.getElementById('jobLinkConnectionSelect'),
+  jobLinkConnectionBtn: document.getElementById('jobLinkConnectionBtn'),
+  // Section nav
+  sectionBtns: document.querySelectorAll('.section-btn'),
+  jobFilters: document.getElementById('jobFilters'),
+  connectionFilters: document.getElementById('connectionFilters'),
+  connectionFilterBtns: document.querySelectorAll('#connectionFilters .filter-btn'),
+  // Connections section
+  connectionsSection: document.getElementById('connectionsSection'),
+  connectionSearchInput: document.getElementById('connectionSearchInput'),
+  connectionSortBy: document.getElementById('connectionSortBy'),
+  addConnectionBtn: document.getElementById('addConnectionBtn'),
+  connectionList: document.getElementById('connectionList'),
+  connectionsEmpty: document.getElementById('connectionsEmpty'),
+  connectionsNoResults: document.getElementById('connectionsNoResults'),
+  // Connection modal
+  connectionModal: document.getElementById('connectionModal'),
+  closeConnectionModal: document.getElementById('closeConnectionModal'),
+  connectionModalTitle: document.getElementById('connectionModalTitle'),
+  connectionEditForm: document.getElementById('connectionEditForm'),
+  deleteConnectionBtn: document.getElementById('deleteConnectionBtn'),
+  connName: document.getElementById('connName'),
+  connRelationship: document.getElementById('connRelationship'),
+  connCompany: document.getElementById('connCompany'),
+  connRole: document.getElementById('connRole'),
+  connEmail: document.getElementById('connEmail'),
+  connPhone: document.getElementById('connPhone'),
+  connLinkedin: document.getElementById('connLinkedin'),
+  connIndustry: document.getElementById('connIndustry'),
+  connTags: document.getElementById('connTags'),
+  connLastContacted: document.getElementById('connLastContacted'),
+  connNotes: document.getElementById('connNotes'),
+  connLinkedJobs: document.getElementById('connLinkedJobs'),
+  connLinkJobSelect: document.getElementById('connLinkJobSelect'),
+  connLinkJobBtn: document.getElementById('connLinkJobBtn')
 };
 
 /**
@@ -60,6 +105,7 @@ const elements = {
  */
 async function init() {
   await loadApplications();
+  await loadConnections();
   setupEventListeners();
   checkForHighlight();
 }
@@ -71,6 +117,16 @@ async function loadApplications() {
   allApplications = await getAllApplications();
   await updateStats();
   renderJobs();
+}
+
+/**
+ * Load all connections and render
+ */
+async function loadConnections() {
+  allConnections = await getAllConnections();
+  if (currentSection === 'connections') {
+    renderConnections();
+  }
 }
 
 /**
@@ -124,8 +180,57 @@ function setupEventListeners() {
   
   // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Escape') {
+      closeModal();
+      closeConnectionModal();
+    }
   });
+
+  // Section navigation
+  elements.sectionBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      elements.sectionBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      switchSection(btn.dataset.section);
+    });
+  });
+
+  // Connection filters
+  elements.connectionFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      elements.connectionFilterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      connectionFilter = btn.dataset.relationship;
+      renderConnections();
+    });
+  });
+
+  // Connection search
+  elements.connectionSearchInput.addEventListener('input', (e) => {
+    connectionSearch = e.target.value.toLowerCase();
+    renderConnections();
+  });
+
+  // Connection sort
+  elements.connectionSortBy.addEventListener('change', (e) => {
+    connectionSort = e.target.value;
+    renderConnections();
+  });
+
+  // Add connection button
+  elements.addConnectionBtn.addEventListener('click', () => openConnectionModal(null));
+
+  // Connection modal
+  elements.closeConnectionModal.addEventListener('click', closeConnectionModal);
+  elements.connectionModal.querySelector('.modal-backdrop').addEventListener('click', closeConnectionModal);
+  elements.connectionEditForm.addEventListener('submit', handleSaveConnection);
+  elements.deleteConnectionBtn.addEventListener('click', handleDeleteConnection);
+
+  // Link job to connection
+  elements.connLinkJobBtn.addEventListener('click', linkJobToConnection);
+
+  // Link connection to job
+  elements.jobLinkConnectionBtn.addEventListener('click', linkConnectionToJob);
 }
 
 /**
@@ -445,6 +550,7 @@ function renderJobCard(job) {
         ${job.salary ? `<span>💰 ${escapeHtml(job.salary)}</span>` : ''}
         <span>📅 ${formatDate(job.dateAdded)}</span>
         ${job.portalUrl ? `<span class="portal-indicator" title="Has application portal">🔗 Portal</span>` : ''}
+        ${getConnectionCountForJob(job.id) > 0 ? `<span class="connection-count-badge" title="Linked connections">👤 ${getConnectionCountForJob(job.id)}</span>` : ''}
       </div>
       ${job.tags && job.tags.length > 0 ? `
         <div class="job-card-tags">
@@ -861,6 +967,8 @@ function openJobModal(jobId) {
 
   elements.editDateAdded.textContent = new Date(job.dateAdded).toLocaleString();
 
+  renderLinkedConnectionsInJobModal(jobId);
+
   elements.modal.classList.remove('hidden');
 }
 
@@ -994,12 +1102,355 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// ===== Section Switching =====
+
+function switchSection(section) {
+  currentSection = section;
+  const jobsContent = document.getElementById('jobsHeader');
+  const jobList = elements.jobList;
+  const emptyState = elements.emptyState;
+  const noResults = elements.noResults;
+
+  if (section === 'connections') {
+    // Hide jobs UI
+    jobsContent.classList.add('hidden');
+    jobList.classList.add('hidden');
+    emptyState.classList.add('hidden');
+    noResults.classList.add('hidden');
+    elements.jobFilters.classList.add('hidden');
+    elements.connectionFilters.classList.remove('hidden');
+    // Show connections
+    elements.connectionsSection.classList.remove('hidden');
+    renderConnections();
+  } else {
+    // Show jobs UI
+    jobsContent.classList.remove('hidden');
+    elements.jobFilters.classList.remove('hidden');
+    elements.connectionFilters.classList.add('hidden');
+    // Hide connections
+    elements.connectionsSection.classList.add('hidden');
+    renderJobs();
+  }
+}
+
+// ===== Connection Rendering =====
+
+function getFilteredConnections() {
+  let filtered = [...allConnections];
+
+  if (connectionFilter !== 'all') {
+    filtered = filtered.filter(c => c.relationship === connectionFilter);
+  }
+
+  if (connectionSearch) {
+    filtered = filtered.filter(c =>
+      c.name.toLowerCase().includes(connectionSearch) ||
+      c.company.toLowerCase().includes(connectionSearch) ||
+      c.role.toLowerCase().includes(connectionSearch) ||
+      c.email.toLowerCase().includes(connectionSearch) ||
+      c.tags?.some(tag => tag.includes(connectionSearch))
+    );
+  }
+
+  const [sortField, sortDir] = connectionSort.split('-');
+  filtered.sort((a, b) => {
+    let valA = a[sortField];
+    let valB = b[sortField];
+
+    if (sortField === 'dateAdded' || sortField === 'lastContactedDate') {
+      valA = valA ? new Date(valA).getTime() : 0;
+      valB = valB ? new Date(valB).getTime() : 0;
+    } else {
+      valA = (valA || '').toLowerCase();
+      valB = (valB || '').toLowerCase();
+    }
+
+    return sortDir === 'asc' ? (valA > valB ? 1 : -1) : (valA < valB ? 1 : -1);
+  });
+
+  return filtered;
+}
+
+function renderConnections() {
+  const filtered = getFilteredConnections();
+
+  if (allConnections.length === 0) {
+    elements.connectionList.classList.add('hidden');
+    elements.connectionsEmpty.classList.remove('hidden');
+    elements.connectionsNoResults.classList.add('hidden');
+    return;
+  }
+
+  if (filtered.length === 0) {
+    elements.connectionList.classList.add('hidden');
+    elements.connectionsEmpty.classList.add('hidden');
+    elements.connectionsNoResults.classList.remove('hidden');
+    return;
+  }
+
+  elements.connectionList.classList.remove('hidden');
+  elements.connectionsEmpty.classList.add('hidden');
+  elements.connectionsNoResults.classList.add('hidden');
+
+  elements.connectionList.innerHTML = filtered.map(conn => renderConnectionCard(conn)).join('');
+
+  // Event delegation for connection cards
+  elements.connectionList.onclick = (e) => {
+    const card = e.target.closest('.connection-card');
+    if (card) {
+      openConnectionModal(card.dataset.connectionId);
+    }
+  };
+}
+
+const RELATIONSHIP_LABELS = {
+  recruiter: 'Recruiter',
+  referral: 'Referral',
+  colleague: 'Colleague',
+  mentor: 'Mentor',
+  other: 'Other'
+};
+
+function renderConnectionCard(conn) {
+  const linkedCount = conn.linkedJobIds ? conn.linkedJobIds.length : 0;
+  const initials = conn.name.split(/\s+/).map(w => w[0]).join('').substring(0, 2).toUpperCase();
+
+  return `
+    <div class="connection-card" data-connection-id="${conn.id}">
+      <div class="connection-card-avatar">
+        <div class="connection-initials">${initials}</div>
+      </div>
+      <div class="connection-card-body">
+        <div class="connection-card-header">
+          <h3 class="connection-card-name">${escapeHtml(conn.name)}</h3>
+          <span class="connection-relationship relationship-${conn.relationship}">${RELATIONSHIP_LABELS[conn.relationship] || conn.relationship}</span>
+        </div>
+        <div class="connection-card-meta">
+          ${conn.role ? `<span>${escapeHtml(conn.role)}</span>` : ''}
+          ${conn.company ? `<span>at ${escapeHtml(conn.company)}</span>` : ''}
+        </div>
+        <div class="connection-card-footer">
+          ${conn.email ? `<span class="connection-detail">${escapeHtml(conn.email)}</span>` : ''}
+          ${conn.lastContactedDate ? `<span class="connection-detail">Last contact: ${formatDate(conn.lastContactedDate)}</span>` : ''}
+          ${linkedCount > 0 ? `<span class="connection-detail connection-job-count">${linkedCount} linked job${linkedCount !== 1 ? 's' : ''}</span>` : ''}
+        </div>
+        ${conn.tags && conn.tags.length > 0 ? `
+          <div class="connection-card-tags">
+            ${conn.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ===== Connection Modal =====
+
+function openConnectionModal(connectionId) {
+  selectedConnectionId = connectionId;
+
+  if (connectionId) {
+    const conn = allConnections.find(c => c.id === connectionId);
+    if (!conn) return;
+    elements.connectionModalTitle.textContent = conn.name;
+    elements.connName.value = conn.name;
+    elements.connRelationship.value = conn.relationship || 'other';
+    elements.connCompany.value = conn.company || '';
+    elements.connRole.value = conn.role || '';
+    elements.connEmail.value = conn.email || '';
+    elements.connPhone.value = conn.phone || '';
+    elements.connLinkedin.value = conn.linkedinUrl || '';
+    elements.connIndustry.value = conn.industry || '';
+    elements.connTags.value = conn.tags?.join(', ') || '';
+    elements.connLastContacted.value = conn.lastContactedDate ? conn.lastContactedDate.split('T')[0] : '';
+    elements.connNotes.value = conn.notes || '';
+    elements.deleteConnectionBtn.classList.remove('hidden');
+    renderLinkedJobsInConnectionModal(conn.linkedJobIds || []);
+  } else {
+    elements.connectionModalTitle.textContent = 'Add Connection';
+    elements.connName.value = '';
+    elements.connRelationship.value = 'other';
+    elements.connCompany.value = '';
+    elements.connRole.value = '';
+    elements.connEmail.value = '';
+    elements.connPhone.value = '';
+    elements.connLinkedin.value = '';
+    elements.connIndustry.value = '';
+    elements.connTags.value = '';
+    elements.connLastContacted.value = '';
+    elements.connNotes.value = '';
+    elements.deleteConnectionBtn.classList.add('hidden');
+    renderLinkedJobsInConnectionModal([]);
+  }
+
+  populateLinkJobSelect(connectionId);
+  elements.connectionModal.classList.remove('hidden');
+}
+
+function closeConnectionModal() {
+  elements.connectionModal.classList.add('hidden');
+  selectedConnectionId = null;
+}
+
+function renderLinkedJobsInConnectionModal(jobIds) {
+  if (!jobIds || jobIds.length === 0) {
+    elements.connLinkedJobs.innerHTML = '<span class="meta-text">No linked jobs</span>';
+    return;
+  }
+  elements.connLinkedJobs.innerHTML = jobIds.map(jobId => {
+    const job = allApplications.find(j => j.id === jobId);
+    if (!job) return '';
+    return `<div class="linked-item">
+      <span>${escapeHtml(job.title)} at ${escapeHtml(job.company)}</span>
+      <button type="button" class="btn-unlink" data-job-id="${jobId}" onclick="unlinkJobFromConnection('${jobId}')">&times;</button>
+    </div>`;
+  }).join('');
+}
+
+function populateLinkJobSelect(connectionId) {
+  const conn = connectionId ? allConnections.find(c => c.id === connectionId) : null;
+  const linkedIds = conn?.linkedJobIds || [];
+  const available = allApplications.filter(j => !linkedIds.includes(j.id));
+
+  elements.connLinkJobSelect.innerHTML = '<option value="">-- Link a job --</option>' +
+    available.map(j => `<option value="${j.id}">${escapeHtml(j.title)} - ${escapeHtml(j.company)}</option>`).join('');
+}
+
+async function linkJobToConnection() {
+  const jobId = elements.connLinkJobSelect.value;
+  if (!jobId || !selectedConnectionId) return;
+
+  const conn = allConnections.find(c => c.id === selectedConnectionId);
+  if (!conn) return;
+
+  const linkedJobIds = [...(conn.linkedJobIds || []), jobId];
+  await updateConnection(selectedConnectionId, { linkedJobIds });
+  allConnections = await getAllConnections();
+
+  renderLinkedJobsInConnectionModal(linkedJobIds);
+  populateLinkJobSelect(selectedConnectionId);
+}
+
+function unlinkJobFromConnection(jobId) {
+  if (!selectedConnectionId) return;
+  const conn = allConnections.find(c => c.id === selectedConnectionId);
+  if (!conn) return;
+
+  const linkedJobIds = (conn.linkedJobIds || []).filter(id => id !== jobId);
+  updateConnection(selectedConnectionId, { linkedJobIds }).then(async () => {
+    allConnections = await getAllConnections();
+    renderLinkedJobsInConnectionModal(linkedJobIds);
+    populateLinkJobSelect(selectedConnectionId);
+  });
+}
+
+async function handleSaveConnection(e) {
+  e.preventDefault();
+
+  const data = {
+    name: elements.connName.value.trim(),
+    relationship: elements.connRelationship.value,
+    company: elements.connCompany.value.trim(),
+    role: elements.connRole.value.trim(),
+    email: elements.connEmail.value.trim(),
+    phone: elements.connPhone.value.trim(),
+    linkedinUrl: elements.connLinkedin.value.trim(),
+    industry: elements.connIndustry.value.trim(),
+    tags: elements.connTags.value.split(',').map(t => t.trim().toLowerCase()).filter(t => t.length > 0),
+    lastContactedDate: elements.connLastContacted.value || '',
+    notes: elements.connNotes.value.trim()
+  };
+
+  if (!data.name) {
+    alert('Name is required');
+    return;
+  }
+
+  if (selectedConnectionId) {
+    await updateConnection(selectedConnectionId, data);
+  } else {
+    await saveConnection(data);
+  }
+
+  closeConnectionModal();
+  allConnections = await getAllConnections();
+  renderConnections();
+}
+
+async function handleDeleteConnection() {
+  if (!selectedConnectionId) return;
+  const conn = allConnections.find(c => c.id === selectedConnectionId);
+  if (!confirm(`Delete connection "${conn.name}"?`)) return;
+
+  await deleteConnection(selectedConnectionId);
+  closeConnectionModal();
+  allConnections = await getAllConnections();
+  renderConnections();
+}
+
+// ===== Linked Connections in Job Modal =====
+
+function renderLinkedConnectionsInJobModal(jobId) {
+  const linked = allConnections.filter(c => c.linkedJobIds && c.linkedJobIds.includes(jobId));
+
+  if (linked.length === 0) {
+    elements.jobLinkedConnections.innerHTML = '<span class="meta-text">No linked connections</span>';
+  } else {
+    elements.jobLinkedConnections.innerHTML = linked.map(c =>
+      `<div class="linked-item">
+        <span>${escapeHtml(c.name)}${c.company ? ` (${escapeHtml(c.company)})` : ''}</span>
+        <button type="button" class="btn-unlink" onclick="unlinkConnectionFromJob('${c.id}')">&times;</button>
+      </div>`
+    ).join('');
+  }
+
+  // Populate select with unlinked connections
+  const linkedIds = linked.map(c => c.id);
+  const available = allConnections.filter(c => !linkedIds.includes(c.id));
+  elements.jobLinkConnectionSelect.innerHTML = '<option value="">-- Link a connection --</option>' +
+    available.map(c => `<option value="${c.id}">${escapeHtml(c.name)}${c.company ? ` (${escapeHtml(c.company)})` : ''}</option>`).join('');
+}
+
+async function linkConnectionToJob() {
+  const connId = elements.jobLinkConnectionSelect.value;
+  if (!connId || !selectedJobId) return;
+
+  const conn = allConnections.find(c => c.id === connId);
+  if (!conn) return;
+
+  const linkedJobIds = [...(conn.linkedJobIds || []), selectedJobId];
+  await updateConnection(connId, { linkedJobIds });
+  allConnections = await getAllConnections();
+  renderLinkedConnectionsInJobModal(selectedJobId);
+}
+
+function unlinkConnectionFromJob(connId) {
+  if (!selectedJobId) return;
+  const conn = allConnections.find(c => c.id === connId);
+  if (!conn) return;
+
+  const linkedJobIds = (conn.linkedJobIds || []).filter(id => id !== selectedJobId);
+  updateConnection(connId, { linkedJobIds }).then(async () => {
+    allConnections = await getAllConnections();
+    renderLinkedConnectionsInJobModal(selectedJobId);
+  });
+}
+
+// ===== Connection count helper for job cards =====
+
+function getConnectionCountForJob(jobId) {
+  return allConnections.filter(c => c.linkedJobIds && c.linkedJobIds.includes(jobId)).length;
+}
+
 // Make functions available globally (for onclick)
 window.openJobModal = openJobModal;
 window.toggleCompanyGroup = toggleCompanyGroup;
 window.startInlineEdit = startInlineEdit;
 window.cancelInlineEdit = cancelInlineEdit;
 window.saveInlineEdit = saveInlineEdit;
+window.unlinkJobFromConnection = unlinkJobFromConnection;
+window.unlinkConnectionFromJob = unlinkConnectionFromJob;
+window.openConnectionModal = openConnectionModal;
 
 // Initialize on load
 document.addEventListener('DOMContentLoaded', init);

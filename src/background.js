@@ -9,18 +9,23 @@ chrome.runtime.onInstalled.addListener((details) => {
     console.log('Job Tracker extension installed!');
     
     // Initialize storage with empty array if needed
-    chrome.storage.local.get('jobApplications', (result) => {
+    chrome.storage.local.get(['jobApplications', 'connections'], (result) => {
       if (!result.jobApplications) {
         chrome.storage.local.set({ jobApplications: [] });
+      }
+      if (!result.connections) {
+        chrome.storage.local.set({ connections: [] });
       }
     });
   }
   
   // Create context menu (runs on install and update)
-  chrome.contextMenus.create({
-    id: 'saveJob',
-    title: 'Save to Job Tracker',
-    contexts: ['page']
+  chrome.contextMenus.removeAll(() => {
+    chrome.contextMenus.create({
+      id: 'saveJob',
+      title: 'Save to Job Tracker',
+      contexts: ['page']
+    });
   });
 });
 
