@@ -1,0 +1,1 @@
+export { PostingCard } from './PostingCard';

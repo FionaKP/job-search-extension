@@ -257,7 +257,7 @@ async function updateStats() {
  */
 function openDashboard() {
   chrome.tabs.create({
-    url: chrome.runtime.getURL('src/dashboard/dashboard.html')
+    url: chrome.runtime.getURL('index.html')
   });
 }
 
@@ -266,7 +266,7 @@ function openDashboard() {
  */
 function viewExistingJob() {
   chrome.tabs.create({
-    url: chrome.runtime.getURL(`src/dashboard/dashboard.html?highlight=${existingJobId}`)
+    url: chrome.runtime.getURL(`index.html?highlight=${existingJobId}`)
   });
 }
 

@@ -1,48 +1,27 @@
 {
   "manifest_version": 3,
-  "name": "Job Application Tracker",
-  "version": "1.0.0",
-  "description": "Track and manage your job applications with one click. Save job postings, track application status, and stay organized during your job search.",
-  
-  "permissions": [
-    "storage",
-    "activeTab",
-    "scripting",
-    "contextMenus"
-  ],
-  
+  "name": "JobFlow - Job Application Tracker",
+  "version": "2.0.0",
+  "description": "Track and manage your job applications",
+  "permissions": ["storage", "activeTab", "scripting"],
   "action": {
     "default_popup": "src/popup/popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
-    },
-    "default_title": "Save Job Application"
+    }
   },
-  
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/content/scraper.js"],
-      "run_at": "document_idle"
+      "js": ["src/content/scraper.ts"]
     }
   ],
-  
-  "background": {
-    "service_worker": "src/background.js"
-  },
-  
-  "web_accessible_resources": [
-    {
-      "resources": ["src/dashboard/dashboard.html"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+  "options_page": "index.html"
 }
