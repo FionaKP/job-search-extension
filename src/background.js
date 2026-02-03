@@ -42,7 +42,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'openDashboard') {
     chrome.tabs.create({
-      url: chrome.runtime.getURL('src/dashboard/dashboard.html')
+      url: chrome.runtime.getURL('index.html')
     });
     sendResponse({ success: true });
   }
