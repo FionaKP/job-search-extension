@@ -140,6 +140,7 @@ export interface V1Application {
 
 // ============ Scraper Types ============
 
+/** @deprecated Use ScrapedData instead */
 export interface ScrapedJobData {
   url: string;
   title: string;
@@ -149,6 +150,20 @@ export interface ScrapedJobData {
   detectedSite: string;
   scrapedAt: string;
   salary?: string;
+}
+
+/** New scraper response format (Phase 3) */
+export interface ScrapedData {
+  title: string | null;
+  company: string | null;
+  companyLogo: string | null;
+  location: string | null;
+  salary: string | null;
+  description: string | null;
+  url: string;
+  scrapedAt: number;
+  source: string; // e.g., 'linkedin', 'greenhouse', 'generic'
+  confidence: number; // 0-1, how reliable the scrape was
 }
 
 // ============ Stats ============
