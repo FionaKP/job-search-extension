@@ -4,6 +4,9 @@ import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { KanbanBoard } from '@/components/dashboard/KanbanBoard';
 import { ListView } from '@/components/dashboard/ListView';
 import { PostingDetailPanel } from '@/components/dashboard/PostingDetailPanel';
+import { exportDataToFile, promptImportFile } from '@/utils/dataTransfer';
+import { runMigrationIfNeeded } from '@/services/migration';
+import { getPostings, savePostings as persistPostings, getViewPreference, saveViewPreference } from '@/services/storage';
 
 function App() {
   const [postings, setPostings] = useState<Posting[]>([]);
@@ -14,20 +17,29 @@ function App() {
   const [selectedPostingId, setSelectedPostingId] = useState<string | null>(null);
   const [detailPanelOpen, setDetailPanelOpen] = useState(false);
 
-  // Load postings from storage
+  // Load postings from storage (after running migration)
   useEffect(() => {
-    const loadPostings = async () => {
+    const initializeApp = async () => {
       try {
-        const result = await chrome.storage.local.get(['postings']);
-        setPostings(result.postings || []);
+        // Run migration first
+        await runMigrationIfNeeded();
+
+        // Load postings and view preference
+        const [loadedPostings, viewPref] = await Promise.all([
+          getPostings(),
+          getViewPreference(),
+        ]);
+
+        setPostings(loadedPostings);
+        setCurrentView(viewPref);
       } catch (err) {
-        console.error('Failed to load postings:', err);
+        console.error('Failed to initialize app:', err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadPostings();
+    initializeApp();
 
     // Listen for storage changes
     const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }) => {
@@ -53,20 +65,32 @@ function App() {
   // Save postings to storage
   const savePostings = useCallback(async (newPostings: Posting[]) => {
     try {
-      await chrome.storage.local.set({ postings: newPostings });
+      await persistPostings(newPostings);
       setPostings(newPostings);
     } catch (err) {
       console.error('Failed to save postings:', err);
     }
   }, []);
 
+  // Handle view change with persistence
+  const handleViewChange = useCallback(async (view: ViewMode) => {
+    setCurrentView(view);
+    try {
+      await saveViewPreference(view);
+    } catch (err) {
+      console.error('Failed to save view preference:', err);
+    }
+  }, []);
+
   // Filter postings based on search and priority
   const filteredPostings = postings.filter((posting) => {
+    const query = searchQuery.toLowerCase();
     const matchesSearch =
       !searchQuery ||
-      posting.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      posting.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      posting.location.toLowerCase().includes(searchQuery.toLowerCase());
+      posting.title.toLowerCase().includes(query) ||
+      posting.company.toLowerCase().includes(query) ||
+      posting.location.toLowerCase().includes(query) ||
+      posting.tags.some((tag) => tag.toLowerCase().includes(query));
 
     const matchesPriority = !priorityFilter || posting.priority === priorityFilter;
 
@@ -122,6 +146,31 @@ function App() {
     alert('Use the extension popup on a job posting page to add new jobs.');
   };
 
+  const handleExport = () => {
+    exportDataToFile(postings);
+  };
+
+  const handleImport = async () => {
+    const result = await promptImportFile();
+    if (!result.success) {
+      alert(result.error || 'Import failed');
+      return;
+    }
+
+    const confirmMessage = `Import ${result.postings.length} job posting(s)?\n\nThis will merge with your existing data. Duplicates (same URL) will be skipped.`;
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    // Merge imported postings, skip duplicates based on URL
+    const existingUrls = new Set(postings.map((p) => p.url));
+    const newPostings = result.postings.filter((p) => !existingUrls.has(p.url));
+    const merged = [...postings, ...newPostings];
+
+    savePostings(merged);
+    alert(`Imported ${newPostings.length} new posting(s). ${result.postings.length - newPostings.length} duplicate(s) skipped.`);
+  };
+
   const selectedPosting = postings.find((p) => p.id === selectedPostingId) || null;
 
   if (isLoading) {
@@ -143,8 +192,10 @@ function App() {
         priorityFilter={priorityFilter}
         onPriorityFilterChange={setPriorityFilter}
         currentView={currentView}
-        onViewChange={setCurrentView}
+        onViewChange={handleViewChange}
         onAddClick={handleAddClick}
+        onExport={handleExport}
+        onImport={handleImport}
       />
 
       <main className="flex-1 overflow-hidden">
