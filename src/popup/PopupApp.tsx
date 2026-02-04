@@ -1,28 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import type { ScrapedJobData, Stats, Posting } from '../types';
+import type { ScrapedData, Stats, Posting } from '../types';
 
-interface FormData {
-  url: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  tags: string;
-  notes: string;
-  companyUrl: string;
-  portalUrl: string;
+interface ScrapeStatus {
+  source: string;
+  confidence: number;
+  isLoading: boolean;
+  error: string | null;
 }
 
-const PRIORITY_LABELS = [
-  'Not rated',
-  'Low priority',
-  'Medium priority',
-  'High priority',
-];
+const PRIORITY_LABELS: Record<1 | 2 | 3, string> = {
+  1: 'Low',
+  2: 'Medium',
+  3: 'High',
+};
 
+const SUGGESTED_TAGS = ['remote', 'hybrid', 'onsite', 'startup', 'enterprise', 'contract'];
 const STORAGE_KEY = 'postings';
 
-// Storage helpers (inline for popup simplicity)
+// Storage helpers
 async function getAllPostings(): Promise<Posting[]> {
   const result = await chrome.storage.local.get(STORAGE_KEY);
   return result[STORAGE_KEY] || [];
@@ -52,10 +47,7 @@ async function savePosting(jobData: Partial<Posting>): Promise<Posting> {
   return newJob;
 }
 
-async function updatePosting(
-  id: string,
-  updates: Partial<Posting>
-): Promise<Posting | null> {
+async function updatePosting(id: string, updates: Partial<Posting>): Promise<Posting | null> {
   const postings = await getAllPostings();
   const index = postings.findIndex((job) => job.id === id);
   if (index === -1) return null;
@@ -79,45 +71,45 @@ async function findByUrl(url: string): Promise<Posting | null> {
 }
 
 export default function PopupApp() {
-  const [formData, setFormData] = useState<FormData>({
-    url: '',
-    title: '',
-    company: '',
-    location: '',
-    salary: '',
-    tags: '',
-    notes: '',
-    companyUrl: '',
-    portalUrl: '',
-  });
+  // Form fields
+  const [title, setTitle] = useState('');
+  const [company, setCompany] = useState('');
+  const [location, setLocation] = useState('');
+  const [salary, setSalary] = useState('');
+  const [description, setDescription] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+  const [notes, setNotes] = useState('');
   const [priority, setPriority] = useState<1 | 2 | 3>(2);
+  const [showDescription, setShowDescription] = useState(false);
+
+  // Scrape status
+  const [, setScrapedData] = useState<ScrapedData | null>(null);
+  const [scrapeStatus, setScrapeStatus] = useState<ScrapeStatus>({
+    source: '',
+    confidence: 0,
+    isLoading: false,
+    error: null,
+  });
+  const [isManualMode, setIsManualMode] = useState(false);
+
+  // UI state
   const [stats, setStats] = useState<Stats>({
-    total: 0,
-    saved: 0,
-    applied: 0,
-    interviewing: 0,
-    offer: 0,
-    rejected: 0,
-    withdrawn: 0,
+    total: 0, saved: 0, applied: 0, interviewing: 0, offer: 0, rejected: 0, withdrawn: 0,
   });
   const [recentPostings, setRecentPostings] = useState<Posting[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [existingJobId, setExistingJobId] = useState<string | null>(null);
+  const [existingJob, setExistingJob] = useState<Posting | null>(null);
   const [currentTabUrl, setCurrentTabUrl] = useState('');
   const [isPopout, setIsPopout] = useState(false);
 
   const updateStats = useCallback(async () => {
     const postings = await getAllPostings();
     const newStats: Stats = {
-      total: postings.length,
-      saved: 0,
-      applied: 0,
-      interviewing: 0,
-      offer: 0,
-      rejected: 0,
-      withdrawn: 0,
+      total: postings.length, saved: 0, applied: 0, interviewing: 0, offer: 0, rejected: 0, withdrawn: 0,
     };
     postings.forEach((job) => {
       if (job.status in newStats) {
@@ -125,43 +117,60 @@ export default function PopupApp() {
       }
     });
     setStats(newStats);
-    // Get 3 most recent postings (already sorted by dateAdded desc from unshift)
     setRecentPostings(postings.slice(0, 3));
   }, []);
 
-  const populateForm = useCallback((data: Partial<ScrapedJobData & Posting>) => {
-    setFormData((prev) => ({
-      ...prev,
-      title: data.title || prev.title,
-      company: data.company || prev.company,
-      location: data.location || prev.location,
-      salary: data.salary || prev.salary,
-      notes: data.notes || prev.notes,
-      tags: Array.isArray(data.tags) ? data.tags.join(', ') : prev.tags,
-    }));
-    if (data.priority) {
+  const populateForm = useCallback((data: ScrapedData | Posting) => {
+    setTitle(data.title || '');
+    setCompany(data.company || '');
+    setLocation(data.location || '');
+    setSalary(data.salary || '');
+    setDescription(data.description || '');
+
+    if ('tags' in data && Array.isArray(data.tags)) {
+      setTags(data.tags);
+    }
+    if ('notes' in data) {
+      setNotes(data.notes || '');
+    }
+    if ('priority' in data) {
       setPriority(data.priority);
+    }
+
+    // Update scrape status if this is scraped data
+    if ('source' in data && 'confidence' in data) {
+      setScrapedData(data);
+      setScrapeStatus({
+        source: data.source || '',
+        confidence: data.confidence || 0,
+        isLoading: false,
+        error: (!data.title && !data.company)
+          ? 'Could not detect job details. Please fill in manually.'
+          : null,
+      });
     }
   }, []);
 
-  const scrapeCurrentPage = useCallback(
-    async (tabId: number) => {
-      try {
-        await chrome.scripting.executeScript({
-          target: { tabId },
-          files: ['src/content/scraper.ts'],
-        });
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        const response = await chrome.tabs.sendMessage(tabId, { action: 'scrapeJob' });
-        if (response) {
-          populateForm(response);
-        }
-      } catch (err) {
-        console.log('Scraping not available on this page:', err);
+  const scrapeCurrentPage = useCallback(async (tabId: number) => {
+    setScrapeStatus((prev) => ({ ...prev, isLoading: true, error: null }));
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const response: ScrapedData = await chrome.tabs.sendMessage(tabId, { action: 'scrapeJob' });
+
+      if (response) {
+        populateForm(response);
       }
-    },
-    [populateForm]
-  );
+    } catch (err) {
+      console.log('Scraping not available:', err);
+      setScrapeStatus({
+        source: '',
+        confidence: 0,
+        isLoading: false,
+        error: 'This page cannot be scraped. Please fill in manually.',
+      });
+    }
+  }, [populateForm]);
 
   useEffect(() => {
     async function init() {
@@ -182,12 +191,11 @@ export default function PopupApp() {
         }
 
         setCurrentTabUrl(url);
-        setFormData((prev) => ({ ...prev, url }));
 
-        const existingJob = await findByUrl(url);
-        if (existingJob) {
-          setExistingJobId(existingJob.id);
-          populateForm(existingJob);
+        const existing = await findByUrl(url);
+        if (existing) {
+          setExistingJob(existing);
+          populateForm(existing);
         } else if (tabId) {
           await scrapeCurrentPage(tabId);
         }
@@ -203,43 +211,40 @@ export default function PopupApp() {
     init();
   }, [populateForm, scrapeCurrentPage, updateStats]);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim() || !formData.company.trim()) {
-      setError('Please enter job title and company');
+    setError(null);
+
+    if (!title.trim()) {
+      setError('Job title is required');
+      return;
+    }
+    if (!company.trim()) {
+      setError('Company name is required');
       return;
     }
 
+    setSaving(true);
     try {
       const jobData = {
         url: currentTabUrl,
-        title: formData.title.trim(),
-        company: formData.company.trim(),
-        location: formData.location.trim(),
-        salary: formData.salary.trim(),
-        notes: formData.notes.trim(),
+        title: title.trim(),
+        company: company.trim(),
+        location: location.trim(),
+        salary: salary.trim() || undefined,
+        description: description.trim(),
+        notes: notes.trim(),
         priority,
-        tags: formData.tags
-          .split(',')
-          .map((t) => t.trim().toLowerCase())
-          .filter((t) => t.length > 0),
+        tags,
       };
 
-      if (existingJobId) {
-        await updatePosting(existingJobId, jobData);
+      if (existingJob) {
+        await updatePosting(existingJob.id, jobData);
       } else {
         await savePosting(jobData);
       }
 
       setSuccess(true);
-      setError(null);
       await updateStats();
 
       if (!isPopout) {
@@ -248,7 +253,42 @@ export default function PopupApp() {
     } catch (err) {
       console.error('Save error:', err);
       setError('Failed to save application');
+    } finally {
+      setSaving(false);
     }
+  };
+
+  const handleAddTag = (tag: string) => {
+    const normalized = tag.trim().toLowerCase();
+    if (normalized && !tags.includes(normalized)) {
+      setTags([...tags, normalized]);
+    }
+    setTagInput('');
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    setTags(tags.filter((t) => t !== tag));
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      handleAddTag(tagInput);
+    }
+  };
+
+  const switchToManualMode = () => {
+    setIsManualMode(true);
+    setScrapeStatus({ source: '', confidence: 0, isLoading: false, error: null });
+    // Clear form for fresh manual entry (keep URL)
+    setTitle('');
+    setCompany('');
+    setLocation('');
+    setSalary('');
+    setDescription('');
+    setTags([]);
+    setNotes('');
+    setPriority(2);
   };
 
   const openDashboard = () => {
@@ -256,50 +296,36 @@ export default function PopupApp() {
   };
 
   const openPopout = () => {
-    const popoutUrl =
-      chrome.runtime.getURL('src/popup/popup.html') +
-      '?sourceUrl=' +
-      encodeURIComponent(currentTabUrl);
+    const popoutUrl = chrome.runtime.getURL('src/popup/popup.html') + '?sourceUrl=' + encodeURIComponent(currentTabUrl);
     chrome.tabs.create({ url: popoutUrl });
     window.close();
-  };
-
-  const viewExistingJob = () => {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL(`index.html?highlight=${existingJobId}`),
-    });
   };
 
   const displayUrl = (() => {
     try {
       const urlObj = new URL(currentTabUrl);
-      const path = urlObj.pathname.slice(0, 30);
-      return urlObj.hostname + path + (urlObj.pathname.length > 30 ? '...' : '');
+      const path = urlObj.pathname.slice(0, 25);
+      return urlObj.hostname + path + (urlObj.pathname.length > 25 ? '...' : '');
     } catch {
-      return currentTabUrl.slice(0, 40) + '...';
+      return currentTabUrl.slice(0, 35) + '...';
     }
   })();
+
+  const getConfidenceClass = (confidence: number) => {
+    if (confidence >= 0.6) return 'notice-success';
+    if (confidence >= 0.3) return 'notice-warning';
+    return 'notice-error';
+  };
 
   return (
     <div className="popup-container">
       {/* Header */}
       <header className="header">
-        <h1>Job Tracker</h1>
+        <h1>JobFlow</h1>
         <div className="header-actions">
           {!isPopout && (
-            <button
-              className="btn-icon"
-              title="Open in new tab (stays open while you copy/paste)"
-              onClick={openPopout}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
+            <button className="btn-icon" title="Open in new tab" onClick={openPopout}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                 <polyline points="15 3 21 3 21 9" />
                 <line x1="10" y1="14" x2="21" y2="3" />
@@ -307,14 +333,7 @@ export default function PopupApp() {
             </button>
           )}
           <button className="btn-icon" title="Open Dashboard" onClick={openDashboard}>
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="7" height="7" />
               <rect x="14" y="3" width="7" height="7" />
               <rect x="14" y="14" width="7" height="7" />
@@ -324,73 +343,124 @@ export default function PopupApp() {
         </div>
       </header>
 
-      {/* Current URL Display */}
+      {/* URL Display */}
       <div className="current-url">
-        <span className="url-label">Saving from:</span>
-        <span className="url-text" title={currentTabUrl}>
-          {displayUrl}
-        </span>
+        <span className="url-label">From:</span>
+        <span className="url-text" title={currentTabUrl}>{displayUrl}</span>
       </div>
 
-      {/* Already Saved Notice */}
-      {existingJobId && (
+      {/* Scrape Status / Manual Mode */}
+      {scrapeStatus.isLoading && (
+        <div className="notice notice-loading">
+          <div className="spinner-small" />
+          <span>Scanning page...</span>
+        </div>
+      )}
+      {isManualMode && !scrapeStatus.isLoading && (
         <div className="notice notice-info">
-          <span>This job is already saved</span>
-          <button className="btn-link" onClick={viewExistingJob}>
-            View in Dashboard
+          <span>Manual entry mode</span>
+          <button
+            className="btn-link"
+            onClick={async () => {
+              setIsManualMode(false);
+              const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+              if (tab.id) {
+                scrapeCurrentPage(tab.id);
+              }
+            }}
+          >
+            Try auto-detect
+          </button>
+        </div>
+      )}
+      {!isManualMode && scrapeStatus.source && !scrapeStatus.isLoading && scrapeStatus.confidence > 0 && (
+        <div className={`notice ${getConfidenceClass(scrapeStatus.confidence)}`}>
+          <span>
+            <strong>{scrapeStatus.source}</strong> • {Math.round(scrapeStatus.confidence * 100)}% confidence
+          </span>
+          <button className="btn-link" onClick={switchToManualMode}>
+            Edit manually
+          </button>
+        </div>
+      )}
+      {!isManualMode && scrapeStatus.error && (
+        <div className="notice notice-warning">
+          <span>{scrapeStatus.error}</span>
+          <button className="btn-link" onClick={switchToManualMode}>
+            Enter manually
+          </button>
+        </div>
+      )}
+      {/* Show manual entry prompt when no scrape data and not loading */}
+      {!isManualMode && !scrapeStatus.isLoading && !scrapeStatus.source && !scrapeStatus.error && !existingJob && !loading && (
+        <div className="notice notice-info">
+          <span>No job detected on this page</span>
+          <button className="btn-link" onClick={switchToManualMode}>
+            Enter manually
           </button>
         </div>
       )}
 
-      {/* Loading State */}
-      {loading && (
-        <div className="loading">
-          <div className="spinner" />
-          <span>Scanning page...</span>
+      {/* Existing Job Notice */}
+      {existingJob && (
+        <div className="notice notice-info">
+          <span>Already saved</span>
+          <button
+            className="btn-link"
+            onClick={() => chrome.tabs.create({ url: chrome.runtime.getURL(`index.html?highlight=${existingJob.id}`) })}
+          >
+            View
+          </button>
         </div>
       )}
 
-      {/* Main Form */}
+      {/* Loading */}
+      {loading && (
+        <div className="loading">
+          <div className="spinner" />
+          <span>Loading...</span>
+        </div>
+      )}
+
+      {/* Form */}
       {!loading && (
         <form className="job-form" onSubmit={handleSubmit}>
-          <input type="hidden" name="url" value={formData.url} />
-
+          {/* Title */}
           <div className="form-group">
             <label htmlFor="title">Job Title *</label>
             <input
               type="text"
               id="title"
-              name="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Software Engineer"
-              required
-              value={formData.title}
-              onChange={handleInputChange}
+              className={error?.includes('title') ? 'error' : ''}
             />
           </div>
 
+          {/* Company */}
           <div className="form-group">
             <label htmlFor="company">Company *</label>
             <input
               type="text"
               id="company"
-              name="company"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
               placeholder="e.g., Acme Corp"
-              required
-              value={formData.company}
-              onChange={handleInputChange}
+              className={error?.includes('Company') ? 'error' : ''}
             />
           </div>
 
+          {/* Location & Salary */}
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="location">Location</label>
               <input
                 type="text"
                 id="location"
-                name="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g., Remote"
-                value={formData.location}
-                onChange={handleInputChange}
               />
             </div>
             <div className="form-group">
@@ -398,24 +468,22 @@ export default function PopupApp() {
               <input
                 type="text"
                 id="salary"
-                name="salary"
-                placeholder="e.g., $100k"
-                value={formData.salary}
-                onChange={handleInputChange}
+                value={salary}
+                onChange={(e) => setSalary(e.target.value)}
+                placeholder="e.g., $150k"
               />
             </div>
           </div>
 
-          {/* Priority Rating */}
+          {/* Priority */}
           <div className="form-group">
-            <label>Priority Level</label>
+            <label>Priority</label>
             <div className="star-rating">
               {([1, 2, 3] as const).map((value) => (
                 <button
                   key={value}
                   type="button"
                   className={`star-btn ${value <= priority ? 'active' : ''}`}
-                  title={PRIORITY_LABELS[value]}
                   onClick={() => setPriority(value)}
                 >
                   ★
@@ -425,65 +493,73 @@ export default function PopupApp() {
             </div>
           </div>
 
+          {/* Tags */}
           <div className="form-group">
-            <label htmlFor="tags">Tags</label>
-            <input
-              type="text"
-              id="tags"
-              name="tags"
-              placeholder="e.g., remote, startup, fintech"
-              value={formData.tags}
-              onChange={handleInputChange}
-            />
+            <label>Tags</label>
+            <div className="tags-container">
+              {tags.map((tag) => (
+                <span key={tag} className="tag-chip">
+                  {tag}
+                  <button type="button" onClick={() => handleRemoveTag(tag)} className="tag-remove">×</button>
+                </span>
+              ))}
+              <input
+                type="text"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                placeholder={tags.length === 0 ? 'Add tags...' : ''}
+                className="tag-input"
+              />
+            </div>
+            {tags.length === 0 && (
+              <div className="suggested-tags">
+                {SUGGESTED_TAGS.slice(0, 4).map((tag) => (
+                  <button key={tag} type="button" onClick={() => handleAddTag(tag)} className="suggested-tag">
+                    + {tag}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
+          {/* Description Preview */}
+          {description && (
+            <div className="form-group">
+              <div className="description-header">
+                <label>Description</label>
+                <button type="button" onClick={() => setShowDescription(!showDescription)} className="btn-link">
+                  {showDescription ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              {showDescription && (
+                <div className="description-preview">{description}</div>
+              )}
+            </div>
+          )}
+
+          {/* Notes */}
           <div className="form-group">
             <label htmlFor="notes">Notes</label>
             <textarea
               id="notes"
-              name="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              placeholder="Any notes about this position..."
-              value={formData.notes}
-              onChange={handleInputChange}
+              placeholder="Personal notes..."
             />
           </div>
 
+          {/* Submit */}
           <div className="form-actions">
-            <button type="submit" className="btn btn-primary">
-              {existingJobId ? 'Update Application' : 'Save Application'}
+            <button type="submit" className="btn btn-primary" disabled={saving}>
+              {saving ? 'Saving...' : existingJob ? 'Update' : 'Save to JobFlow'}
             </button>
           </div>
-
-          <details className="additional-urls">
-            <summary>Additional Links (optional)</summary>
-            <div className="form-group">
-              <label htmlFor="companyUrl">Company Website</label>
-              <input
-                type="url"
-                id="companyUrl"
-                name="companyUrl"
-                placeholder="e.g., https://company.com"
-                value={formData.companyUrl}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="portalUrl">Application Portal</label>
-              <input
-                type="url"
-                id="portalUrl"
-                name="portalUrl"
-                placeholder="e.g., https://workday.company.com"
-                value={formData.portalUrl}
-                onChange={handleInputChange}
-              />
-            </div>
-          </details>
         </form>
       )}
 
-      {/* Quick Stats */}
+      {/* Stats */}
       <div className="stats">
         <div className="stat">
           <span className="stat-value">{stats.total}</span>
@@ -495,45 +571,32 @@ export default function PopupApp() {
         </div>
         <div className="stat">
           <span className="stat-value">{stats.interviewing}</span>
-          <span className="stat-label">Interviewing</span>
+          <span className="stat-label">Interviews</span>
         </div>
       </div>
 
-      {/* Recent Postings */}
+      {/* Recent */}
       {recentPostings.length > 0 && (
         <div className="recent-postings">
-          <div className="recent-header">Recent ({recentPostings.length})</div>
+          <div className="recent-header">Recent</div>
           <ul className="recent-list">
             {recentPostings.map((posting) => (
               <li
                 key={posting.id}
                 className="recent-item"
-                onClick={() => {
-                  chrome.tabs.create({
-                    url: chrome.runtime.getURL(`index.html?highlight=${posting.id}`),
-                  });
-                }}
+                onClick={() => chrome.tabs.create({ url: chrome.runtime.getURL(`index.html?highlight=${posting.id}`) })}
               >
                 <span className="recent-title">{posting.title}</span>
                 <span className="recent-company">@ {posting.company}</span>
-                <span className="recent-priority">
-                  {'★'.repeat(posting.priority)}{'☆'.repeat(3 - posting.priority)}
-                </span>
               </li>
             ))}
           </ul>
         </div>
       )}
 
-      {/* Success Message */}
-      {success && <div className="notice notice-success">Job saved successfully!</div>}
-
-      {/* Error Message */}
-      {error && (
-        <div className="notice notice-error">
-          <span>{error}</span>
-        </div>
-      )}
+      {/* Messages */}
+      {success && <div className="notice notice-success">Saved successfully!</div>}
+      {error && <div className="notice notice-error">{error}</div>}
     </div>
   );
 }

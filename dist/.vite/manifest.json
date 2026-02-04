@@ -10,7 +10,7 @@
     "name": "client"
   },
   "index.html": {
-    "file": "assets/index-DtSfA1vw.js",
+    "file": "assets/index-BsQXW-88.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -18,21 +18,21 @@
       "_client-D6vcrbFg.js"
     ],
     "css": [
-      "assets/index-CZZwHkHT.css"
+      "assets/index-DR_1yFjT.css"
     ]
   },
   "scraper.ts-loader.js": {
-    "file": "assets/scraper.ts-loader-FmklppvL.js",
+    "file": "assets/scraper.ts-loader-CTO0kcLD.js",
     "src": "scraper.ts-loader.js"
   },
   "src/content/scraper.ts": {
-    "file": "assets/scraper.ts-5FyORc0C.js",
+    "file": "assets/scraper.ts-CiyY0u-t.js",
     "name": "scraper.ts",
     "src": "src/content/scraper.ts",
     "isEntry": true
   },
   "src/popup/popup.html": {
-    "file": "assets/popup-HFctK6Ga.js",
+    "file": "assets/popup-DmRKRSWs.js",
     "name": "popup",
     "src": "src/popup/popup.html",
     "isEntry": true,
@@ -40,7 +40,7 @@
       "_client-D6vcrbFg.js"
     ],
     "css": [
-      "assets/popup-De4PT5eF.css"
+      "assets/popup-B0AZz42j.css"
     ]
   }
 }
