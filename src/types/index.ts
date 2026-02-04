@@ -82,12 +82,29 @@ export type ViewMode = 'kanban' | 'list';
 export interface AppSettings {
   defaultView: ViewMode;
   theme: 'light' | 'dark';
+  collapsedColumns: PostingStatus[];
 }
 
 export interface FilterState {
   searchQuery: string;
   priorityFilter: 1 | 2 | 3 | null;
   statusFilter: PostingStatus | null;
+  // Advanced filters
+  tagFilters: string[];
+  companyFilter: string;
+  dateRange: {
+    from: string | null; // ISO date string
+    to: string | null;
+  };
+  hasDeadline: boolean;
+  deadlineSoon: boolean; // Within 7 days
+  needsAction: boolean; // No update in 7+ days, non-terminal status
+}
+
+export const TERMINAL_STATUSES: PostingStatus[] = ['accepted', 'rejected', 'withdrawn'];
+
+export function isTerminalStatus(status: PostingStatus): boolean {
+  return TERMINAL_STATUSES.includes(status);
 }
 
 export interface AppState {

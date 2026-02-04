@@ -1,4 +1,4 @@
-import { Posting, Connection, AppSettings, ViewMode } from '@/types';
+import { Posting, Connection, AppSettings, ViewMode, PostingStatus } from '@/types';
 
 export const STORAGE_KEYS = {
   POSTINGS: 'postings',
@@ -6,6 +6,8 @@ export const STORAGE_KEYS = {
   SETTINGS: 'settings',
   SCHEMA_VERSION: 'schemaVersion',
   VIEW_PREFERENCE: 'viewPreference',
+  COLLAPSED_COLUMNS: 'collapsedColumns',
+  STATS_EXPANDED: 'statsExpanded',
 } as const;
 
 // ============ Postings ============
@@ -64,6 +66,7 @@ function getDefaultSettings(): AppSettings {
   return {
     defaultView: 'kanban',
     theme: 'light',
+    collapsedColumns: ['rejected'], // Default: collapse rejected column
   };
 }
 
@@ -76,6 +79,29 @@ export async function getViewPreference(): Promise<ViewMode> {
 
 export async function saveViewPreference(view: ViewMode): Promise<void> {
   await chrome.storage.local.set({ [STORAGE_KEYS.VIEW_PREFERENCE]: view });
+}
+
+// ============ Collapsed Columns ============
+
+export async function getCollapsedColumns(): Promise<PostingStatus[]> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.COLLAPSED_COLUMNS);
+  // Default to ['rejected'] if not set
+  return result[STORAGE_KEYS.COLLAPSED_COLUMNS] ?? ['rejected'];
+}
+
+export async function saveCollapsedColumns(columns: PostingStatus[]): Promise<void> {
+  await chrome.storage.local.set({ [STORAGE_KEYS.COLLAPSED_COLUMNS]: columns });
+}
+
+// ============ Stats Expanded ============
+
+export async function getStatsExpanded(): Promise<boolean> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.STATS_EXPANDED);
+  return result[STORAGE_KEYS.STATS_EXPANDED] ?? false;
+}
+
+export async function saveStatsExpanded(expanded: boolean): Promise<void> {
+  await chrome.storage.local.set({ [STORAGE_KEYS.STATS_EXPANDED]: expanded });
 }
 
 // ============ Schema Version ============
