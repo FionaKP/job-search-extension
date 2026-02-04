@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import type { ScrapedJobData, Stats, V1Application } from '../types';
+import type { ScrapedJobData, Stats, Posting } from '../types';
 
 interface FormData {
   url: string;
@@ -13,27 +13,26 @@ interface FormData {
   portalUrl: string;
 }
 
-const INTEREST_LABELS = [
+const PRIORITY_LABELS = [
   'Not rated',
-  'Low interest',
-  'Somewhat interested',
-  'Interested',
-  'Very interested',
-  'Top choice',
+  'Low priority',
+  'Medium priority',
+  'High priority',
 ];
 
-const STORAGE_KEY = 'jobApplications';
+const STORAGE_KEY = 'postings';
 
 // Storage helpers (inline for popup simplicity)
-async function getAllApplications(): Promise<V1Application[]> {
+async function getAllPostings(): Promise<Posting[]> {
   const result = await chrome.storage.local.get(STORAGE_KEY);
   return result[STORAGE_KEY] || [];
 }
 
-async function saveApplication(jobData: Partial<V1Application>): Promise<V1Application> {
-  const applications = await getAllApplications();
-  const newJob: V1Application = {
-    id: `job_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+async function savePosting(jobData: Partial<Posting>): Promise<Posting> {
+  const postings = await getAllPostings();
+  const now = Date.now();
+  const newJob: Posting = {
+    id: `job_${now}_${Math.random().toString(36).substring(2, 9)}`,
     url: jobData.url || '',
     company: jobData.company || '',
     title: jobData.title || '',
@@ -41,30 +40,32 @@ async function saveApplication(jobData: Partial<V1Application>): Promise<V1Appli
     description: jobData.description || '',
     salary: jobData.salary,
     status: 'saved',
-    dateAdded: new Date().toISOString(),
+    priority: jobData.priority || 2,
+    dateAdded: now,
+    dateModified: now,
     notes: jobData.notes || '',
     tags: jobData.tags || [],
-    interest: jobData.interest || 0,
+    connectionIds: [],
   };
-  applications.unshift(newJob);
-  await chrome.storage.local.set({ [STORAGE_KEY]: applications });
+  postings.unshift(newJob);
+  await chrome.storage.local.set({ [STORAGE_KEY]: postings });
   return newJob;
 }
 
-async function updateApplication(
+async function updatePosting(
   id: string,
-  updates: Partial<V1Application>
-): Promise<V1Application | null> {
-  const applications = await getAllApplications();
-  const index = applications.findIndex((job) => job.id === id);
+  updates: Partial<Posting>
+): Promise<Posting | null> {
+  const postings = await getAllPostings();
+  const index = postings.findIndex((job) => job.id === id);
   if (index === -1) return null;
-  applications[index] = { ...applications[index], ...updates };
-  await chrome.storage.local.set({ [STORAGE_KEY]: applications });
-  return applications[index];
+  postings[index] = { ...postings[index], ...updates, dateModified: Date.now() };
+  await chrome.storage.local.set({ [STORAGE_KEY]: postings });
+  return postings[index];
 }
 
-async function findByUrl(url: string): Promise<V1Application | null> {
-  const applications = await getAllApplications();
+async function findByUrl(url: string): Promise<Posting | null> {
+  const postings = await getAllPostings();
   const normalizeUrl = (u: string): string => {
     try {
       const parsed = new URL(u);
@@ -74,26 +75,7 @@ async function findByUrl(url: string): Promise<V1Application | null> {
     }
   };
   const normalizedUrl = normalizeUrl(url);
-  return applications.find((job) => normalizeUrl(job.url) === normalizedUrl) || null;
-}
-
-async function getStats(): Promise<Stats> {
-  const applications = await getAllApplications();
-  const stats: Stats = {
-    total: applications.length,
-    saved: 0,
-    applied: 0,
-    interviewing: 0,
-    offer: 0,
-    rejected: 0,
-    withdrawn: 0,
-  };
-  applications.forEach((job) => {
-    if (job.status in stats) {
-      stats[job.status as keyof Omit<Stats, 'total'>]++;
-    }
-  });
-  return stats;
+  return postings.find((job) => normalizeUrl(job.url) === normalizedUrl) || null;
 }
 
 export default function PopupApp() {
@@ -108,7 +90,7 @@ export default function PopupApp() {
     companyUrl: '',
     portalUrl: '',
   });
-  const [interest, setInterest] = useState(0);
+  const [priority, setPriority] = useState<1 | 2 | 3>(2);
   const [stats, setStats] = useState<Stats>({
     total: 0,
     saved: 0,
@@ -118,6 +100,7 @@ export default function PopupApp() {
     rejected: 0,
     withdrawn: 0,
   });
+  const [recentPostings, setRecentPostings] = useState<Posting[]>([]);
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,11 +109,27 @@ export default function PopupApp() {
   const [isPopout, setIsPopout] = useState(false);
 
   const updateStats = useCallback(async () => {
-    const newStats = await getStats();
+    const postings = await getAllPostings();
+    const newStats: Stats = {
+      total: postings.length,
+      saved: 0,
+      applied: 0,
+      interviewing: 0,
+      offer: 0,
+      rejected: 0,
+      withdrawn: 0,
+    };
+    postings.forEach((job) => {
+      if (job.status in newStats) {
+        newStats[job.status as keyof Omit<Stats, 'total'>]++;
+      }
+    });
     setStats(newStats);
+    // Get 3 most recent postings (already sorted by dateAdded desc from unshift)
+    setRecentPostings(postings.slice(0, 3));
   }, []);
 
-  const populateForm = useCallback((data: Partial<ScrapedJobData & V1Application>) => {
+  const populateForm = useCallback((data: Partial<ScrapedJobData & Posting>) => {
     setFormData((prev) => ({
       ...prev,
       title: data.title || prev.title,
@@ -140,8 +139,8 @@ export default function PopupApp() {
       notes: data.notes || prev.notes,
       tags: Array.isArray(data.tags) ? data.tags.join(', ') : prev.tags,
     }));
-    if (data.interest) {
-      setInterest(data.interest);
+    if (data.priority) {
+      setPriority(data.priority);
     }
   }, []);
 
@@ -226,7 +225,7 @@ export default function PopupApp() {
         location: formData.location.trim(),
         salary: formData.salary.trim(),
         notes: formData.notes.trim(),
-        interest,
+        priority,
         tags: formData.tags
           .split(',')
           .map((t) => t.trim().toLowerCase())
@@ -234,9 +233,9 @@ export default function PopupApp() {
       };
 
       if (existingJobId) {
-        await updateApplication(existingJobId, jobData);
+        await updatePosting(existingJobId, jobData);
       } else {
-        await saveApplication(jobData);
+        await savePosting(jobData);
       }
 
       setSuccess(true);
@@ -407,22 +406,22 @@ export default function PopupApp() {
             </div>
           </div>
 
-          {/* Interest Rating */}
+          {/* Priority Rating */}
           <div className="form-group">
-            <label>Interest Level</label>
+            <label>Priority Level</label>
             <div className="star-rating">
-              {[1, 2, 3, 4, 5].map((value) => (
+              {([1, 2, 3] as const).map((value) => (
                 <button
                   key={value}
                   type="button"
-                  className={`star-btn ${value <= interest ? 'active' : ''}`}
-                  title={`${value} star${value > 1 ? 's' : ''}`}
-                  onClick={() => setInterest(value)}
+                  className={`star-btn ${value <= priority ? 'active' : ''}`}
+                  title={PRIORITY_LABELS[value]}
+                  onClick={() => setPriority(value)}
                 >
                   ★
                 </button>
               ))}
-              <span className="star-label">{INTEREST_LABELS[interest]}</span>
+              <span className="star-label">{PRIORITY_LABELS[priority]}</span>
             </div>
           </div>
 
@@ -499,6 +498,32 @@ export default function PopupApp() {
           <span className="stat-label">Interviewing</span>
         </div>
       </div>
+
+      {/* Recent Postings */}
+      {recentPostings.length > 0 && (
+        <div className="recent-postings">
+          <div className="recent-header">Recent ({recentPostings.length})</div>
+          <ul className="recent-list">
+            {recentPostings.map((posting) => (
+              <li
+                key={posting.id}
+                className="recent-item"
+                onClick={() => {
+                  chrome.tabs.create({
+                    url: chrome.runtime.getURL(`index.html?highlight=${posting.id}`),
+                  });
+                }}
+              >
+                <span className="recent-title">{posting.title}</span>
+                <span className="recent-company">@ {posting.company}</span>
+                <span className="recent-priority">
+                  {'★'.repeat(posting.priority)}{'☆'.repeat(3 - posting.priority)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Success Message */}
       {success && <div className="notice notice-success">Job saved successfully!</div>}

@@ -10,7 +10,7 @@
     "name": "client"
   },
   "index.html": {
-    "file": "assets/index-e0duEXB5.js",
+    "file": "assets/index-ST8Nyf5I.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -18,7 +18,7 @@
       "_client-DYDkQYN6.js"
     ],
     "css": [
-      "assets/index-D0J3UMf6.css"
+      "assets/index-DBp8thFv.css"
     ]
   },
   "scraper.ts-loader.js": {
@@ -32,7 +32,7 @@
     "isEntry": true
   },
   "src/popup/popup.html": {
-    "file": "assets/popup-jKXUz7zj.js",
+    "file": "assets/popup-BK5Z-NCQ.js",
     "name": "popup",
     "src": "src/popup/popup.html",
     "isEntry": true,
@@ -40,7 +40,7 @@
       "_client-DYDkQYN6.js"
     ],
     "css": [
-      "assets/popup-DXaVEkt6.css"
+      "assets/popup-De4PT5eF.css"
     ]
   }
 }
