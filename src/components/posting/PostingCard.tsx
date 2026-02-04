@@ -1,4 +1,4 @@
-import { Posting, PostingStatus, STATUS_LABELS } from '@/types';
+import { Posting, PostingStatus, STATUS_LABELS, isTerminalStatus } from '@/types';
 import { PriorityStars, TagChip, ContextMenu } from '@/components/common';
 
 interface PostingCardProps {
@@ -19,11 +19,28 @@ function getInitials(company: string): string {
     .toUpperCase();
 }
 
-function getDaysSince(timestamp: number): string {
-  const days = Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
+function getDaysSinceModified(timestamp: number): number {
+  return Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
+}
+
+function getDaysSinceLabel(timestamp: number): string {
+  const days = getDaysSinceModified(timestamp);
   if (days === 0) return 'Today';
   if (days === 1) return '1d';
   return `${days}d`;
+}
+
+// Color coding for days: 0-3 gray, 4-7 orange, 8+ red
+function getDaysColorClass(days: number, isStale: boolean): string {
+  if (days <= 3) return 'text-gray-400';
+  if (days <= 7) return 'text-orange-500';
+  return isStale ? 'text-red-500 font-semibold' : 'text-red-500';
+}
+
+// A posting is stale if non-terminal and no update in 7+ days
+function checkIsStale(posting: Posting): boolean {
+  if (isTerminalStatus(posting.status)) return false;
+  return getDaysSinceModified(posting.dateModified) >= 7;
 }
 
 export function PostingCard({
@@ -64,6 +81,10 @@ export function PostingCard({
     },
   ];
 
+  const isStale = checkIsStale(posting);
+  const daysSince = getDaysSinceModified(posting.dateModified);
+  const daysColorClass = getDaysColorClass(daysSince, isStale);
+
   if (variant === 'list') {
     return (
       <ContextMenu items={contextMenuItems}>
@@ -71,13 +92,22 @@ export function PostingCard({
           onClick={() => onSelect(posting.id)}
           className="flex cursor-pointer items-center gap-4 border-b border-gray-200 bg-white px-4 py-3 hover:bg-gray-50"
         >
-          {posting.companyLogo ? (
-            <img src={posting.companyLogo} alt={posting.company} className="h-10 w-10 rounded object-contain" />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded bg-gray-200 text-sm font-medium text-gray-600">
-              {getInitials(posting.company)}
-            </div>
-          )}
+          <div className="relative">
+            {posting.companyLogo ? (
+              <img src={posting.companyLogo} alt={posting.company} className="h-10 w-10 rounded object-contain" />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded bg-gray-200 text-sm font-medium text-gray-600">
+                {getInitials(posting.company)}
+              </div>
+            )}
+            {isStale && (
+              <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-100">
+                <svg className="h-3 w-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+            )}
+          </div>
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium text-gray-900">{posting.title}</p>
             <p className="truncate text-sm text-gray-500">{posting.company}</p>
@@ -91,7 +121,14 @@ export function PostingCard({
           <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
             <PriorityStars priority={posting.priority} onChange={(p) => onPriorityChange(posting.id, p)} size="sm" />
           </div>
-          <div className="flex-shrink-0 text-xs text-gray-400">{getDaysSince(posting.dateAdded)}</div>
+          <div className={`flex flex-shrink-0 items-center gap-1 text-xs ${daysColorClass}`}>
+            {isStale && (
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            )}
+            {getDaysSinceLabel(posting.dateModified)}
+          </div>
         </div>
       </ContextMenu>
     );
@@ -101,16 +138,27 @@ export function PostingCard({
     <ContextMenu items={contextMenuItems}>
       <div
         onClick={() => onSelect(posting.id)}
-        className="cursor-pointer rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md"
+        className={`cursor-pointer rounded-lg border bg-white p-3 shadow-sm transition-shadow hover:shadow-md ${
+          isStale ? 'border-red-200' : 'border-gray-200'
+        }`}
       >
         <div className="flex items-start gap-3">
-          {posting.companyLogo ? (
-            <img src={posting.companyLogo} alt={posting.company} className="h-10 w-10 rounded object-contain" />
-          ) : (
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded bg-gray-200 text-sm font-medium text-gray-600">
-              {getInitials(posting.company)}
-            </div>
-          )}
+          <div className="relative flex-shrink-0">
+            {posting.companyLogo ? (
+              <img src={posting.companyLogo} alt={posting.company} className="h-10 w-10 rounded object-contain" />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded bg-gray-200 text-sm font-medium text-gray-600">
+                {getInitials(posting.company)}
+              </div>
+            )}
+            {isStale && (
+              <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-100">
+                <svg className="h-3 w-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+            )}
+          </div>
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium text-gray-900">{posting.title}</p>
             <p className="truncate text-sm text-gray-600">{posting.company}</p>
@@ -129,7 +177,14 @@ export function PostingCard({
               )}
             </div>
           </div>
-          <span className="text-xs text-gray-400">{getDaysSince(posting.dateAdded)}</span>
+          <div className={`flex items-center gap-1 text-xs ${daysColorClass}`}>
+            {isStale && (
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            )}
+            {getDaysSinceLabel(posting.dateModified)}
+          </div>
         </div>
       </div>
     </ContextMenu>

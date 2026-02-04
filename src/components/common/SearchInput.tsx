@@ -1,13 +1,14 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent, MutableRefObject } from 'react';
 
 interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   debounceMs?: number;
+  inputRef?: MutableRefObject<HTMLInputElement | null>;
 }
 
-export function SearchInput({ value, onChange, placeholder = 'Search...', debounceMs = 300 }: SearchInputProps) {
+export function SearchInput({ value, onChange, placeholder = 'Search...', debounceMs = 300, inputRef }: SearchInputProps) {
   const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export function SearchInput({ value, onChange, placeholder = 'Search...', deboun
         </svg>
       </div>
       <input
+        ref={inputRef}
         type="text"
         value={localValue}
         onChange={handleChange}
