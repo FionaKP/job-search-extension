@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
-import { Posting, PostingStatus, STATUS_LABELS } from '@/types';
+import { Posting, PostingStatus, STATUS_LABELS, Connection } from '@/types';
 import { DraggablePostingCard } from './DraggablePostingCard';
 
 interface KanbanColumnProps {
@@ -12,6 +12,8 @@ interface KanbanColumnProps {
   onCollapse: () => void;
   isOver?: boolean;
   isDragging?: boolean;
+  getLinkedConnections?: (postingId: string) => Connection[];
+  onConnectionClick?: (postingId: string) => void;
 }
 
 const COLUMN_COLORS: Record<PostingStatus, string> = {
@@ -57,6 +59,8 @@ export function KanbanColumn({
   onCollapse,
   isOver = false,
   isDragging = false,
+  getLinkedConnections,
+  onConnectionClick,
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({
     id: status,
@@ -97,6 +101,8 @@ export function KanbanColumn({
             onPriorityChange={onPriorityChange}
             onStatusChange={onStatusChange}
             onDelete={onDelete}
+            linkedConnections={getLinkedConnections?.(posting.id)}
+            onConnectionClick={() => onConnectionClick?.(posting.id)}
           />
         ))}
         {postings.length === 0 && (

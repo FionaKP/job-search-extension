@@ -33,67 +33,211 @@
 
 ### 2.1 Color Palette
 
-**Light Mode:**
-```css
-:root {
-  /* Primary - Used for actions, links, focus states */
-  --color-primary-50: #EEF2FF;
-  --color-primary-100: #E0E7FF;
-  --color-primary-500: #6366F1;  /* Main primary */
-  --color-primary-600: #4F46E5;  /* Hover */
-  --color-primary-700: #4338CA;  /* Active */
-  
-  /* Neutral - Text, backgrounds, borders */
-  --color-neutral-50: #FAFAFA;   /* Background */
-  --color-neutral-100: #F4F4F5;  /* Card background */
-  --color-neutral-200: #E4E4E7;  /* Borders */
-  --color-neutral-400: #A1A1AA;  /* Placeholder text */
-  --color-neutral-500: #71717A;  /* Secondary text */
-  --color-neutral-700: #3F3F46;  /* Primary text */
-  --color-neutral-900: #18181B;  /* Headings */
-  
-  /* Status Colors - For Kanban columns and badges */
-  --color-saved: #3B82F6;        /* Blue */
-  --color-in-progress: #F59E0B;  /* Amber */
-  --color-applied: #10B981;      /* Emerald */
-  --color-interviewing: #8B5CF6; /* Violet */
-  --color-offer: #F97316;        /* Orange */
-  --color-accepted: #22C55E;     /* Green */
-  --color-rejected: #6B7280;     /* Gray */
-  --color-withdrawn: #9CA3AF;    /* Light gray */
-  
-  /* Semantic */
-  --color-success: #10B981;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
-  --color-info: #3B82F6;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-```
+JobFlow Color Palette - Vintage Vibes Edition
+PRIMARY COLOR PALETTE
+Color NameHexRGBUsageNative Wine#4F243E(79, 36, 62)Primary brand color, sidebar, logo accents, dark elementsFlat Red#CA423B(202, 66, 59)Primary CTAs, alerts, urgent status, highlightsPandora#E68342(230, 131, 66)Secondary accents, count badges, hover statesChampagne Brown#E9C593(233, 197, 147)Light backgrounds, subtle highlights, progress barsPumpkin Seed#A2A77E(162, 167, 126)Neutral accents, borders, secondary UI elementsClassic Blue-green#3C9C9A(60, 156, 154)Success states, stage completion, secondary CTAs
 
-**Dark Mode:**
-```css
-[data-theme="dark"] {
-  --color-primary-500: #818CF8;
-  --color-primary-600: #6366F1;
-  
-  --color-neutral-50: #18181B;
-  --color-neutral-100: #27272A;
-  --color-neutral-200: #3F3F46;
-  --color-neutral-400: #71717A;
-  --color-neutral-500: #A1A1AA;
-  --color-neutral-700: #D4D4D8;
-  --color-neutral-900: #FAFAFA;
-  
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-}
-```
+DETAILED COLOR ASSIGNMENTS
+Sidebar Navigation
+
+Background: Native Wine (#4F243E)
+Icon color: Champagne Brown (#E9C593) - creates nice contrast
+Active state: Flat Red (#CA423B) with slight background highlight
+Hover state: Pandora (#E68342)
+Text: Off-white (#F5F5F5)
+
+Pipeline/Roadmap Bar (At Top)
+
+Stage background (default): Light Champagne Brown (#F0E8D8 - lightened version)
+Stage background (active): Flat Red (#CA423B)
+Count badge (BOOKMARKED): Pandora (#E68342) with white text
+Stage text: Native Wine (#4F243E)
+Dividers between stages: Pumpkin Seed (#A2A77E)
+
+Main Header/Branding
+
+Logo accent: Native Wine (#4F243E) or Flat Red (#CA423B)
+Page title: Native Wine (#4F243E)
+
+Buttons
+Primary CTA (Add a New Job)
+
+Background: Flat Red (#CA423B)
+Text: White (#FFFFFF)
+Hover: Darker red (use RGB 178, 56, 50 - darkened version)
+Active: Even darker (RGB 140, 40, 35)
+Icon: White
+
+Secondary Buttons (Columns, Menu)
+
+Background: Light Champagne Brown (#F5EDD8)
+Border: Pumpkin Seed (#A2A77E)
+Text: Native Wine (#4F243E)
+Hover: Pandora (#E68342)
+
+Success Actions (Save, Accept)
+
+Background: Classic Blue-green (#3C9C9A)
+Text: White (#FFFFFF)
+Hover: Darker teal (RGB 45, 130, 128)
+
+Status Badges & Pipeline
+StatusColorHexNotesBookmarkedPandora#E68342Warm, invitingApplyingChampagne Brown#E9C593Light, hopefulAppliedClassic Blue-green#3C9C9ACool, neutralInterviewingFlat Red#CA423BAttention-grabbingNegotiatingPandora (darker)#D67630Active engagementAcceptedClassic Blue-green (darker)#2A8C8ASuccess!
+Data Grid/Table
+
+Header background: Light Champagne Brown (#F5EDD8)
+Header text: Native Wine (#4F243E)
+Row background: White (#FFFFFF)
+Row hover: Very light Champagne Brown (#FAF7F0)
+Borders: Light gray with touch of Pumpkin Seed (#E8E8E8 or #E0DDD4)
+Status badge background: Soft version of status color (e.g., light Pandora: #F5D7C3)
+Striped rows (optional): Alternate white with #FEFDFB
+
+Chrome Extension Popup
+
+Header background: Native Wine (#4F243E)
+Header text: Champagne Brown (#E9C593) or white
+Main background: Light Champagne Brown (#F5EDD8)
+Save button: Flat Red (#CA423B)
+Details section: White background
+Accent line: Pandora (#E68342)
+
+Progress Indicators & Charts
+
+Progress bar (incomplete): Pumpkin Seed (#A2A77E)
+Progress bar (complete): Classic Blue-green (#3C9C9A)
+Donut chart segments:
+
+Resume Structure: Flat Red (#CA423B)
+Measurable Results: Pandora (#E68342)
+Keyword Usage: Classic Blue-green (#3C9C9A)
+
+
+
+Backgrounds
+
+Page background: Off-white (#F9F7F3)
+Card background: White (#FFFFFF)
+Subtle background (hover): Very light Champagne Brown (#F5EDD8)
+Dark background sections: Native Wine (#4F243E)
+
+Text
+
+Primary text: Native Wine (#4F243E)
+Secondary text: Pumpkin Seed (#A2A77E) or gray (#666666)
+Disabled text: Light gray (#CCCCCC)
+On dark backgrounds: Champagne Brown (#E9C593) or white
+
+Borders & Dividers
+
+Light border: Pumpkin Seed (#A2A77E) at 30% opacity
+Subtle divider: Champagne Brown (#E9C593) at 20% opacity
+Dark border: Native Wine (#4F243E) at 20% opacity
+
+Interactive States
+Hover States
+
+Buttons: +10-15% brightness
+Links: Underline with Pandora (#E68342)
+Table rows: Light Champagne Brown background (#F5EDD8)
+Sidebar items: Pandora (#E68342) with Native Wine background
+
+Active/Focused States
+
+Focus ring: Flat Red (#CA423B) with 2px border
+Tab active indicator: Flat Red (#CA423B) underline
+Selected checkbox: Flat Red (#CA423B)
+
+Disabled States
+
+Background: Very light gray (#E8E8E8)
+Text: Light gray (#999999)
+Border: Light gray (#CCCCCC)
+
+Error States
+
+Border: Flat Red (#CA423B)
+Text: Flat Red (#CA423B)
+Background: Light version of Flat Red (#F5DEDE or #FCEEEC)
+
+Success States
+
+Border: Classic Blue-green (#3C9C9A)
+Text: Classic Blue-green (#3C9C9A)
+Background: Light version of Blue-green (#E8F5F4 or #F0FEFE)
+
+Warning/Alert States
+
+Border: Pandora (#E68342)
+Text: Pandora (#E68342)
+Background: Light version of Pandora (#F5E8D8 or #FCF0E8)
+
+
+COLOR VARIATION GUIDE
+For lighter/darker versions of colors (for different accent needs):
+Native Wine (#4F243E)
+
+Lighter: #7A4A63 (add lightness)
+Much lighter: #B896AA (for backgrounds)
+Darker: #3A1A2E (for emphasis)
+
+Flat Red (#CA423B)
+
+Lighter: #E67A72 (for hover)
+Much lighter: #F5DEDE (for backgrounds)
+Darker: #8B2820 (for active/pressed)
+
+Pandora (#E68342)
+
+Lighter: #F0A56B (for hover)
+Much lighter: #F5D7C3 (for backgrounds)
+Darker: #C96E2A (for active/pressed)
+
+Champagne Brown (#E9C593)
+
+Lighter: #F0D9B4 (for subtle backgrounds)
+Much lighter: #F5EDD8 (for section backgrounds)
+Darker: #D4B07D (for emphasis)
+
+Pumpkin Seed (#A2A77E)
+
+Lighter: #C4C8A8 (for hover)
+Much lighter: #E8E9DD (for backgrounds)
+Darker: #7F8364 (for emphasis)
+
+Classic Blue-green (#3C9C9A)
+
+Lighter: #6BB9B7 (for hover)
+Much lighter: #E8F5F4 (for backgrounds)
+Darker: #2A6B6A (for active/pressed)
+
+
+COLOR COMBINATIONS FOR HARMONY
+Recommended Pairings:
+
+Primary accent: Flat Red (#CA423B) with Native Wine (#4F243E) backgrounds
+Success action: Classic Blue-green (#3C9C9A) with Champagne Brown backgrounds
+Warm warning: Pandora (#E68342) with light Champagne Brown
+Subtle accents: Pumpkin Seed (#A2A77E) with off-white backgrounds
+
+Typography Color Combos:
+
+Dark text on light: Native Wine on Champagne Brown = excellent contrast
+Light text on dark: Champagne Brown on Native Wine = excellent contrast
+Accent text: Flat Red or Pandora for emphasis
+
+
+ACCESSIBILITY NOTES
+
+Contrast ratio (WCAG AA): Native Wine + Champagne Brown ✅ Good (>4.5:1)
+Contrast ratio (WCAG AA): Flat Red + white ✅ Good (>4.5:1)
+Contrast ratio (WCAG AA): Pandora + Native Wine ✅ Acceptable (4.2:1)
+Consider: Use text labels with colored badges for colorblind users
+Don't rely solely on color to indicate status; use icons, text, and shapes too
+
+
+USAGE SUMMARY TABLE
+ElementPrimary ColorSecondaryAccentLogo/BrandNative Wine--SidebarNative Wine-PandoraPipeline barChampagne BrownFlat Red (active)PandoraPrimary CTAFlat Red--Success CTAClassic Blue-green--Status badges(see table)--Table headersChampagne BrownNative Wine-Table rowsWhite-Pumpkin Seed (border)LinksNative Wine-Pandora (hover)BackgroundsChampagne BrownOff-whiteNative WineBordersPumpkin Seed--ErrorFlat Red--SuccessClassic Blue-green--WarningPandora--
 
 ### 2.2 Typography
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Posting, PostingStatus } from '@/types';
+import { Posting, PostingStatus, Connection } from '@/types';
 import { PostingCard } from '@/components/posting';
 
 interface ListViewProps {
@@ -8,6 +8,8 @@ interface ListViewProps {
   onPriorityChange: (id: string, priority: 1 | 2 | 3) => void;
   onStatusChange: (id: string, status: PostingStatus) => void;
   onDelete: (id: string) => void;
+  getLinkedConnections?: (postingId: string) => Connection[];
+  onConnectionClick?: (postingId: string) => void;
 }
 
 type SortField = 'title' | 'company' | 'dateAdded' | 'priority' | 'status';
@@ -19,6 +21,8 @@ export function ListView({
   onPriorityChange,
   onStatusChange,
   onDelete,
+  getLinkedConnections,
+  onConnectionClick,
 }: ListViewProps) {
   const [sortField, setSortField] = useState<SortField>('dateAdded');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -95,6 +99,8 @@ export function ListView({
             onStatusChange={onStatusChange}
             onDelete={onDelete}
             variant="list"
+            linkedConnections={getLinkedConnections?.(posting.id)}
+            onConnectionClick={() => onConnectionClick?.(posting.id)}
           />
         ))}
         {postings.length === 0 && (

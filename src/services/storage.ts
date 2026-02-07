@@ -51,6 +51,110 @@ export async function saveConnections(connections: Connection[]): Promise<void> 
   await chrome.storage.local.set({ [STORAGE_KEYS.CONNECTIONS]: connections });
 }
 
+export async function saveConnection(connection: Connection): Promise<void> {
+  const connections = await getConnections();
+  const index = connections.findIndex((c) => c.id === connection.id);
+
+  if (index >= 0) {
+    connections[index] = { ...connection, dateModified: Date.now() };
+  } else {
+    connections.push(connection);
+  }
+
+  await saveConnections(connections);
+}
+
+export async function deleteConnection(id: string): Promise<void> {
+  const connections = await getConnections();
+  const filtered = connections.filter((c) => c.id !== id);
+  await saveConnections(filtered);
+
+  // Also remove this connection from any linked postings
+  const postings = await getPostings();
+  const updatedPostings = postings.map((p) => ({
+    ...p,
+    connectionIds: p.connectionIds.filter((cid) => cid !== id),
+  }));
+  await savePostings(updatedPostings);
+}
+
+export async function getConnectionById(id: string): Promise<Connection | null> {
+  const connections = await getConnections();
+  return connections.find((c) => c.id === id) || null;
+}
+
+export async function getConnectionsByCompany(company: string): Promise<Connection[]> {
+  const connections = await getConnections();
+  const lowerCompany = company.toLowerCase();
+  return connections.filter((c) => c.company.toLowerCase().includes(lowerCompany));
+}
+
+// Link a connection to a posting (bidirectional)
+export async function linkConnectionToPosting(connectionId: string, postingId: string): Promise<void> {
+  const connections = await getConnections();
+  const postings = await getPostings();
+
+  // Update connection
+  const connectionIndex = connections.findIndex((c) => c.id === connectionId);
+  if (connectionIndex >= 0) {
+    const connection = connections[connectionIndex];
+    if (!connection.linkedPostingIds.includes(postingId)) {
+      connections[connectionIndex] = {
+        ...connection,
+        linkedPostingIds: [...connection.linkedPostingIds, postingId],
+        dateModified: Date.now(),
+      };
+    }
+  }
+
+  // Update posting
+  const postingIndex = postings.findIndex((p) => p.id === postingId);
+  if (postingIndex >= 0) {
+    const posting = postings[postingIndex];
+    if (!posting.connectionIds.includes(connectionId)) {
+      postings[postingIndex] = {
+        ...posting,
+        connectionIds: [...posting.connectionIds, connectionId],
+        dateModified: Date.now(),
+      };
+    }
+  }
+
+  await saveConnections(connections);
+  await savePostings(postings);
+}
+
+// Unlink a connection from a posting (bidirectional)
+export async function unlinkConnectionFromPosting(connectionId: string, postingId: string): Promise<void> {
+  const connections = await getConnections();
+  const postings = await getPostings();
+
+  // Update connection
+  const connectionIndex = connections.findIndex((c) => c.id === connectionId);
+  if (connectionIndex >= 0) {
+    const connection = connections[connectionIndex];
+    connections[connectionIndex] = {
+      ...connection,
+      linkedPostingIds: connection.linkedPostingIds.filter((id) => id !== postingId),
+      dateModified: Date.now(),
+    };
+  }
+
+  // Update posting
+  const postingIndex = postings.findIndex((p) => p.id === postingId);
+  if (postingIndex >= 0) {
+    const posting = postings[postingIndex];
+    postings[postingIndex] = {
+      ...posting,
+      connectionIds: posting.connectionIds.filter((id) => id !== connectionId),
+      dateModified: Date.now(),
+    };
+  }
+
+  await saveConnections(connections);
+  await savePostings(postings);
+}
+
 // ============ Settings ============
 
 export async function getSettings(): Promise<AppSettings> {

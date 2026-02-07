@@ -1,7 +1,7 @@
-import { V1Application, Posting } from '@/types';
-import { getSchemaVersion, setSchemaVersion, savePostings } from './storage';
+import { V1Application, Posting, Connection } from '@/types';
+import { getSchemaVersion, setSchemaVersion, savePostings, getConnections, saveConnections } from './storage';
 
-const CURRENT_SCHEMA_VERSION = 2;
+const CURRENT_SCHEMA_VERSION = 3;
 
 // V1 storage keys to check
 const V1_STORAGE_KEYS = ['jobApplications', 'applications'];
@@ -55,9 +55,43 @@ export async function runMigrationIfNeeded(): Promise<void> {
     console.log(`[Migration] Migrated ${newPostings.length} new postings, ${migratedPostings.length - newPostings.length} duplicates skipped`);
   }
 
+  // Migrate connections from V2 to V3 (add new fields)
+  if (currentVersion < 3) {
+    await migrateConnectionsToV3();
+  }
+
   // Set schema version
   await setSchemaVersion(CURRENT_SCHEMA_VERSION);
   console.log(`[Migration] Schema version updated to ${CURRENT_SCHEMA_VERSION}`);
+}
+
+/**
+ * Migrate connections to V3 schema (add new fields with defaults)
+ */
+async function migrateConnectionsToV3(): Promise<void> {
+  const connections = await getConnections();
+
+  if (connections.length === 0) {
+    console.log('[Migration] No connections to migrate');
+    return;
+  }
+
+  const migratedConnections = connections.map((c: Connection & { relationshipNotes?: string }) => ({
+    ...c,
+    // Add new fields with defaults if they don't exist
+    email: c.email || undefined,
+    linkedInUrl: c.linkedInUrl || undefined,
+    relationshipType: c.relationshipType || 'other',
+    howWeMet: c.howWeMet || undefined,
+    relationshipStrength: c.relationshipStrength || 2,
+    notes: c.notes || c.relationshipNotes || '', // Migrate old relationshipNotes to notes
+    contactHistory: c.contactHistory || [],
+    dateAdded: c.dateAdded || Date.now(),
+    dateModified: c.dateModified || Date.now(),
+  }));
+
+  await saveConnections(migratedConnections as Connection[]);
+  console.log(`[Migration] Migrated ${migratedConnections.length} connections to V3 schema`);
 }
 
 /**

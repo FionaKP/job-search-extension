@@ -7,11 +7,15 @@ interface MoreFiltersPanelProps {
   hasDeadline: boolean;
   deadlineSoon: boolean;
   needsAction: boolean;
+  hasConnections: boolean;
+  noConnections: boolean;
   onDateFromChange: (date: string | null) => void;
   onDateToChange: (date: string | null) => void;
   onHasDeadlineChange: (value: boolean) => void;
   onDeadlineSoonChange: (value: boolean) => void;
   onNeedsActionChange: (value: boolean) => void;
+  onHasConnectionsChange: (value: boolean) => void;
+  onNoConnectionsChange: (value: boolean) => void;
   onClearAll: () => void;
 }
 
@@ -21,11 +25,15 @@ export function MoreFiltersPanel({
   hasDeadline,
   deadlineSoon,
   needsAction,
+  hasConnections,
+  noConnections,
   onDateFromChange,
   onDateToChange,
   onHasDeadlineChange,
   onDeadlineSoonChange,
   onNeedsActionChange,
+  onHasConnectionsChange,
+  onNoConnectionsChange,
   onClearAll,
 }: MoreFiltersPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,6 +54,8 @@ export function MoreFiltersPanel({
     hasDeadline,
     deadlineSoon,
     needsAction,
+    hasConnections,
+    noConnections,
   ].filter(Boolean).length;
 
   return (
@@ -119,6 +129,38 @@ export function MoreFiltersPanel({
                 />
                 <span className="text-sm text-gray-700">Needs action (stale)</span>
               </label>
+            </div>
+
+            {/* Networking Filters */}
+            <div className="border-t border-gray-100 pt-3">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">Networking</p>
+              <div className="flex flex-wrap gap-4">
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={hasConnections}
+                    onChange={(e) => {
+                      onHasConnectionsChange(e.target.checked);
+                      if (e.target.checked) onNoConnectionsChange(false);
+                    }}
+                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <span className="text-sm text-gray-700">Has connections</span>
+                </label>
+
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={noConnections}
+                    onChange={(e) => {
+                      onNoConnectionsChange(e.target.checked);
+                      if (e.target.checked) onHasConnectionsChange(false);
+                    }}
+                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <span className="text-sm text-gray-700">No connections</span>
+                </label>
+              </div>
             </div>
 
             {/* Clear All */}

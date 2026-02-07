@@ -32,9 +32,13 @@ interface DashboardHeaderProps {
   hasDeadline: boolean;
   deadlineSoon: boolean;
   needsAction: boolean;
+  hasConnections: boolean;
+  noConnections: boolean;
   onHasDeadlineChange: (value: boolean) => void;
   onDeadlineSoonChange: (value: boolean) => void;
   onNeedsActionChange: (value: boolean) => void;
+  onHasConnectionsChange: (value: boolean) => void;
+  onNoConnectionsChange: (value: boolean) => void;
   onClearAllFilters: () => void;
   activeFilterCount: number;
   // Keyboard shortcuts
@@ -71,9 +75,13 @@ export function DashboardHeader({
   hasDeadline,
   deadlineSoon,
   needsAction,
+  hasConnections,
+  noConnections,
   onHasDeadlineChange,
   onDeadlineSoonChange,
   onNeedsActionChange,
+  onHasConnectionsChange,
+  onNoConnectionsChange,
   onClearAllFilters,
   activeFilterCount,
   // Keyboard shortcuts
@@ -138,11 +146,15 @@ export function DashboardHeader({
           hasDeadline={hasDeadline}
           deadlineSoon={deadlineSoon}
           needsAction={needsAction}
+          hasConnections={hasConnections}
+          noConnections={noConnections}
           onDateFromChange={onDateFromChange}
           onDateToChange={onDateToChange}
           onHasDeadlineChange={onHasDeadlineChange}
           onDeadlineSoonChange={onDeadlineSoonChange}
           onNeedsActionChange={onNeedsActionChange}
+          onHasConnectionsChange={onHasConnectionsChange}
+          onNoConnectionsChange={onNoConnectionsChange}
           onClearAll={onClearAllFilters}
         />
         {activeFilterCount > 0 && (

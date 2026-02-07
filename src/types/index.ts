@@ -60,20 +60,117 @@ export interface Posting {
   dateApplied?: number;
   nextActionDate?: string;
   connectionIds: string[];
+  // Keywords (Phase 5)
+  keywords?: ExtractedKeyword[];
+  keywordsExtractedAt?: number;
 }
 
+// ============ Keywords (Phase 5) ============
+
+export type KeywordCategory =
+  | 'required_skill'
+  | 'preferred_skill'
+  | 'soft_skill'
+  | 'experience'
+  | 'education'
+  | 'values'
+  | 'tools'
+  | 'industry';
+
+export type KeywordImportance = 'high' | 'medium' | 'low';
+
+export interface ExtractedKeyword {
+  term: string;
+  category: KeywordCategory;
+  importance: KeywordImportance;
+  frequency: number;
+  contexts?: string[]; // Surrounding text snippets
+  addressed: boolean; // User marked as addressed in their application
+}
+
+export const KEYWORD_CATEGORY_LABELS: Record<KeywordCategory, string> = {
+  required_skill: 'Required Skills',
+  preferred_skill: 'Preferred Skills',
+  soft_skill: 'Soft Skills',
+  experience: 'Experience',
+  education: 'Education',
+  values: 'Values & Culture',
+  tools: 'Tools',
+  industry: 'Industry',
+};
+
+export const KEYWORD_CATEGORY_ORDER: KeywordCategory[] = [
+  'required_skill',
+  'preferred_skill',
+  'soft_skill',
+  'experience',
+  'education',
+  'tools',
+  'values',
+  'industry',
+];
+
 // ============ Connections ============
+
+export type RelationshipType = 'recruiter' | 'employee' | 'referral' | 'alumni' | 'other';
+
+export type ContactEventType = 'email' | 'call' | 'meeting' | 'linkedin' | 'other';
+
+export interface ContactEvent {
+  id: string;
+  date: string; // ISO date string
+  type: ContactEventType;
+  notes?: string;
+}
 
 export interface Connection {
   id: string;
   name: string;
+  email?: string;
+  linkedInUrl?: string;
   company: string;
   role?: string;
-  relationshipNotes: string;
+
+  // Relationship
+  relationshipType: RelationshipType;
+  howWeMet?: string;
+  relationshipStrength: 1 | 2 | 3; // 1=weak, 2=moderate, 3=strong
+
+  // Communication
+  notes: string;
   lastContactDate?: string;
   nextFollowUp?: string;
+  contactHistory: ContactEvent[];
+
+  // Links
   linkedPostingIds: string[];
+
+  // Meta
+  dateAdded: number;
+  dateModified: number;
 }
+
+export const RELATIONSHIP_TYPE_LABELS: Record<RelationshipType, string> = {
+  recruiter: 'Recruiter',
+  employee: 'Employee',
+  referral: 'Referral',
+  alumni: 'Alumni',
+  other: 'Other',
+};
+
+export const RELATIONSHIP_STRENGTH_LABELS: Record<1 | 2 | 3, string> = {
+  1: 'Weak',
+  2: 'Moderate',
+  3: 'Strong',
+};
+
+export const CONTACT_EVENT_TYPE_LABELS: Record<ContactEventType, string> = {
+  email: 'Email',
+  call: 'Call',
+  meeting: 'Meeting',
+  linkedin: 'LinkedIn',
+  other: 'Other',
+};
 
 // ============ App State ============
 

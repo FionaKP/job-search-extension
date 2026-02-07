@@ -12,7 +12,7 @@ import {
   DragOverEvent,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Posting, PostingStatus, KANBAN_COLUMNS } from '@/types';
+import { Posting, PostingStatus, KANBAN_COLUMNS, Connection } from '@/types';
 import { KanbanColumn } from './KanbanColumn';
 import { CollapsedColumn } from './CollapsedColumn';
 import { PostingCard } from '@/components/posting';
@@ -25,6 +25,8 @@ interface KanbanBoardProps {
   onDelete: (id: string) => void;
   collapsedColumns: PostingStatus[];
   onCollapseChange: (columns: PostingStatus[]) => void;
+  getLinkedConnections?: (postingId: string) => Connection[];
+  onConnectionClick?: (postingId: string) => void;
 }
 
 export function KanbanBoard({
@@ -35,6 +37,8 @@ export function KanbanBoard({
   onDelete,
   collapsedColumns,
   onCollapseChange,
+  getLinkedConnections,
+  onConnectionClick,
 }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
@@ -145,6 +149,8 @@ export function KanbanBoard({
                 onCollapse={() => handleCollapse(status)}
                 isOver={overId === status}
                 isDragging={activeId !== null}
+                getLinkedConnections={getLinkedConnections}
+                onConnectionClick={onConnectionClick}
               />
             )}
           </div>
