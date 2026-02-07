@@ -5,20 +5,20 @@
     "src": "../../../../@crx/manifest",
     "isEntry": true
   },
-  "_client-D6vcrbFg.js": {
-    "file": "assets/client-D6vcrbFg.js",
-    "name": "client"
+  "_extractor-BlsyOXNW.js": {
+    "file": "assets/extractor-BlsyOXNW.js",
+    "name": "extractor"
   },
   "index.html": {
-    "file": "assets/index-BsQXW-88.js",
+    "file": "assets/index-B2LIj5bC.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "imports": [
-      "_client-D6vcrbFg.js"
+      "_extractor-BlsyOXNW.js"
     ],
     "css": [
-      "assets/index-DR_1yFjT.css"
+      "assets/index-C6b46BK0.css"
     ]
   },
   "scraper.ts-loader.js": {
@@ -32,12 +32,12 @@
     "isEntry": true
   },
   "src/popup/popup.html": {
-    "file": "assets/popup-DmRKRSWs.js",
+    "file": "assets/popup-BCnIDV69.js",
     "name": "popup",
     "src": "src/popup/popup.html",
     "isEntry": true,
     "imports": [
-      "_client-D6vcrbFg.js"
+      "_extractor-BlsyOXNW.js"
     ],
     "css": [
       "assets/popup-B0AZz42j.css"

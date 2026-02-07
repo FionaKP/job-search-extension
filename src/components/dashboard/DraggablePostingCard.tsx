@@ -1,6 +1,6 @@
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Posting, PostingStatus } from '@/types';
+import { Posting, PostingStatus, Connection } from '@/types';
 import { PostingCard } from '@/components/posting';
 
 interface DraggablePostingCardProps {
@@ -9,6 +9,8 @@ interface DraggablePostingCardProps {
   onPriorityChange: (id: string, priority: 1 | 2 | 3) => void;
   onStatusChange: (id: string, status: PostingStatus) => void;
   onDelete: (id: string) => void;
+  linkedConnections?: Connection[];
+  onConnectionClick?: () => void;
 }
 
 export function DraggablePostingCard({
@@ -17,6 +19,8 @@ export function DraggablePostingCard({
   onPriorityChange,
   onStatusChange,
   onDelete,
+  linkedConnections,
+  onConnectionClick,
 }: DraggablePostingCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: posting.id,
@@ -41,6 +45,8 @@ export function DraggablePostingCard({
         onStatusChange={onStatusChange}
         onDelete={onDelete}
         variant="kanban"
+        linkedConnections={linkedConnections}
+        onConnectionClick={onConnectionClick}
       />
     </div>
   );

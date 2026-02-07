@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { ScrapedData, Stats, Posting } from '../types';
+import { extractKeywords } from '../services/keywords';
 
 interface ScrapeStatus {
   source: string;
@@ -26,6 +27,19 @@ async function getAllPostings(): Promise<Posting[]> {
 async function savePosting(jobData: Partial<Posting>): Promise<Posting> {
   const postings = await getAllPostings();
   const now = Date.now();
+
+  // Auto-extract keywords from description if available
+  let keywords = undefined;
+  let keywordsExtractedAt = undefined;
+  if (jobData.description) {
+    try {
+      keywords = extractKeywords(jobData.description);
+      keywordsExtractedAt = now;
+    } catch (err) {
+      console.warn('Failed to extract keywords:', err);
+    }
+  }
+
   const newJob: Posting = {
     id: `job_${now}_${Math.random().toString(36).substring(2, 9)}`,
     url: jobData.url || '',
@@ -41,6 +55,8 @@ async function savePosting(jobData: Partial<Posting>): Promise<Posting> {
     notes: jobData.notes || '',
     tags: jobData.tags || [],
     connectionIds: [],
+    keywords,
+    keywordsExtractedAt,
   };
   postings.unshift(newJob);
   await chrome.storage.local.set({ [STORAGE_KEY]: postings });

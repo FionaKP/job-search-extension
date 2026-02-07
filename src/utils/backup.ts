@@ -5,7 +5,7 @@ import { migrateV1ToV2 } from '@/services/migration';
 // ============ Types ============
 
 export interface BackupData {
-  version: 2;
+  version: 2 | 3;
   exportDate: string;
   postings: Posting[];
   connections: Connection[];
@@ -40,7 +40,7 @@ export async function createBackupData(): Promise<BackupData> {
   ]);
 
   return {
-    version: 2,
+    version: 3,
     exportDate: new Date().toISOString(),
     postings,
     connections,
@@ -155,14 +155,62 @@ export function mergePostings(existing: Posting[], imported: Posting[]): Posting
 }
 
 /**
- * Merges imported connections with existing ones
- * Simple merge: import wins if same ID
+ * Validates a connection has required fields
  */
-export function mergeConnections(existing: Connection[], imported: Connection[]): Connection[] {
+function isValidConnection(connection: unknown): connection is Partial<Connection> {
+  if (typeof connection !== 'object' || connection === null) {
+    return false;
+  }
+  const c = connection as Record<string, unknown>;
+  return (
+    typeof c.id === 'string' &&
+    typeof c.name === 'string' &&
+    typeof c.company === 'string' &&
+    c.id.length > 0 &&
+    c.name.length > 0
+  );
+}
+
+/**
+ * Normalizes a connection to ensure all V3 fields have values
+ */
+function normalizeConnection(c: Partial<Connection> & { relationshipNotes?: string }): Connection {
+  return {
+    id: c.id!,
+    name: c.name!,
+    email: c.email || undefined,
+    linkedInUrl: c.linkedInUrl || undefined,
+    company: c.company!,
+    role: c.role || undefined,
+    relationshipType: c.relationshipType || 'other',
+    howWeMet: c.howWeMet || undefined,
+    relationshipStrength: c.relationshipStrength || 2,
+    notes: c.notes || c.relationshipNotes || '',
+    lastContactDate: c.lastContactDate || undefined,
+    nextFollowUp: c.nextFollowUp || undefined,
+    contactHistory: c.contactHistory || [],
+    linkedPostingIds: c.linkedPostingIds || [],
+    dateAdded: c.dateAdded || Date.now(),
+    dateModified: c.dateModified || Date.now(),
+  };
+}
+
+/**
+ * Merges imported connections with existing ones
+ * Import wins if newer (based on dateModified) or if doesn't exist
+ */
+export function mergeConnections(existing: Connection[], imported: unknown[]): Connection[] {
   const map = new Map(existing.map((c) => [c.id, c]));
 
-  for (const c of imported) {
-    map.set(c.id, c);
+  for (const rawConnection of imported) {
+    if (isValidConnection(rawConnection)) {
+      const normalized = normalizeConnection(rawConnection as Partial<Connection>);
+      const current = map.get(normalized.id);
+      // Import wins if newer, or if doesn't exist
+      if (!current || normalized.dateModified > current.dateModified) {
+        map.set(normalized.id, normalized);
+      }
+    }
   }
 
   return Array.from(map.values());
@@ -191,6 +239,9 @@ export async function importData(backupData: BackupData): Promise<ImportResult> 
         dateAdded: posting.dateAdded || Date.now(),
         dateModified: posting.dateModified || Date.now(),
         connectionIds: posting.connectionIds || [],
+        // Preserve keyword data if present
+        keywords: posting.keywords,
+        keywordsExtractedAt: posting.keywordsExtractedAt,
       });
     } else {
       errors.push(`Posting ${i + 1}: missing required field (id or title)`);

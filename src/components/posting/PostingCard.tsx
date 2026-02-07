@@ -1,5 +1,6 @@
-import { Posting, PostingStatus, STATUS_LABELS, isTerminalStatus } from '@/types';
+import { Posting, PostingStatus, STATUS_LABELS, isTerminalStatus, Connection } from '@/types';
 import { PriorityStars, TagChip, ContextMenu } from '@/components/common';
+import { ConnectionBadge } from '@/components/connections';
 
 interface PostingCardProps {
   posting: Posting;
@@ -8,6 +9,8 @@ interface PostingCardProps {
   onStatusChange: (id: string, status: PostingStatus) => void;
   onDelete: (id: string) => void;
   variant?: 'kanban' | 'list';
+  linkedConnections?: Connection[];
+  onConnectionClick?: () => void;
 }
 
 function getInitials(company: string): string {
@@ -50,6 +53,8 @@ export function PostingCard({
   onStatusChange,
   onDelete,
   variant = 'kanban',
+  linkedConnections = [],
+  onConnectionClick,
 }: PostingCardProps) {
   const contextMenuItems = [
     {
@@ -129,6 +134,9 @@ export function PostingCard({
             )}
             {getDaysSinceLabel(posting.dateModified)}
           </div>
+          <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+            <ConnectionBadge connections={linkedConnections} onClick={onConnectionClick} size="sm" />
+          </div>
         </div>
       </ContextMenu>
     );
@@ -176,6 +184,7 @@ export function PostingCard({
                 <span className="text-xs text-gray-400">+{posting.tags.length - 2}</span>
               )}
             </div>
+            <ConnectionBadge connections={linkedConnections} onClick={onConnectionClick} size="sm" />
           </div>
           <div className={`flex items-center gap-1 text-xs ${daysColorClass}`}>
             {isStale && (
