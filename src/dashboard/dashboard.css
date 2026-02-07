@@ -1,3 +1,8 @@
+/* ============================================
+   JobFlow Dashboard Styles
+   Using Design System Tokens
+   ============================================ */
+
 /* CSS Reset */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -5,30 +10,32 @@
   padding: 0;
 }
 
+/* Legacy variable mappings to new design system */
 :root {
-  --color-primary: #6366f1;
-  --color-primary-dark: #4f46e5;
-  --color-bg: #f8fafc;
-  --color-sidebar: #1e1b4b;
-  --color-card: #ffffff;
-  --color-text: #1e293b;
-  --color-text-muted: #64748b;
-  --color-border: #e2e8f0;
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-info: #3b82f6;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --radius: 8px;
+  /* Map old variables to new design tokens */
+  --color-primary: var(--color-red);
+  --color-primary-dark: var(--color-red-dark);
+  --color-bg: var(--color-bg-page);
+  --color-sidebar: var(--color-wine);
+  --color-card: var(--color-bg-card);
+  --color-text: var(--color-text-primary);
+  --color-text-muted: var(--color-text-secondary);
+  --color-border: var(--color-border-strong);
+  --color-success: var(--color-teal);
+  --color-warning: var(--color-orange);
+  --color-danger: var(--color-red);
+  --color-info: var(--color-teal);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --radius: var(--radius-md);
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background: var(--color-bg);
-  color: var(--color-text);
-  line-height: 1.6;
+  font-family: var(--font-sans);
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
+  line-height: var(--leading-normal);
 }
 
 /* Dashboard Layout */
@@ -38,14 +45,14 @@ body {
   min-height: 100vh;
 }
 
-/* Sidebar */
+/* Sidebar - Native Wine background */
 .sidebar {
-  background: var(--color-sidebar);
-  color: white;
-  padding: 24px;
+  background: var(--color-wine);
+  color: var(--color-text-on-dark-bright);
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-6);
   position: sticky;
   top: 0;
   height: 100vh;
@@ -84,12 +91,13 @@ body {
   letter-spacing: 0.5px;
 }
 
-.stat-total { background: rgba(99, 102, 241, 0.3); }
-.stat-saved { background: rgba(156, 163, 175, 0.3); }
-.stat-applied { background: rgba(59, 130, 246, 0.3); }
-.stat-interviewing { background: rgba(245, 158, 11, 0.3); }
-.stat-offer { background: rgba(34, 197, 94, 0.3); }
-.stat-rejected { background: rgba(239, 68, 68, 0.3); }
+/* Stat card colors using vintage palette */
+.stat-total { background: rgba(202, 66, 59, 0.25); } /* Flat Red */
+.stat-saved { background: rgba(230, 131, 66, 0.25); } /* Pandora */
+.stat-applied { background: rgba(60, 156, 154, 0.25); } /* Teal */
+.stat-interviewing { background: rgba(202, 66, 59, 0.3); } /* Flat Red */
+.stat-offer { background: rgba(60, 156, 154, 0.35); } /* Teal */
+.stat-rejected { background: rgba(139, 40, 32, 0.25); } /* Red dark */
 
 /* Filter Navigation */
 .filter-nav {
@@ -119,12 +127,12 @@ body {
 }
 
 .filter-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: rgba(230, 131, 66, 0.2); /* Pandora hover */
+  color: var(--color-champagne);
 }
 
 .filter-btn.active {
-  background: var(--color-primary);
+  background: var(--color-red);
   color: white;
 }
 
@@ -171,8 +179,8 @@ body {
 
 .search-box input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: var(--color-red);
+  box-shadow: var(--shadow-focus);
 }
 
 .sort-controls {
@@ -215,12 +223,12 @@ body {
 
 .job-card:hover {
   box-shadow: var(--shadow-md);
-  border-color: var(--color-primary);
+  border-color: var(--color-sage);
 }
 
 .job-card.highlighted {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  border-color: var(--color-red);
+  box-shadow: var(--shadow-focus);
 }
 
 .job-card-header {
@@ -240,7 +248,7 @@ body {
 
 .job-card-company {
   font-size: 15px;
-  color: var(--color-primary);
+  color: var(--color-teal);
 }
 
 .job-card-status {
@@ -251,12 +259,39 @@ body {
   text-transform: capitalize;
 }
 
-.status-saved { background: #f1f5f9; color: #475569; }
-.status-applied { background: #dbeafe; color: #1e40af; }
-.status-interviewing { background: #fef3c7; color: #92400e; }
-.status-offer { background: #dcfce7; color: #166534; }
-.status-rejected { background: #fee2e2; color: #991b1b; }
-.status-withdrawn { background: #f3e8ff; color: #6b21a8; }
+/* Status badges using vintage palette */
+.status-saved, .status-bookmarked {
+  background: var(--color-status-bookmarked-bg);
+  color: var(--color-status-bookmarked);
+}
+.status-applying {
+  background: var(--color-status-applying-bg);
+  color: var(--color-wine);
+}
+.status-applied {
+  background: var(--color-status-applied-bg);
+  color: var(--color-status-applied);
+}
+.status-interviewing {
+  background: var(--color-status-interviewing-bg);
+  color: var(--color-status-interviewing);
+}
+.status-negotiating {
+  background: var(--color-status-negotiating-bg);
+  color: var(--color-status-negotiating);
+}
+.status-offer, .status-accepted {
+  background: var(--color-status-accepted-bg);
+  color: var(--color-status-accepted);
+}
+.status-rejected {
+  background: var(--color-status-rejected-bg);
+  color: var(--color-status-rejected);
+}
+.status-withdrawn {
+  background: var(--color-status-withdrawn-bg);
+  color: var(--color-status-withdrawn);
+}
 
 /* Status icons */
 .status-icon {
@@ -425,13 +460,14 @@ body {
 }
 
 .job-url {
-  color: var(--color-primary);
+  color: var(--color-teal);
   text-decoration: none;
   word-break: break-all;
 }
 
 .job-url:hover {
   text-decoration: underline;
+  color: var(--color-teal-dark);
 }
 
 .modal-actions {

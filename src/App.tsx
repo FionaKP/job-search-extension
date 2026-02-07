@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Posting, PostingStatus, ViewMode, isTerminalStatus, Connection } from '@/types';
+import { Sidebar } from '@/components/layout';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DashboardStats } from '@/components/dashboard/DashboardStats';
+import { PipelineBar } from '@/components/dashboard/PipelineBar';
 import { KanbanBoard } from '@/components/dashboard/KanbanBoard';
 import { ListView } from '@/components/dashboard/ListView';
 import { PostingDetailPanel } from '@/components/dashboard/PostingDetailPanel';
@@ -550,6 +552,18 @@ function App() {
     alert('Use the extension popup on a job posting page to add new jobs.');
   }, []);
 
+  // Handle sidebar navigation (must be before early return)
+  const handleSidebarNavigate = useCallback((page: string) => {
+    if (page === 'jobs' || page === 'connections') {
+      setCurrentPage(page as AppPage);
+    } else if (page === 'settings') {
+      // Future: open settings modal
+      console.log('Settings clicked');
+    } else if (page === 'help') {
+      setShortcutsModalOpen(true);
+    }
+  }, []);
+
   // Setup keyboard shortcuts (after all handlers are defined)
   useKeyboardShortcuts([
     // Global shortcuts
@@ -600,10 +614,10 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-champagne-50">
         <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-          <p className="mt-2 text-gray-600">Loading...</p>
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-flatred border-t-transparent"></div>
+          <p className="mt-2 text-wine/70">Loading...</p>
         </div>
       </div>
     );
@@ -612,51 +626,26 @@ function App() {
   const selectedConnection = connections.find((c) => c.id === selectedConnectionId) || null;
 
   return (
-    <div className="flex h-screen flex-col bg-gray-50">
-      {/* Navigation Tabs */}
-      <div className="border-b border-gray-200 bg-white">
-        <div className="flex items-center px-4">
-          <button
-            onClick={() => setCurrentPage('jobs')}
-            className={`relative px-4 py-3 text-sm font-medium transition-colors ${
-              currentPage === 'jobs'
-                ? 'text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            Jobs
-            {currentPage === 'jobs' && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
-            )}
-          </button>
-          <button
-            onClick={() => setCurrentPage('connections')}
-            className={`relative px-4 py-3 text-sm font-medium transition-colors ${
-              currentPage === 'connections'
-                ? 'text-indigo-600'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              Connections
-              {connections.length > 0 && (
-                <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs text-indigo-600">
-                  {connections.length}
-                </span>
-              )}
-            </span>
-            {currentPage === 'connections' && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600" />
-            )}
-          </button>
-        </div>
-      </div>
+    <div className="flex h-screen bg-champagne-50">
+      {/* Sidebar Navigation */}
+      <Sidebar
+        currentPage={currentPage}
+        onNavigate={handleSidebarNavigate}
+        jobCount={postings.length}
+        connectionCount={connections.length}
+      />
 
-      {currentPage === 'jobs' ? (
+      {/* Main Content Area */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        {currentPage === 'jobs' ? (
         <>
+          {/* Pipeline/Roadmap View */}
+          <PipelineBar
+            postings={postings}
+            activeStatus={statusFilter}
+            onStatusClick={setStatusFilter}
+          />
+
           <DashboardHeader
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -741,13 +730,14 @@ function App() {
           />
         </>
       ) : (
-        <ConnectionsList
-          connections={connections}
-          onSelectConnection={handleConnectionSelect}
-          onAddConnection={handleAddConnection}
-          onEditConnection={handleEditConnection}
-        />
-      )}
+          <ConnectionsList
+            connections={connections}
+            onSelectConnection={handleConnectionSelect}
+            onAddConnection={handleAddConnection}
+            onEditConnection={handleEditConnection}
+          />
+        )}
+      </div>
 
       {/* Connection Form Modal */}
       <ConnectionFormModal
