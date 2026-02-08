@@ -104,9 +104,8 @@ export function DashboardHeader({
   }, []);
 
   return (
-    <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
-      <h1 className="text-xl font-bold text-gray-900">JobFlow</h1>
-      <div className="flex items-center gap-3">
+    <header className="flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3">
+      <div className="flex flex-1 items-center gap-3">
         <div className="w-64">
           <SearchInput
             value={searchQuery}

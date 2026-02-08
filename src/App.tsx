@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Posting, PostingStatus, ViewMode, isTerminalStatus, Connection } from '@/types';
 import { Sidebar } from '@/components/layout';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
-import { DashboardStats } from '@/components/dashboard/DashboardStats';
-import { PipelineBar } from '@/components/dashboard/PipelineBar';
 import { KanbanBoard } from '@/components/dashboard/KanbanBoard';
 import { ListView } from '@/components/dashboard/ListView';
 import { PostingDetailPanel } from '@/components/dashboard/PostingDetailPanel';
@@ -23,8 +21,6 @@ import {
   saveViewPreference,
   getCollapsedColumns,
   saveCollapsedColumns,
-  getStatsExpanded,
-  saveStatsExpanded,
   getConnections,
   saveConnection,
   deleteConnection as removeConnection,
@@ -72,18 +68,7 @@ function App() {
   const [isExtractingKeywords, setIsExtractingKeywords] = useState(false);
 
   // Dashboard stats
-  const [statsExpanded, setStatsExpanded] = useState(false);
   const dashboardStats = useDashboardStats(postings);
-
-  // Handle stats expanded change with persistence
-  const handleStatsExpandedChange = useCallback(async (expanded: boolean) => {
-    setStatsExpanded(expanded);
-    try {
-      await saveStatsExpanded(expanded);
-    } catch (err) {
-      console.error('Failed to save stats expanded preference:', err);
-    }
-  }, []);
 
   // Load postings from storage (after running migration)
   useEffect(() => {
@@ -93,19 +78,17 @@ function App() {
         await runMigrationIfNeeded();
 
         // Load postings, connections, view preference, collapsed columns, and stats expanded
-        const [loadedPostings, loadedConnections, viewPref, collapsed, statsExp] = await Promise.all([
+        const [loadedPostings, loadedConnections, viewPref, collapsed] = await Promise.all([
           getPostings(),
           getConnections(),
           getViewPreference(),
           getCollapsedColumns(),
-          getStatsExpanded(),
         ]);
 
         setPostings(loadedPostings);
         setConnections(loadedConnections);
         setCurrentView(viewPref);
         setCollapsedColumns(collapsed);
-        setStatsExpanded(statsExp);
       } catch (err) {
         console.error('Failed to initialize app:', err);
       } finally {
@@ -650,19 +633,13 @@ function App() {
         onNavigate={handleSidebarNavigate}
         jobCount={postings.length}
         connectionCount={connections.length}
+        stats={dashboardStats}
       />
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {currentPage === 'jobs' ? (
         <>
-          {/* Pipeline/Roadmap View */}
-          <PipelineBar
-            postings={postings}
-            activeStatus={statusFilter}
-            onStatusClick={setStatusFilter}
-          />
-
           <DashboardHeader
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -696,12 +673,6 @@ function App() {
             searchInputRef={searchInputRef}
             statusFilter={statusFilter}
             onStatusFilterChange={setStatusFilter}
-          />
-
-          <DashboardStats
-            stats={dashboardStats}
-            expanded={statsExpanded}
-            onExpandedChange={handleStatsExpandedChange}
           />
 
           <main className="flex-1 overflow-hidden">
