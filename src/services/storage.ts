@@ -7,7 +7,6 @@ export const STORAGE_KEYS = {
   SCHEMA_VERSION: 'schemaVersion',
   VIEW_PREFERENCE: 'viewPreference',
   COLLAPSED_COLUMNS: 'collapsedColumns',
-  STATS_EXPANDED: 'statsExpanded',
 } as const;
 
 // ============ Postings ============
@@ -76,17 +75,6 @@ export async function deleteConnection(id: string): Promise<void> {
     connectionIds: p.connectionIds.filter((cid) => cid !== id),
   }));
   await savePostings(updatedPostings);
-}
-
-export async function getConnectionById(id: string): Promise<Connection | null> {
-  const connections = await getConnections();
-  return connections.find((c) => c.id === id) || null;
-}
-
-export async function getConnectionsByCompany(company: string): Promise<Connection[]> {
-  const connections = await getConnections();
-  const lowerCompany = company.toLowerCase();
-  return connections.filter((c) => c.company.toLowerCase().includes(lowerCompany));
 }
 
 // Link a connection to a posting (bidirectional)
@@ -195,17 +183,6 @@ export async function getCollapsedColumns(): Promise<PostingStatus[]> {
 
 export async function saveCollapsedColumns(columns: PostingStatus[]): Promise<void> {
   await chrome.storage.local.set({ [STORAGE_KEYS.COLLAPSED_COLUMNS]: columns });
-}
-
-// ============ Stats Expanded ============
-
-export async function getStatsExpanded(): Promise<boolean> {
-  const result = await chrome.storage.local.get(STORAGE_KEYS.STATS_EXPANDED);
-  return result[STORAGE_KEYS.STATS_EXPANDED] ?? false;
-}
-
-export async function saveStatsExpanded(expanded: boolean): Promise<void> {
-  await chrome.storage.local.set({ [STORAGE_KEYS.STATS_EXPANDED]: expanded });
 }
 
 // ============ Schema Version ============

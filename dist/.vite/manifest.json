@@ -10,7 +10,7 @@
     "name": "extractor"
   },
   "index.html": {
-    "file": "assets/index-EVWOXb9E.js",
+    "file": "assets/index-jPD0t9xS.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -18,21 +18,21 @@
       "_extractor-BlsyOXNW.js"
     ],
     "css": [
-      "assets/index-B_BjJQIP.css"
+      "assets/index-BygGOmoX.css"
     ]
   },
   "scraper.ts-loader.js": {
-    "file": "assets/scraper.ts-loader-WBm_RgLS.js",
+    "file": "assets/scraper.ts-loader-CmSJbb9q.js",
     "src": "scraper.ts-loader.js"
   },
   "src/content/scraper.ts": {
-    "file": "assets/scraper.ts-BXum4v8-.js",
+    "file": "assets/scraper.ts-LJ4uxFqz.js",
     "name": "scraper.ts",
     "src": "src/content/scraper.ts",
     "isEntry": true
   },
   "src/popup/popup.html": {
-    "file": "assets/popup-XWYDq7sr.js",
+    "file": "assets/popup-8WNjzlYA.js",
     "name": "popup",
     "src": "src/popup/popup.html",
     "isEntry": true,
