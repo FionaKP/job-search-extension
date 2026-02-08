@@ -10,7 +10,7 @@
     "name": "extractor"
   },
   "index.html": {
-    "file": "assets/index-LsgvlYzt.js",
+    "file": "assets/index-j8BF0SXM.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -18,21 +18,21 @@
       "_extractor-BlsyOXNW.js"
     ],
     "css": [
-      "assets/index-BTKHc3M3.css"
+      "assets/index-B0WpMn1f.css"
     ]
   },
   "scraper.ts-loader.js": {
-    "file": "assets/scraper.ts-loader-CTO0kcLD.js",
+    "file": "assets/scraper.ts-loader-WBm_RgLS.js",
     "src": "scraper.ts-loader.js"
   },
   "src/content/scraper.ts": {
-    "file": "assets/scraper.ts-CiyY0u-t.js",
+    "file": "assets/scraper.ts-BXum4v8-.js",
     "name": "scraper.ts",
     "src": "src/content/scraper.ts",
     "isEntry": true
   },
   "src/popup/popup.html": {
-    "file": "assets/popup-BCnIDV69.js",
+    "file": "assets/popup-XWYDq7sr.js",
     "name": "popup",
     "src": "src/popup/popup.html",
     "isEntry": true,
@@ -40,7 +40,7 @@
       "_extractor-BlsyOXNW.js"
     ],
     "css": [
-      "assets/popup-B0AZz42j.css"
+      "assets/popup-0ZLGpNf0.css"
     ]
   }
 }

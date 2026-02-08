@@ -54,7 +54,7 @@ export function TagPopover({ tags, onTagsChange, suggestedTags = [] }: TagPopove
     <div className="relative" ref={popoverRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-1 rounded border border-dashed border-gray-300 px-2 py-1 text-xs text-gray-500 hover:border-gray-400 hover:text-gray-600"
+        className="btn btn-sm btn-ghost !h-auto !px-2 !py-1 border border-dashed border-sage/40 text-sage hover:border-sage hover:text-wine"
       >
         <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
           <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
@@ -62,7 +62,7 @@ export function TagPopover({ tags, onTagsChange, suggestedTags = [] }: TagPopove
         Add tag
       </button>
       {isOpen && (
-        <div className="absolute left-0 z-20 mt-1 w-56 rounded-md bg-white p-3 shadow-lg ring-1 ring-black ring-opacity-5">
+        <div className="absolute left-0 z-20 mt-1 w-56 rounded-md bg-white p-3 shadow-lg ring-1 ring-sage/20">
           <input
             ref={inputRef}
             type="text"
@@ -70,7 +70,7 @@ export function TagPopover({ tags, onTagsChange, suggestedTags = [] }: TagPopove
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type and press Enter"
-            className="w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded border border-sage/30 px-2 py-1 text-sm text-wine focus:border-wine focus:outline-none focus:ring-1 focus:ring-wine"
           />
           {tags.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
@@ -80,14 +80,14 @@ export function TagPopover({ tags, onTagsChange, suggestedTags = [] }: TagPopove
             </div>
           )}
           {availableSuggestions.length > 0 && (
-            <div className="mt-2 border-t border-gray-100 pt-2">
-              <p className="mb-1 text-xs text-gray-500">Suggestions:</p>
+            <div className="mt-2 border-t border-sage/20 pt-2">
+              <p className="mb-1 text-xs text-sage">Suggestions:</p>
               <div className="flex flex-wrap gap-1">
                 {availableSuggestions.slice(0, 5).map((tag) => (
                   <button
                     key={tag}
                     onClick={() => handleAddTag(tag)}
-                    className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-200"
+                    className="badge badge-neutral hover:bg-champagne-light cursor-pointer"
                   >
                     {tag}
                   </button>

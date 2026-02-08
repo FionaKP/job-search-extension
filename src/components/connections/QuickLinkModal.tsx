@@ -62,23 +62,23 @@ export function QuickLinkModal({
       <label
         key={connection.id}
         className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-          isLinked ? 'bg-indigo-50' : 'hover:bg-gray-50'
+          isLinked ? 'bg-teal-50' : 'hover:bg-champagne-50'
         }`}
       >
         <input
           type="checkbox"
           checked={isLinked}
           onChange={() => toggleConnection(connection.id)}
-          className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+          className="checkbox checkbox-sm"
         />
-        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium text-sm flex-shrink-0">
+        <div className="w-8 h-8 rounded-full bg-teal/10 flex items-center justify-center text-teal font-medium text-sm flex-shrink-0">
           {connection.name.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <p className={`text-sm font-medium truncate ${isLinked ? 'text-indigo-700' : 'text-gray-900'}`}>
+          <p className={`text-sm font-medium truncate ${isLinked ? 'text-teal-700' : 'text-wine'}`}>
             {connection.name}
           </p>
-          <p className="text-xs text-gray-500 truncate">
+          <p className="text-xs text-wine/60 truncate">
             {connection.role ? `${connection.role} @ ` : ''}{connection.company}
           </p>
         </div>

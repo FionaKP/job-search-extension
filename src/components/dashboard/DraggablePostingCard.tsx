@@ -1,16 +1,19 @@
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Posting, PostingStatus, Connection } from '@/types';
+import { Posting, PostingStatus, Connection, InterestLevel } from '@/types';
 import { PostingCard } from '@/components/posting';
 
 interface DraggablePostingCardProps {
   posting: Posting;
   onSelect: (id: string) => void;
-  onPriorityChange: (id: string, priority: 1 | 2 | 3) => void;
+  onPriorityChange: (id: string, interest: InterestLevel) => void;
   onStatusChange: (id: string, status: PostingStatus) => void;
   onDelete: (id: string) => void;
+  onEdit?: (id: string) => void;
   linkedConnections?: Connection[];
   onConnectionClick?: () => void;
+  isSelected?: boolean;
+  columnWidth?: number;
 }
 
 export function DraggablePostingCard({
@@ -19,8 +22,11 @@ export function DraggablePostingCard({
   onPriorityChange,
   onStatusChange,
   onDelete,
+  onEdit,
   linkedConnections,
   onConnectionClick,
+  isSelected,
+  columnWidth,
 }: DraggablePostingCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: posting.id,
@@ -44,9 +50,12 @@ export function DraggablePostingCard({
         onPriorityChange={onPriorityChange}
         onStatusChange={onStatusChange}
         onDelete={onDelete}
+        onEdit={onEdit}
         variant="kanban"
         linkedConnections={linkedConnections}
         onConnectionClick={onConnectionClick}
+        isSelected={isSelected}
+        columnWidth={columnWidth}
       />
     </div>
   );

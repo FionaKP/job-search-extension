@@ -108,7 +108,7 @@ export function migrateV1ToV2(v1Data: V1Application[]): Posting[] {
     description: v1.description,
     salary: v1.salary,
     status: mapV1Status(v1.status),
-    priority: mapInterestToPriority(v1.interest),
+    interest: mapV1InterestToInterest(v1.interest),
     tags: v1.tags || [],
     notes: v1.notes || '',
     dateAdded: parseTimestamp(v1.dateAdded),
@@ -129,12 +129,28 @@ function mapV1Status(status: V1Application['status']): Posting['status'] {
 }
 
 /**
- * Map V1 interest (0-5) to V2 priority (1-3)
+ * Map V1 interest (0-5) to new interest scale (1-5)
  */
-function mapInterestToPriority(interest?: number): 1 | 2 | 3 {
-  if (!interest || interest <= 1) return 1;
-  if (interest <= 3) return 2;
-  return 3;
+function mapV1InterestToInterest(interest?: number): 1 | 2 | 3 | 4 | 5 {
+  if (!interest || interest <= 1) return 2;
+  if (interest === 2) return 3;
+  if (interest === 3) return 3;
+  if (interest === 4) return 4;
+  return 5;
+}
+
+/**
+ * Migrate old priority (1-3) to new interest (1-5)
+ * Called for existing V2 postings that have priority instead of interest
+ * Mapping: 1→2 (low→low), 2→3 (medium→medium), 3→5 (high→very excited)
+ */
+export function migratePriorityToInterest(priority: 1 | 2 | 3): 1 | 2 | 3 | 4 | 5 {
+  const mapping: Record<1 | 2 | 3, 1 | 2 | 3 | 4 | 5> = {
+    1: 2,
+    2: 3,
+    3: 5,
+  };
+  return mapping[priority];
 }
 
 /**

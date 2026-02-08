@@ -19,8 +19,8 @@ export function KeywordItem({ keyword, onToggleAddressed }: KeywordItemProps) {
             (keyword.importance === 'high' && i < 3) ||
             (keyword.importance === 'medium' && i < 2) ||
             (keyword.importance === 'low' && i < 1)
-              ? 'bg-indigo-500'
-              : 'bg-gray-200'
+              ? 'bg-teal'
+              : 'bg-sage/30'
           }`}
         />
       ))}
@@ -34,18 +34,18 @@ export function KeywordItem({ keyword, onToggleAddressed }: KeywordItemProps) {
           type="checkbox"
           checked={keyword.addressed}
           onChange={(e) => onToggleAddressed(keyword.term, e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          className="checkbox checkbox-sm"
         />
         <button
           onClick={() => setShowContext(!showContext)}
           className={`flex-1 text-left text-sm ${
-            keyword.addressed ? 'text-gray-400 line-through' : 'text-gray-700'
-          } hover:text-indigo-600 transition-colors`}
+            keyword.addressed ? 'text-sage line-through' : 'text-wine'
+          } hover:text-wine/70 transition-colors`}
         >
           {keyword.term}
         </button>
         {importanceDots}
-        <span className="text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className="text-xs text-sage opacity-0 group-hover:opacity-100 transition-opacity">
           {keyword.frequency}x
         </span>
       </div>

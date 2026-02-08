@@ -7,6 +7,7 @@ import { SiteParser, ScrapedData } from './types';
 import { selectText, selectAttr, selectFirst } from '../utils/selectors';
 import { cleanText, truncate, cleanUrl, extractCompanyFromUrl } from '../utils/cleaners';
 import { calculateConfidence } from '../utils/confidence';
+import { getLogoWithFallback } from '../utils/logo';
 
 export const greenhouseParser: SiteParser = {
   name: 'greenhouse',
@@ -33,11 +34,11 @@ export const greenhouseParser: SiteParser = {
       selectAttr(document, '.company-logo img', 'alt') ||
       extractCompanyFromUrl(url);
 
-    // Company logo
-    const companyLogo =
-      selectAttr(document, '.company-logo img', 'src') ||
-      selectAttr(document, '.logo img', 'src') ||
-      selectAttr(document, 'meta[property="og:image"]', 'content');
+    // Company logo with Clearbit fallback
+    const companyLogo = getLogoWithFallback(document, company, [
+      '.company-logo img',
+      '.logo img',
+    ]);
 
     // Location
     const location = selectFirst(document, [

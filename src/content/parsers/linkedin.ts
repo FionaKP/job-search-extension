@@ -4,10 +4,11 @@
  */
 
 import { SiteParser, ScrapedData } from './types';
-import { selectText, selectFirst, selectFirstAttr } from '../utils/selectors';
+import { selectText, selectFirst } from '../utils/selectors';
 import { cleanText, truncate, cleanUrl } from '../utils/cleaners';
 import { extractSalary } from '../utils/salary';
 import { calculateConfidence } from '../utils/confidence';
+import { getLogoWithFallback } from '../utils/logo';
 
 export const linkedinParser: SiteParser = {
   name: 'linkedin',
@@ -43,26 +44,13 @@ export const linkedinParser: SiteParser = {
         '.company-name',
       ]);
 
-    // Company logo
-    const companyLogo =
-      selectFirstAttr(
-        document,
-        [
-          '.job-details-jobs-unified-top-card__company-logo img',
-          '.jobs-unified-top-card__company-logo img',
-          '.company-logo img',
-          '.topcard__org-photo img',
-        ],
-        'src'
-      ) ||
-      selectFirstAttr(
-        document,
-        [
-          '.job-details-jobs-unified-top-card__company-logo img',
-          '.jobs-unified-top-card__company-logo img',
-        ],
-        'data-delayed-url'
-      );
+    // Company logo with Clearbit fallback
+    const companyLogo = getLogoWithFallback(document, company, [
+      '.job-details-jobs-unified-top-card__company-logo img',
+      '.jobs-unified-top-card__company-logo img',
+      '.company-logo img',
+      '.topcard__org-photo img',
+    ]);
 
     // Location - often includes "Remote" designation
     const location =

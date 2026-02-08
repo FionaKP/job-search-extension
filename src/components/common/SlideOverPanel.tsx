@@ -28,16 +28,21 @@ export function SlideOverPanel({ isOpen, onClose, title, children, width = 'max-
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
-      <div className="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
+      {/* Backdrop with fade animation */}
+      <div
+        className="absolute inset-0 bg-wine/50 animate-fade-in"
+        onClick={onClose}
+      />
+      {/* Panel with slide animation */}
+      <div className="fixed inset-y-0 right-0 flex max-w-full pl-10 animate-slide-right">
         <div className={`w-screen ${width}`}>
           <div className="flex h-full flex-col bg-white shadow-xl">
             {title && (
-              <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
-                <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+              <div className="flex items-center justify-between border-b border-sage/20 px-4 py-3">
+                <h2 className="text-lg font-semibold text-wine">{title}</h2>
                 <button
                   onClick={onClose}
-                  className="rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="rounded-md text-sage hover:text-wine focus:outline-none focus:ring-2 focus:ring-wine"
                 >
                   <span className="sr-only">Close</span>
                   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">

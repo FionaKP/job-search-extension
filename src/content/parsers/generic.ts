@@ -14,7 +14,7 @@ import { selectAttr, selectFirst, selectAll } from '../utils/selectors';
 import { cleanText, truncate, cleanUrl, extractCompanyFromUrl, cleanJobTitle } from '../utils/cleaners';
 import { extractSalaryFromText } from '../utils/salary';
 import { calculateConfidence } from '../utils/confidence';
-import { extractLogo, getFaviconUrl } from '../utils/logo';
+import { getLogoWithFallback } from '../utils/logo';
 
 export const genericParser: SiteParser = {
   name: 'generic',
@@ -74,8 +74,8 @@ export const genericParser: SiteParser = {
       selectorData.salary ??
       extractSalaryFromFullPage(document);
 
-    // Try to find logo
-    const companyLogo = extractLogo(document) || getFaviconUrl(document);
+    // Try to find logo (with Clearbit fallback)
+    const companyLogo = getLogoWithFallback(document, company);
 
     const extractedData: ScrapedData = {
       title: cleanJobTitle(title),

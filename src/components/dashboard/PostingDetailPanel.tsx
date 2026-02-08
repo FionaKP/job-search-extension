@@ -3,6 +3,7 @@ import { Posting, PostingStatus, STATUS_LABELS, POSTING_STATUSES, Connection } f
 import { SlideOverPanel, PriorityStars, TagPopover, TagChip } from '@/components/common';
 import { ConnectionCard, QuickLinkModal } from '@/components/connections';
 import { KeywordsPanel } from '@/components/keywords';
+import { getLogoUrl } from '@/utils/logo';
 
 type Tab = 'details' | 'keywords' | 'connections';
 
@@ -12,6 +13,7 @@ interface PostingDetailPanelProps {
   onClose: () => void;
   onUpdate: (id: string, updates: Partial<Posting>) => void;
   onDelete: (id: string) => void;
+  onEdit?: (id: string) => void;
   // Connections props
   connections?: Connection[];
   linkedConnections?: Connection[];
@@ -30,6 +32,7 @@ export function PostingDetailPanel({
   onClose,
   onUpdate,
   onDelete,
+  onEdit,
   connections = [],
   linkedConnections = [],
   onLinkConnection,
@@ -43,6 +46,12 @@ export function PostingDetailPanel({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showQuickLinkModal, setShowQuickLinkModal] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('details');
+  const [logoError, setLogoError] = useState(false);
+
+  // Reset logo error when posting changes
+  useEffect(() => {
+    setLogoError(false);
+  }, [posting?.id]);
 
   useEffect(() => {
     if (posting) {
@@ -102,17 +111,55 @@ export function PostingDetailPanel({
     <SlideOverPanel isOpen={isOpen} onClose={onClose} width="max-w-lg">
       <div className="flex h-full flex-col">
         {/* Header */}
-        <div className="border-b border-gray-200 px-4 py-4">
+        <div className="border-b border-sage/20 bg-champagne-50 px-4 py-4">
           <div className="flex items-start justify-between">
-            <div className="min-w-0 flex-1">
-              <h2 className="text-lg font-semibold text-gray-900">{posting.title}</h2>
-              <p className="text-gray-600">{posting.company}</p>
-              {posting.location && <p className="text-sm text-gray-500">{posting.location}</p>}
+            <div className="flex items-start gap-3 min-w-0 flex-1">
+              {/* Company Logo */}
+              {(() => {
+                const logoUrl = getLogoUrl(posting.companyLogo, posting.company);
+                const showLogo = logoUrl && !logoError;
+                const handleLogoLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+                  const img = e.currentTarget;
+                  // Google's default favicon is 16x16, treat as error to show initials
+                  if (img.naturalWidth <= 16 && img.naturalHeight <= 16) {
+                    setLogoError(true);
+                  }
+                };
+                return showLogo ? (
+                  <img
+                    src={logoUrl}
+                    alt={posting.company}
+                    className="h-12 w-12 rounded-lg object-contain bg-white border border-sage/20 flex-shrink-0"
+                    onLoad={handleLogoLoad}
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <div className="h-12 w-12 rounded-lg bg-champagne-200 flex items-center justify-center text-sm font-semibold text-wine flex-shrink-0">
+                    {posting.company.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()}
+                  </div>
+                );
+              })()}
+              <div className="min-w-0">
+                <h2 className="text-lg font-semibold text-wine">{posting.title}</h2>
+                <p className="text-wine/80">{posting.company}</p>
+                {posting.location && <p className="text-sm text-wine/60">{posting.location}</p>}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              {onEdit && (
+                <button
+                  onClick={() => onEdit(posting.id)}
+                  className="btn btn-icon btn-ghost text-wine/50 hover:text-wine hover:bg-sage/10"
+                  title="Edit posting"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+              )}
               <button
                 onClick={() => window.open(posting.url, '_blank')}
-                className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                className="btn btn-icon btn-ghost text-wine/50 hover:text-wine hover:bg-sage/10"
                 title="Open URL (O)"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,7 +168,7 @@ export function PostingDetailPanel({
               </button>
               <button
                 onClick={onClose}
-                className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                className="btn btn-icon btn-ghost text-wine/50 hover:text-wine hover:bg-sage/10"
                 title="Close (Esc or ⌘S)"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,7 +179,7 @@ export function PostingDetailPanel({
           </div>
 
           {/* Tabs */}
-          <div className="mt-4 flex gap-1 border-b border-gray-200 -mb-px">
+          <div className="mt-4 flex gap-1 border-b border-sage/20 -mb-px">
             <TabButton
               active={activeTab === 'details'}
               onClick={() => setActiveTab('details')}
@@ -189,24 +236,24 @@ export function PostingDetailPanel({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 px-4 py-3">
-          <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="border-t border-sage/20 px-4 py-3">
+          <div className="flex items-center justify-between text-xs text-wine/50">
             <div>
               <p>Added: {formatDate(posting.dateAdded)}</p>
               <p>Modified: {formatDate(posting.dateModified)}</p>
             </div>
             {showDeleteConfirm ? (
               <div className="flex items-center gap-2">
-                <span className="text-red-600">Delete this posting?</span>
+                <span className="text-flatred">Delete this posting?</span>
                 <button
                   onClick={handleDelete}
-                  className="rounded bg-red-600 px-2 py-1 text-white hover:bg-red-700"
+                  className="btn btn-sm btn-primary"
                 >
                   Yes
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="rounded bg-gray-200 px-2 py-1 text-gray-700 hover:bg-gray-300"
+                  className="btn btn-sm btn-secondary"
                 >
                   No
                 </button>
@@ -214,7 +261,7 @@ export function PostingDetailPanel({
             ) : (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                className="text-red-600 hover:text-red-700"
+                className="btn btn-sm btn-danger"
               >
                 Delete posting
               </button>
@@ -263,15 +310,15 @@ function TabButton({
       onClick={onClick}
       className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
         active
-          ? 'border-indigo-500 text-indigo-600'
-          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+          ? 'border-wine text-wine'
+          : 'border-transparent text-sage hover:text-wine hover:border-sage'
       }`}
     >
       {children}
       {badge && (
         <span
           className={`text-xs px-1.5 py-0.5 rounded-full ${
-            active ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-600'
+            active ? 'bg-champagne-100 text-wine' : 'bg-champagne-50 text-wine/60'
           }`}
         >
           {badge}
@@ -299,11 +346,11 @@ function DetailsTab({
     <div className="space-y-4 p-4">
       <div className="flex items-center gap-4">
         <div className="flex-1">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Status</label>
+          <label className="mb-1 block text-sm font-medium text-wine">Status</label>
           <select
             value={posting.status}
             onChange={(e) => onUpdate(posting.id, { status: e.target.value as PostingStatus })}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-sage/30 px-3 py-2 text-sm text-wine focus:border-wine focus:outline-none focus:ring-1 focus:ring-wine"
           >
             {POSTING_STATUSES.map((status) => (
               <option key={status} value={status}>
@@ -313,16 +360,16 @@ function DetailsTab({
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Priority</label>
+          <label className="mb-1 block text-sm font-medium text-wine">Interest</label>
           <PriorityStars
-            priority={posting.priority}
-            onChange={(p) => onUpdate(posting.id, { priority: p })}
+            priority={posting.interest}
+            onChange={(p) => onUpdate(posting.id, { interest: p })}
           />
         </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Tags</label>
+        <label className="mb-1 block text-sm font-medium text-wine">Tags</label>
         <div className="flex flex-wrap items-center gap-1">
           {posting.tags.map((tag) => (
             <TagChip
@@ -340,38 +387,38 @@ function DetailsTab({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Next Action Date</label>
+        <label className="mb-1 block text-sm font-medium text-wine">Next Action Date</label>
         <input
           type="date"
           value={posting.nextActionDate || ''}
           onChange={(e) => onUpdate(posting.id, { nextActionDate: e.target.value || undefined })}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-md border border-sage/30 px-3 py-2 text-sm text-wine focus:border-wine focus:outline-none focus:ring-1 focus:ring-wine"
         />
       </div>
 
       {posting.salary && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Salary</label>
-          <p className="text-sm text-gray-600">{posting.salary}</p>
+          <label className="mb-1 block text-sm font-medium text-wine">Salary</label>
+          <p className="text-sm text-wine/70">{posting.salary}</p>
         </div>
       )}
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Description</label>
-        <div className="max-h-48 overflow-y-auto rounded-md border border-gray-200 bg-gray-50 p-3 text-sm text-gray-600 whitespace-pre-wrap">
+        <label className="mb-1 block text-sm font-medium text-wine">Description</label>
+        <div className="max-h-48 overflow-y-auto rounded-md border border-sage/20 bg-champagne-50 p-3 text-sm text-wine/70 whitespace-pre-wrap">
           {posting.description || 'No description available'}
         </div>
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Notes</label>
+        <label className="mb-1 block text-sm font-medium text-wine">Notes</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           onBlur={handleNotesBlur}
           rows={4}
           placeholder="Add notes about this application..."
-          className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full resize-none rounded-md border border-sage/30 px-3 py-2 text-sm text-wine focus:border-wine focus:outline-none focus:ring-1 focus:ring-wine"
         />
       </div>
     </div>
@@ -391,12 +438,12 @@ function ConnectionsTab({
   return (
     <div className="p-4">
       <div className="mb-3 flex items-center justify-between">
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-wine">
           Linked Connections ({linkedConnections.length})
         </label>
         <button
           onClick={onShowQuickLink}
-          className="text-xs text-indigo-600 hover:text-indigo-700"
+          className="text-xs text-flatred hover:text-flatred-600"
         >
           + Link Connection
         </button>
@@ -413,16 +460,16 @@ function ConnectionsTab({
           ))}
         </div>
       ) : (
-        <div className="rounded-md bg-gray-50 p-4 text-center">
-          <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-gray-100 flex items-center justify-center">
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="rounded-md bg-champagne-50 p-4 text-center">
+          <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-champagne-100 flex items-center justify-center">
+            <svg className="w-5 h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
-          <p className="text-sm text-gray-500 mb-2">No connections linked</p>
+          <p className="text-sm text-wine/60 mb-2">No connections linked</p>
           <button
             onClick={onShowQuickLink}
-            className="text-sm text-indigo-600 hover:text-indigo-700"
+            className="text-sm text-flatred hover:text-flatred-600"
           >
             Link a connection
           </button>

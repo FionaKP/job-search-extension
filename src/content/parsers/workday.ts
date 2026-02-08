@@ -5,10 +5,11 @@
  */
 
 import { SiteParser, ScrapedData } from './types';
-import { selectText, selectAttr, selectFirst } from '../utils/selectors';
+import { selectText, selectFirst } from '../utils/selectors';
 import { cleanText, truncate, cleanUrl, extractCompanyFromUrl } from '../utils/cleaners';
 import { extractSalary } from '../utils/salary';
 import { calculateConfidence } from '../utils/confidence';
+import { getLogoWithFallback } from '../utils/logo';
 
 export const workdayParser: SiteParser = {
   name: 'workday',
@@ -36,11 +37,11 @@ export const workdayParser: SiteParser = {
         '[data-automation-id="companyName"]',
       ]) || extractCompanyFromUrl(url);
 
-    // Company logo
-    const companyLogo =
-      selectAttr(document, '[data-automation-id="companyLogo"] img', 'src') ||
-      selectAttr(document, '.company-logo img', 'src') ||
-      selectAttr(document, 'meta[property="og:image"]', 'content');
+    // Company logo with Clearbit fallback
+    const companyLogo = getLogoWithFallback(document, company, [
+      '[data-automation-id="companyLogo"] img',
+      '.company-logo img',
+    ]);
 
     // Location
     const location = selectFirst(document, [

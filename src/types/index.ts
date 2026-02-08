@@ -42,6 +42,8 @@ export const KANBAN_COLUMNS: PostingStatus[] = [
   'rejected',
 ];
 
+export type InterestLevel = 1 | 2 | 3 | 4 | 5;
+
 export interface Posting {
   id: string;
   url: string;
@@ -52,7 +54,7 @@ export interface Posting {
   description: string;
   salary?: string;
   status: PostingStatus;
-  priority: 1 | 2 | 3;
+  interest: InterestLevel;
   tags: string[];
   notes: string;
   dateAdded: number;
@@ -184,7 +186,7 @@ export interface AppSettings {
 
 export interface FilterState {
   searchQuery: string;
-  priorityFilter: 1 | 2 | 3 | null;
+  interestFilter: InterestLevel | null;
   statusFilter: PostingStatus | null;
   // Advanced filters
   tagFilters: string[];

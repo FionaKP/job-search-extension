@@ -24,7 +24,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/scraper.ts-loader-CTO0kcLD.js"
+        "assets/scraper.ts-loader-WBm_RgLS.js"
       ],
       "matches": [
         "<all_urls>"
@@ -38,7 +38,7 @@
         "<all_urls>"
       ],
       "resources": [
-        "assets/scraper.ts-CiyY0u-t.js"
+        "assets/scraper.ts-BXum4v8-.js"
       ],
       "use_dynamic_url": true
     }

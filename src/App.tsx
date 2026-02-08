@@ -7,6 +7,7 @@ import { PipelineBar } from '@/components/dashboard/PipelineBar';
 import { KanbanBoard } from '@/components/dashboard/KanbanBoard';
 import { ListView } from '@/components/dashboard/ListView';
 import { PostingDetailPanel } from '@/components/dashboard/PostingDetailPanel';
+import { EditPostingModal } from '@/components/posting';
 import { ConnectionsList, ConnectionFormModal, ConnectionDetailPanel } from '@/components/connections';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { KeyboardShortcutsModal } from '@/components/common';
@@ -41,6 +42,8 @@ function App() {
   const [priorityFilter, setPriorityFilter] = useState<1 | 2 | 3 | null>(null);
   const [selectedPostingId, setSelectedPostingId] = useState<string | null>(null);
   const [detailPanelOpen, setDetailPanelOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingPosting, setEditingPosting] = useState<Posting | null>(null);
   const [collapsedColumns, setCollapsedColumns] = useState<PostingStatus[]>(['rejected']);
 
   // Connection page state
@@ -208,8 +211,8 @@ function App() {
         posting.notes.toLowerCase().includes(query) ||
         posting.tags.some((tag) => tag.toLowerCase().includes(query));
 
-      // Priority filter
-      const matchesPriority = !priorityFilter || posting.priority === priorityFilter;
+      // Interest filter
+      const matchesInterest = !priorityFilter || posting.interest === priorityFilter;
 
       // Status filter
       const matchesStatus = !statusFilter || posting.status === statusFilter;
@@ -245,7 +248,7 @@ function App() {
 
       return (
         matchesSearch &&
-        matchesPriority &&
+        matchesInterest &&
         matchesStatus &&
         matchesTags &&
         matchesCompany &&
@@ -313,13 +316,13 @@ function App() {
     searchInputRef.current?.focus();
   }, []);
 
-  // Cycle priority for selected posting
-  const cyclePriority = useCallback(() => {
+  // Cycle interest for selected posting
+  const cycleInterest = useCallback(() => {
     if (!selectedPostingId) return;
     const posting = postings.find((p) => p.id === selectedPostingId);
     if (!posting) return;
-    const nextPriority = ((posting.priority % 3) + 1) as 1 | 2 | 3;
-    handlePriorityChange(selectedPostingId, nextPriority);
+    const nextInterest = ((posting.interest % 5) + 1) as 1 | 2 | 3 | 4 | 5;
+    handlePriorityChange(selectedPostingId, nextInterest);
   }, [selectedPostingId, postings]);
 
   // Open URL for selected posting
@@ -364,9 +367,9 @@ function App() {
     setDetailPanelOpen(true);
   };
 
-  const handlePriorityChange = (id: string, priority: 1 | 2 | 3) => {
+  const handlePriorityChange = (id: string, interest: 1 | 2 | 3 | 4 | 5) => {
     const updated = postings.map((p) =>
-      p.id === id ? { ...p, priority, dateModified: Date.now() } : p
+      p.id === id ? { ...p, interest, dateModified: Date.now() } : p
     );
     savePostings(updated);
   };
@@ -399,6 +402,20 @@ function App() {
       setSelectedPostingId(null);
       setDetailPanelOpen(false);
     }
+  };
+
+  const handleEditPosting = (id: string) => {
+    const posting = postings.find((p) => p.id === id);
+    if (posting) {
+      setEditingPosting(posting);
+      setEditModalOpen(true);
+    }
+  };
+
+  const handleSaveEditedPosting = (id: string, updates: Partial<Posting>) => {
+    handleUpdate(id, updates);
+    setEditModalOpen(false);
+    setEditingPosting(null);
   };
 
   // Keyword extraction handler
@@ -601,7 +618,7 @@ function App() {
     { key: 'Enter', handler: () => selectedPostingId && setDetailPanelOpen(true) },
 
     // Card actions
-    { key: 's', handler: cyclePriority },
+    { key: 's', handler: cycleInterest },
     { key: 'e', handler: () => selectedPostingId && setDetailPanelOpen(true) }, // Edit (opens detail panel)
     { key: 'o', handler: openSelectedUrl },
     { key: 'd', handler: deleteSelected },
@@ -695,10 +712,15 @@ function App() {
                 onPriorityChange={handlePriorityChange}
                 onStatusChange={handleStatusChange}
                 onDelete={handleDelete}
+                onEdit={(id) => {
+                  setSelectedPostingId(id);
+                  setDetailPanelOpen(true);
+                }}
                 collapsedColumns={collapsedColumns}
                 onCollapseChange={handleCollapseChange}
                 getLinkedConnections={getLinkedConnections}
                 onConnectionClick={handleConnectionClick}
+                selectedPostingId={selectedPostingId}
               />
             ) : (
               <ListView
@@ -719,6 +741,7 @@ function App() {
             onClose={() => setDetailPanelOpen(false)}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
+            onEdit={handleEditPosting}
             connections={connections}
             linkedConnections={selectedPosting ? getLinkedConnections(selectedPosting.id) : []}
             onLinkConnection={handleLinkConnection}
@@ -785,6 +808,17 @@ function App() {
           }}
         />
       )}
+
+      {/* Edit Posting Modal */}
+      <EditPostingModal
+        isOpen={editModalOpen}
+        onClose={() => {
+          setEditModalOpen(false);
+          setEditingPosting(null);
+        }}
+        onSave={handleSaveEditedPosting}
+        posting={editingPosting}
+      />
 
       <KeyboardShortcutsModal
         isOpen={shortcutsModalOpen}
