@@ -73,9 +73,26 @@
   .animate-slide-in-right {
     animation: slideInRight 0.2s ease-out forwards;
   }
+
+  /* Tab slide animation - slides from left to right */
+  .animate-tab-slide-in {
+    animation: slideInFromLeft 0.25s ease-out forwards;
+  }
 }
 
 /* Keyframes for column animations */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Legacy - kept for compatibility */
 @keyframes slideInLeft {
   from {
     opacity: 0;

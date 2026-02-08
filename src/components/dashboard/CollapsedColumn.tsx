@@ -86,19 +86,19 @@ export function CollapsedColumn({
     <div
       ref={setNodeRef}
       className={`
-        group relative flex-1 flex items-center cursor-pointer
+        group relative flex-1 flex items-center justify-center cursor-pointer
         ${colors.bg} ${colors.hover}
         ${isOver ? `ring-2 ${DROP_HIGHLIGHT_COLORS[status]} ring-inset` : ''}
         rounded-l-lg
-        transition-all duration-300 ease-out
-        hover:flex-[1.4] hover:shadow-lg hover:z-10
-        origin-right
-        ${isAnimating ? 'animate-slide-in-left' : ''}
+        transition-all duration-200 ease-out
+        hover:flex-[1.5] hover:shadow-lg hover:z-10
+        hover:-ml-3
+        ${isAnimating ? 'animate-tab-slide-in' : ''}
       `}
       onClick={onExpand}
       title={`Expand ${STATUS_LABELS[status]} column (${count})`}
     >
-      <div className="flex flex-col items-center justify-center w-full h-full px-1.5 py-2 gap-1">
+      <div className="flex flex-col items-center justify-center h-full py-2 gap-1">
         {/* Count badge - prominent at top */}
         <span className={`flex items-center justify-center min-w-[20px] h-[20px] rounded-full bg-white/30 ${colors.text} text-[11px] font-bold`}>
           {count}
