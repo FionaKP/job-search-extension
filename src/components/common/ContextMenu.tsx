@@ -52,18 +52,18 @@ export function ContextMenu({ children, items }: ContextMenuProps) {
       {isOpen && (
         <div
           ref={menuRef}
-          className="fixed z-50 min-w-[160px] rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5"
+          className="fixed z-50 min-w-[160px] rounded-md bg-white py-1 shadow-lg ring-1 ring-sage/20"
           style={{ left: position.x, top: position.y }}
         >
           {items.map((item, index) => (
             item.divider ? (
-              <div key={index} className="my-1 border-t border-gray-100" />
+              <div key={index} className="my-1 border-t border-sage/20" />
             ) : (
               <button
                 key={index}
                 onClick={() => handleItemClick(item)}
-                className={`flex w-full items-center gap-2 px-4 py-2 text-left text-sm ${
-                  item.danger ? 'text-red-600 hover:bg-red-50' : 'text-gray-700 hover:bg-gray-100'
+                className={`btn btn-ghost !h-auto !justify-start w-full gap-2 px-4 py-2 text-left text-sm rounded-none ${
+                  item.danger ? 'text-flatred hover:bg-flatred-50' : ''
                 }`}
               >
                 {item.icon}

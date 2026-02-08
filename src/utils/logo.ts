@@ -1,29 +1,10 @@
 /**
- * Logo Extraction Utilities
- * Helpers for finding company logos on job pages
- * Includes Clearbit fallback for when scraping fails
+ * Logo Utilities for Dashboard Components
+ * Provides Clearbit fallback for company logos
  */
 
-import { selectAttr, selectFirstAttr } from './selectors';
-import { cleanUrl } from './cleaners';
-
 /**
- * Common selectors for company logos
- */
-const LOGO_SELECTORS = [
-  '[class*="company-logo"] img',
-  '[class*="companyLogo"] img',
-  '[class*="company_logo"] img',
-  '[class*="employer-logo"] img',
-  '[class*="employerLogo"] img',
-  '.logo img',
-  'header img[alt*="logo" i]',
-  'img[alt*="company" i][alt*="logo" i]',
-];
-
-/**
- * Well-known company domain mappings for common companies
- * that don't follow the simple "companyname.com" pattern
+ * Well-known company domain mappings
  */
 const KNOWN_COMPANY_DOMAINS: Record<string, string> = {
   'google': 'google.com',
@@ -145,53 +126,6 @@ const KNOWN_COMPANY_DOMAINS: Record<string, string> = {
 };
 
 /**
- * Extract company logo from page
- */
-export function extractLogo(doc: Document, customSelectors?: string[]): string | null {
-  const selectors = customSelectors ? [...customSelectors, ...LOGO_SELECTORS] : LOGO_SELECTORS;
-
-  // Try src attribute first
-  let logoUrl = selectFirstAttr(doc, selectors, 'src');
-
-  // Try data-src for lazy-loaded images
-  if (!logoUrl) {
-    logoUrl = selectFirstAttr(doc, selectors, 'data-src');
-  }
-
-  // Try og:image as fallback
-  if (!logoUrl) {
-    logoUrl = selectAttr(doc, 'meta[property="og:image"]', 'content');
-  }
-
-  return cleanUrl(logoUrl);
-}
-
-/**
- * Get favicon as last resort logo
- */
-export function getFaviconUrl(doc: Document): string | null {
-  const selectors = [
-    'link[rel="icon"]',
-    'link[rel="shortcut icon"]',
-    'link[rel="apple-touch-icon"]',
-  ];
-
-  for (const selector of selectors) {
-    const href = selectAttr(doc, selector, 'href');
-    if (href) {
-      return cleanUrl(href);
-    }
-  }
-
-  // Default favicon location
-  try {
-    return new URL('/favicon.ico', window.location.origin).href;
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Convert company name to a likely domain
  */
 function companyToDomain(company: string): string | null {
@@ -212,7 +146,6 @@ function companyToDomain(company: string): string | null {
   }
 
   // Generate domain from company name
-  // Remove common suffixes and clean up
   const cleaned = normalized
     .replace(/\s*(inc\.?|llc\.?|ltd\.?|corp\.?|corporation|company|co\.?|limited|gmbh|ag|sa|plc)\.?\s*$/i, '')
     .replace(/[^a-z0-9\s]/g, '')
@@ -226,13 +159,12 @@ function companyToDomain(company: string): string | null {
 
 /**
  * Get logo URL for a company using Google's favicon API
- * This is a free, no-auth-required service (Clearbit API is being sunset)
+ * This is a free, no-auth-required service
  * https://dev.to/derlin/get-favicons-from-any-website-using-a-hidden-google-api-3p1e
  */
 export function getCompanyLogoUrl(company: string, size: number = 128): string | null {
   const domain = companyToDomain(company);
   if (!domain) return null;
-
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=${size}`;
 }
 
@@ -244,26 +176,10 @@ export function getClearbitLogoUrl(company: string): string | null {
 }
 
 /**
- * Get logo URL using multiple fallback strategies
- * 1. Try to scrape from page
- * 2. Try Google favicon API for company domain
- * 3. Fall back to page favicon
+ * Get the best available logo URL for a posting
+ * Returns existing logo if available, otherwise Google favicon fallback
  */
-export function getLogoWithFallback(
-  doc: Document,
-  company: string | null,
-  customSelectors?: string[]
-): string | null {
-  // Try scraping first
-  const scrapedLogo = extractLogo(doc, customSelectors);
-  if (scrapedLogo) return scrapedLogo;
-
-  // Try Google favicon API if we have a company name
-  if (company) {
-    const companyLogo = getCompanyLogoUrl(company);
-    if (companyLogo) return companyLogo;
-  }
-
-  // Fall back to page favicon
-  return getFaviconUrl(doc);
+export function getLogoUrl(companyLogo: string | null | undefined, company: string): string | null {
+  if (companyLogo) return companyLogo;
+  return getCompanyLogoUrl(company);
 }

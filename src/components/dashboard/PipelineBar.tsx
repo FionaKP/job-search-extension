@@ -255,7 +255,7 @@ export function PipelineBar({ postings, activeStatus, onStatusClick }: PipelineB
           {activeStatus && (
             <button
               onClick={() => onStatusClick(null)}
-              className="ml-2 flex items-center gap-1 rounded-lg bg-wine/10 px-2.5 py-1.5 text-xs font-medium text-wine transition-colors hover:bg-wine/20"
+              className="btn btn-sm btn-ghost ml-2"
             >
               <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

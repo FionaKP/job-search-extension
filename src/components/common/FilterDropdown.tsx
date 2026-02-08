@@ -32,7 +32,7 @@ export function FilterDropdown<T extends string | number>({ label, options, valu
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="inline-flex items-center gap-1 rounded-md border border-sage/30 bg-white px-3 py-2 text-sm font-medium text-wine hover:bg-champagne-50 focus:outline-none focus:ring-2 focus:ring-wine"
       >
         {selectedOption ? selectedOption.label : label}
         <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -40,11 +40,11 @@ export function FilterDropdown<T extends string | number>({ label, options, valu
         </svg>
       </button>
       {isOpen && (
-        <div className="absolute right-0 z-10 mt-1 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+        <div className="absolute right-0 z-10 mt-1 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-sage/20">
           <div className="py-1">
             <button
               onClick={() => { onChange(null); setIsOpen(false); }}
-              className={`block w-full px-4 py-2 text-left text-sm ${value === null ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50'}`}
+              className={`block w-full px-4 py-2 text-left text-sm ${value === null ? 'bg-champagne-100 text-wine' : 'text-wine/80 hover:bg-champagne-50'}`}
             >
               All
             </button>
@@ -52,7 +52,7 @@ export function FilterDropdown<T extends string | number>({ label, options, valu
               <button
                 key={String(option.value)}
                 onClick={() => { onChange(option.value); setIsOpen(false); }}
-                className={`block w-full px-4 py-2 text-left text-sm ${value === option.value ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50'}`}
+                className={`block w-full px-4 py-2 text-left text-sm ${value === option.value ? 'bg-champagne-100 text-wine' : 'text-wine/80 hover:bg-champagne-50'}`}
               >
                 {option.label}
               </button>

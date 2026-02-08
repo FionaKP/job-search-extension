@@ -4,10 +4,11 @@
  */
 
 import { SiteParser, ScrapedData } from './types';
-import { selectText, selectAttr, selectFirst } from '../utils/selectors';
+import { selectText, selectFirst } from '../utils/selectors';
 import { cleanText, truncate, cleanUrl } from '../utils/cleaners';
 import { extractSalary } from '../utils/salary';
 import { calculateConfidence } from '../utils/confidence';
+import { getLogoWithFallback } from '../utils/logo';
 
 export const glassdoorParser: SiteParser = {
   name: 'glassdoor',
@@ -40,11 +41,11 @@ export const glassdoorParser: SiteParser = {
       '.company-name',
     ]);
 
-    // Company logo
-    const companyLogo =
-      selectAttr(document, '[data-test="employer-logo"] img', 'src') ||
-      selectAttr(document, '.employer-logo img', 'src') ||
-      selectAttr(document, 'meta[property="og:image"]', 'content');
+    // Company logo with Clearbit fallback
+    const companyLogo = getLogoWithFallback(document, company, [
+      '[data-test="employer-logo"] img',
+      '.employer-logo img',
+    ]);
 
     // Location
     const location = selectFirst(document, [

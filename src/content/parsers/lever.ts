@@ -7,6 +7,7 @@ import { SiteParser, ScrapedData } from './types';
 import { selectText, selectAttr, selectFirst } from '../utils/selectors';
 import { cleanText, truncate, cleanUrl, extractCompanyFromUrl } from '../utils/cleaners';
 import { calculateConfidence } from '../utils/confidence';
+import { getLogoWithFallback } from '../utils/logo';
 
 export const leverParser: SiteParser = {
   name: 'lever',
@@ -31,8 +32,10 @@ export const leverParser: SiteParser = {
       selectText(document, '.posting-headline .company-name') ||
       extractCompanyFromUrl(url);
 
-    // Company logo
-    const companyLogo = selectAttr(document, '.main-header-logo img', 'src');
+    // Company logo with Clearbit fallback
+    const companyLogo = getLogoWithFallback(document, company, [
+      '.main-header-logo img',
+    ]);
 
     // Location - Lever often has location in categories
     const location = selectFirst(document, [

@@ -4,10 +4,11 @@
  */
 
 import { SiteParser, ScrapedData } from './types';
-import { selectText, selectFirst, selectFirstAttr } from '../utils/selectors';
+import { selectText, selectFirst } from '../utils/selectors';
 import { cleanText, truncate, cleanUrl } from '../utils/cleaners';
 import { extractSalary } from '../utils/salary';
 import { calculateConfidence } from '../utils/confidence';
+import { getLogoWithFallback } from '../utils/logo';
 
 export const indeedParser: SiteParser = {
   name: 'indeed',
@@ -39,16 +40,12 @@ export const indeedParser: SiteParser = {
       '.icl-u-lg-mr--sm a',
     ]);
 
-    // Company logo - Indeed usually has logos
-    const companyLogo = selectFirstAttr(
-      document,
-      [
-        '.jobsearch-CompanyAvatar-image',
-        '[data-testid="companyAvatar"] img',
-        '.company-logo img',
-      ],
-      'src'
-    );
+    // Company logo with Clearbit fallback
+    const companyLogo = getLogoWithFallback(document, company, [
+      '.jobsearch-CompanyAvatar-image',
+      '[data-testid="companyAvatar"] img',
+      '.company-logo img',
+    ]);
 
     // Location
     const location = selectFirst(document, [

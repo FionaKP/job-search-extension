@@ -78,15 +78,15 @@ export function ConnectionsList({
   ).length;
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col overflow-hidden p-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Connections</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-2xl font-semibold text-wine">Connections</h1>
+          <p className="text-sm text-wine/60">
             {connections.length} connection{connections.length !== 1 ? 's' : ''}
             {followUpDueCount > 0 && (
-              <span className="text-amber-600 ml-2">
+              <span className="ml-2 text-pandora">
                 ({followUpDueCount} follow-up{followUpDueCount !== 1 ? 's' : ''} due)
               </span>
             )}
@@ -94,9 +94,9 @@ export function ConnectionsList({
         </div>
         <button
           onClick={onAddConnection}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          className="btn btn-primary"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Add Connection
@@ -104,11 +104,11 @@ export function ConnectionsList({
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 mb-4">
+      <div className="mb-4 flex flex-wrap items-center gap-3">
         {/* Search */}
-        <div className="relative flex-1 min-w-[200px]">
+        <div className="relative min-w-[200px] flex-1">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sage"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -120,7 +120,7 @@ export function ConnectionsList({
             placeholder="Search connections..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="input pl-9"
           />
         </div>
 
@@ -128,7 +128,7 @@ export function ConnectionsList({
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value as FilterType)}
-          className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="input select w-auto"
         >
           <option value="all">All Connections</option>
           <option value="follow-up-due">Follow-up Due</option>
@@ -140,7 +140,7 @@ export function ConnectionsList({
         <select
           value={companyFilter}
           onChange={(e) => setCompanyFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="input select w-auto"
         >
           <option value="">All Companies</option>
           {companies.map((company) => (
@@ -158,7 +158,7 @@ export function ConnectionsList({
               setFilterType('all');
               setCompanyFilter('');
             }}
-            className="text-sm text-indigo-600 hover:text-indigo-700"
+            className="btn btn-sm btn-ghost text-flatred hover:text-flatred-600"
           >
             Clear filters
           </button>
@@ -168,23 +168,23 @@ export function ConnectionsList({
       {/* Connection list */}
       <div className="flex-1 overflow-auto">
         {sortedConnections.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="py-12 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-champagne-100">
+              <svg className="h-8 w-8 text-wine/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
             {connections.length === 0 ? (
               <>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No connections yet</h3>
-                <p className="text-gray-500 mb-4">
+                <h3 className="mb-1 text-lg font-medium text-wine">No connections yet</h3>
+                <p className="mb-4 text-wine/60">
                   Start building your network by adding contacts you meet during your job search.
                 </p>
                 <button
                   onClick={onAddConnection}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="btn btn-primary"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
                   Add Your First Connection
@@ -192,8 +192,8 @@ export function ConnectionsList({
               </>
             ) : (
               <>
-                <h3 className="text-lg font-medium text-gray-900 mb-1">No matches found</h3>
-                <p className="text-gray-500">Try adjusting your search or filters.</p>
+                <h3 className="mb-1 text-lg font-medium text-wine">No matches found</h3>
+                <p className="text-wine/60">Try adjusting your search or filters.</p>
               </>
             )}
           </div>

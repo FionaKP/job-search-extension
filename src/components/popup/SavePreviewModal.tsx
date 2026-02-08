@@ -24,7 +24,7 @@ export interface SaveFormData {
   description: string;
   tags: string[];
   notes: string;
-  priority: 1 | 2 | 3;
+  interest: 1 | 2 | 3 | 4 | 5;
 }
 
 interface ValidationErrors {
@@ -32,10 +32,12 @@ interface ValidationErrors {
   company?: string;
 }
 
-const PRIORITY_LABELS: Record<1 | 2 | 3, string> = {
-  1: 'Low',
-  2: 'Medium',
-  3: 'High',
+const INTEREST_LABELS: Record<1 | 2 | 3 | 4 | 5, string> = {
+  1: 'Not interested',
+  2: 'Low',
+  3: 'Medium',
+  4: 'High',
+  5: 'Very excited!',
 };
 
 const SUGGESTED_TAGS = ['remote', 'hybrid', 'onsite', 'startup', 'enterprise', 'contract', 'full-time', 'part-time'];
@@ -57,7 +59,7 @@ export function SavePreviewModal({
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [notes, setNotes] = useState('');
-  const [priority, setPriority] = useState<1 | 2 | 3>(2);
+  const [interest, setInterest] = useState<1 | 2 | 3 | 4 | 5>(3);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});
 
@@ -72,7 +74,7 @@ export function SavePreviewModal({
       setDescription(existingPosting.description);
       setTags(existingPosting.tags);
       setNotes(existingPosting.notes);
-      setPriority(existingPosting.priority);
+      setInterest(existingPosting.interest);
     } else if (scrapedData) {
       // New posting from scrape
       setTitle(scrapedData.title || '');
@@ -82,7 +84,7 @@ export function SavePreviewModal({
       setDescription(scrapedData.description || '');
       setTags([]);
       setNotes('');
-      setPriority(2);
+      setInterest(3);
     }
     setErrors({});
   }, [scrapedData, existingPosting, isOpen]);
@@ -115,7 +117,7 @@ export function SavePreviewModal({
       description: description.trim(),
       tags,
       notes: notes.trim(),
-      priority,
+      interest,
     });
   };
 
@@ -254,26 +256,26 @@ export function SavePreviewModal({
               </div>
             </div>
 
-            {/* Priority */}
+            {/* Interest */}
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">
-                Priority
+                Interest
               </label>
               <div className="flex items-center gap-1">
-                {([1, 2, 3] as const).map((value) => (
+                {([1, 2, 3, 4, 5] as const).map((value) => (
                   <button
                     key={value}
                     type="button"
-                    onClick={() => setPriority(value)}
-                    className={`px-1 text-2xl transition-colors ${
-                      value <= priority ? 'text-yellow-400' : 'text-gray-300'
-                    } hover:text-yellow-500`}
+                    onClick={() => setInterest(value)}
+                    className={`px-1 text-xl transition-colors ${
+                      value <= interest ? 'text-pandora' : 'text-sage/30'
+                    } hover:text-pandora-500`}
                   >
                     ★
                   </button>
                 ))}
                 <span className="ml-2 text-sm text-gray-500">
-                  {PRIORITY_LABELS[priority]}
+                  {INTEREST_LABELS[interest]}
                 </span>
               </div>
             </div>

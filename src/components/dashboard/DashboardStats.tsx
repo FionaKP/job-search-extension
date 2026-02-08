@@ -7,15 +7,17 @@ interface DashboardStatsProps {
   onExpandedChange: (expanded: boolean) => void;
 }
 
+// Vintage palette status colors
+// Red = rejected, Green/Teal = applied, Wine = interviewing
 const STATUS_COLORS: Record<PostingStatus, string> = {
-  saved: 'bg-blue-500',
-  in_progress: 'bg-orange-500',
-  applied: 'bg-green-500',
-  interviewing: 'bg-purple-500',
-  offer: 'bg-yellow-500',
-  accepted: 'bg-emerald-500',
-  rejected: 'bg-gray-400',
-  withdrawn: 'bg-gray-400',
+  saved: 'bg-pandora',
+  in_progress: 'bg-champagne-400',
+  applied: 'bg-teal',
+  interviewing: 'bg-wine',
+  offer: 'bg-pandora-500',
+  accepted: 'bg-teal-600',
+  rejected: 'bg-flatred',
+  withdrawn: 'bg-sage',
 };
 
 function StatCard({

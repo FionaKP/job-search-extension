@@ -1,32 +1,42 @@
-interface PriorityStarsProps {
-  priority: 1 | 2 | 3;
-  onChange?: (priority: 1 | 2 | 3) => void;
+import { InterestLevel } from '@/types';
+
+interface InterestStarsProps {
+  interest: InterestLevel;
+  onChange?: (interest: InterestLevel) => void;
   size?: 'sm' | 'md';
   readOnly?: boolean;
 }
 
-export function PriorityStars({ priority, onChange, size = 'md', readOnly = false }: PriorityStarsProps) {
-  const sizeClasses = size === 'sm' ? 'h-4 w-4' : 'h-5 w-5';
-  const gapClass = size === 'sm' ? 'gap-0.5' : 'gap-1';
+// Alias for backwards compatibility during migration
+interface PriorityStarsProps {
+  priority: InterestLevel;
+  onChange?: (priority: InterestLevel) => void;
+  size?: 'sm' | 'md';
+  readOnly?: boolean;
+}
 
-  const handleClick = (star: 1 | 2 | 3) => {
+export function InterestStars({ interest, onChange, size = 'md', readOnly = false }: InterestStarsProps) {
+  const sizeClasses = size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4';
+  const gapClass = size === 'sm' ? 'gap-0' : 'gap-0.5';
+
+  const handleClick = (star: InterestLevel) => {
     if (!readOnly && onChange) {
       onChange(star);
     }
   };
 
   return (
-    <div className={`flex ${gapClass}`}>
-      {([1, 2, 3] as const).map((star) => (
+    <div className={`flex ${gapClass}`} title={`Interest: ${interest}/5`}>
+      {([1, 2, 3, 4, 5] as const).map((star) => (
         <button
           key={star}
           onClick={() => handleClick(star)}
           disabled={readOnly}
           className={`${readOnly ? 'cursor-default' : 'cursor-pointer hover:scale-110'} transition-transform`}
-          title={`Priority ${star}`}
+          title={`Interest ${star}`}
         >
           <svg
-            className={`${sizeClasses} ${star <= priority ? 'text-yellow-400' : 'text-gray-300'}`}
+            className={`${sizeClasses} ${star <= interest ? 'text-pandora' : 'text-sage/30'}`}
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -39,5 +49,17 @@ export function PriorityStars({ priority, onChange, size = 'md', readOnly = fals
         </button>
       ))}
     </div>
+  );
+}
+
+// Backwards compatible alias - maps priority to interest
+export function PriorityStars({ priority, onChange, size = 'md', readOnly = false }: PriorityStarsProps) {
+  return (
+    <InterestStars
+      interest={priority}
+      onChange={onChange}
+      size={size}
+      readOnly={readOnly}
+    />
   );
 }

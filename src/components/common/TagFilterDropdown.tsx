@@ -40,13 +40,13 @@ export function TagFilterDropdown({
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${
           hasSelection
-            ? 'border-blue-500 bg-blue-50 text-blue-700'
-            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+            ? 'border-wine bg-champagne-50 text-wine'
+            : 'border-sage/30 bg-white text-wine hover:bg-champagne-50'
         }`}
       >
         <span>Tags</span>
         {hasSelection && (
-          <span className="rounded-full bg-blue-500 px-1.5 py-0.5 text-xs text-white">
+          <span className="rounded-full bg-wine px-1.5 py-0.5 text-xs text-white">
             {selectedTags.length}
           </span>
         )}
@@ -61,32 +61,32 @@ export function TagFilterDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 z-20 mt-1 w-56 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
+        <div className="absolute left-0 z-20 mt-1 w-56 rounded-md bg-white py-1 shadow-lg ring-1 ring-sage/20">
           {availableTags.length === 0 ? (
-            <div className="px-4 py-2 text-sm text-gray-500">No tags available</div>
+            <div className="px-4 py-2 text-sm text-sage">No tags available</div>
           ) : (
             <>
               <div className="max-h-60 overflow-y-auto">
                 {availableTags.map((tag) => (
                   <label
                     key={tag}
-                    className="flex cursor-pointer items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                    className="checkbox-label px-4 py-2 hover:bg-champagne-50"
                   >
                     <input
                       type="checkbox"
                       checked={selectedTags.includes(tag)}
                       onChange={() => handleTagToggle(tag)}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="checkbox checkbox-sm"
                     />
-                    <span className="text-sm text-gray-700">{tag}</span>
+                    <span>{tag}</span>
                   </label>
                 ))}
               </div>
               {hasSelection && (
-                <div className="border-t border-gray-100 px-4 py-2">
+                <div className="border-t border-sage/20 px-4 py-2">
                   <button
                     onClick={() => onChange([])}
-                    className="text-sm text-blue-600 hover:text-blue-800"
+                    className="text-sm text-flatred hover:text-flatred-600"
                   >
                     Clear selection
                   </button>

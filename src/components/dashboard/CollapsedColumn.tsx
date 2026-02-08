@@ -6,75 +6,92 @@ interface CollapsedColumnProps {
   count: number;
   onExpand: () => void;
   isOver?: boolean;
+  isAnimating?: boolean; // Recently collapsed - show slide animation
 }
 
-const COLLAPSED_COLORS: Record<PostingStatus, string> = {
-  saved: 'bg-blue-100 text-blue-800 border-blue-200',
-  in_progress: 'bg-orange-100 text-orange-800 border-orange-200',
-  applied: 'bg-green-100 text-green-800 border-green-200',
-  interviewing: 'bg-purple-100 text-purple-800 border-purple-200',
-  offer: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  accepted: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  rejected: 'bg-gray-200 text-gray-700 border-gray-300',
-  withdrawn: 'bg-gray-200 text-gray-700 border-gray-300',
+// Vintage palette colors for collapsed column tabs
+// Red = rejected, Green = applied, Wine = interviewing
+const TAB_COLORS: Record<PostingStatus, { bg: string; text: string; border: string; hover: string }> = {
+  saved: { bg: 'bg-pandora', text: 'text-white', border: 'border-pandora-600', hover: 'hover:bg-pandora-500' },
+  in_progress: { bg: 'bg-champagne-400', text: 'text-wine', border: 'border-champagne-500', hover: 'hover:bg-champagne-300' },
+  applied: { bg: 'bg-teal', text: 'text-white', border: 'border-teal-600', hover: 'hover:bg-teal-400' },
+  interviewing: { bg: 'bg-wine', text: 'text-white', border: 'border-wine-700', hover: 'hover:bg-wine-400' },
+  offer: { bg: 'bg-pandora-500', text: 'text-white', border: 'border-pandora-600', hover: 'hover:bg-pandora-400' },
+  accepted: { bg: 'bg-teal-600', text: 'text-white', border: 'border-teal-700', hover: 'hover:bg-teal-500' },
+  rejected: { bg: 'bg-flatred', text: 'text-white', border: 'border-flatred-700', hover: 'hover:bg-flatred-400' },
+  withdrawn: { bg: 'bg-sage', text: 'text-wine', border: 'border-sage-600', hover: 'hover:bg-sage-300' },
 };
 
 const DROP_HIGHLIGHT_COLORS: Record<PostingStatus, string> = {
-  saved: 'ring-blue-400',
-  in_progress: 'ring-orange-400',
-  applied: 'ring-green-400',
-  interviewing: 'ring-purple-400',
-  offer: 'ring-yellow-400',
-  accepted: 'ring-emerald-400',
-  rejected: 'ring-gray-400',
-  withdrawn: 'ring-gray-400',
+  saved: 'ring-pandora',
+  in_progress: 'ring-champagne-400',
+  applied: 'ring-teal',
+  interviewing: 'ring-wine',
+  offer: 'ring-pandora-500',
+  accepted: 'ring-teal-600',
+  rejected: 'ring-flatred',
+  withdrawn: 'ring-sage',
 };
 
-export function CollapsedColumn({ status, count, onExpand, isOver = false }: CollapsedColumnProps) {
+export function CollapsedColumn({ status, count, onExpand, isOver = false, isAnimating = false }: CollapsedColumnProps) {
   const { setNodeRef } = useDroppable({
     id: status,
   });
 
+  const colors = TAB_COLORS[status];
+
+  // Get short label for the tab
+  const shortLabels: Record<PostingStatus, string> = {
+    saved: 'SAVED',
+    in_progress: 'IN PROG',
+    applied: 'APPLIED',
+    interviewing: 'INTRVW',
+    offer: 'OFFER',
+    accepted: 'ACCEPT',
+    rejected: 'REJECT',
+    withdrawn: 'WTHDRN',
+  };
+
   return (
     <div
       ref={setNodeRef}
-      className={`flex h-full w-full flex-col items-center rounded-lg border transition-colors duration-200 ${
-        COLLAPSED_COLORS[status]
-      } ${isOver ? `ring-2 ${DROP_HIGHLIGHT_COLORS[status]}` : ''}`}
+      className={`
+        group relative flex-1 flex items-center cursor-pointer
+        ${colors.bg} ${colors.hover}
+        ${isOver ? `ring-2 ${DROP_HIGHLIGHT_COLORS[status]} ring-inset` : ''}
+        rounded-l-lg
+        transition-all duration-300 ease-out
+        hover:flex-[1.4] hover:shadow-lg hover:z-10
+        origin-right
+        ${isAnimating ? 'animate-slide-in-left' : ''}
+      `}
+      onClick={onExpand}
+      title={`Expand ${STATUS_LABELS[status]} column (${count})`}
     >
-      <button
-        onClick={onExpand}
-        className="flex h-full w-full flex-col items-center justify-center gap-2 py-3 hover:opacity-80"
-        title={`Expand ${STATUS_LABELS[status]} column`}
-      >
-        {/* Vertical text */}
-        <span
-          className="text-xs font-medium"
-          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-        >
-          {STATUS_LABELS[status]}
-        </span>
-
-        {/* Count badge */}
-        <span className="rounded-full bg-white bg-opacity-50 px-1.5 py-0.5 text-xs font-medium">
+      <div className="flex flex-col items-center justify-center w-full h-full px-1.5 py-2 gap-1">
+        {/* Count badge - prominent at top */}
+        <span className={`flex items-center justify-center min-w-[20px] h-[20px] rounded-full bg-white/30 ${colors.text} text-[11px] font-bold`}>
           {count}
         </span>
 
-        {/* Expand icon */}
+        {/* Vertical text label */}
+        <span
+          className={`text-[9px] font-bold tracking-wider whitespace-nowrap ${colors.text} opacity-90 flex-1 flex items-center`}
+          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}
+        >
+          {shortLabels[status]}
+        </span>
+
+        {/* Right arrow indicator - shows on hover */}
         <svg
-          className="h-4 w-4 opacity-60"
+          className={`h-3 w-3 ${colors.text} opacity-0 group-hover:opacity-80 transition-opacity duration-200 flex-shrink-0`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-      </button>
+      </div>
     </div>
   );
 }

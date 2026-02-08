@@ -230,10 +230,17 @@ export async function importData(backupData: BackupData): Promise<ImportResult> 
     const posting = backupData.postings[i];
     if (isValidPosting(posting)) {
       // Ensure all required fields have defaults
+      // Handle migration from old priority (1-3) to new interest (1-5) format
+      let interest = posting.interest || 3;
+      if (!posting.interest && (posting as { priority?: number }).priority) {
+        const oldPriority = (posting as { priority?: number }).priority as 1 | 2 | 3;
+        const priorityToInterest: Record<1 | 2 | 3, 1 | 2 | 3 | 4 | 5> = { 1: 2, 2: 3, 3: 5 };
+        interest = priorityToInterest[oldPriority] || 3;
+      }
       validPostings.push({
         ...posting,
         status: posting.status || 'saved',
-        priority: posting.priority || 2,
+        interest,
         tags: posting.tags || [],
         notes: posting.notes || '',
         dateAdded: posting.dateAdded || Date.now(),

@@ -69,46 +69,49 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <>
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
+      <div className="modal-backdrop" onClick={onClose} />
 
-      {/* Modal */}
-      <div className="relative max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
-        <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-          <h2 className="text-lg font-semibold text-gray-900">Keyboard Shortcuts</h2>
-          <button
-            onClick={onClose}
-            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+      {/* Modal Container */}
+      <div className="modal-container">
+        <div className="modal modal-lg">
+          <div className="modal-header">
+            <h2 className="modal-title">Keyboard Shortcuts</h2>
+            <button onClick={onClose} className="modal-close">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-        <div className="grid gap-6 p-6 sm:grid-cols-2">
-          {SHORTCUT_GROUPS.map((group) => (
-            <div key={group.title}>
-              <h3 className="mb-3 text-sm font-semibold uppercase text-gray-500">{group.title}</h3>
-              <div className="space-y-2">
-                {group.shortcuts.map((shortcut) => (
-                  <div key={shortcut.keys} className="flex items-center justify-between gap-4">
-                    <span className="text-sm text-gray-600">{shortcut.description}</span>
-                    <kbd className="rounded bg-gray-100 px-2 py-1 text-xs font-mono text-gray-700">
-                      {shortcut.keys}
-                    </kbd>
+          <div className="modal-body">
+            <div className="grid gap-6 sm:grid-cols-2">
+              {SHORTCUT_GROUPS.map((group) => (
+                <div key={group.title}>
+                  <h3 className="mb-3 text-sm font-semibold uppercase text-sage">{group.title}</h3>
+                  <div className="space-y-2">
+                    {group.shortcuts.map((shortcut) => (
+                      <div key={shortcut.keys} className="flex items-center justify-between gap-4">
+                        <span className="text-sm text-wine/70">{shortcut.description}</span>
+                        <kbd className="rounded bg-champagne-100 px-2 py-1 text-xs font-mono text-wine">
+                          {shortcut.keys}
+                        </kbd>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div className="border-t border-gray-200 px-6 py-4 text-center text-sm text-gray-500">
-          Press <kbd className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs">Esc</kbd> to close
+          <div className="modal-footer justify-center">
+            <span className="text-sm text-wine/60">
+              Press <kbd className="rounded bg-champagne-100 px-1.5 py-0.5 font-mono text-xs text-wine">Esc</kbd> to close
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

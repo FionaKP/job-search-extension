@@ -4,10 +4,11 @@
  */
 
 import { SiteParser, ScrapedData } from './types';
-import { selectText, selectAttr, selectFirst } from '../utils/selectors';
+import { selectText, selectFirst } from '../utils/selectors';
 import { cleanText, truncate, cleanUrl } from '../utils/cleaners';
 import { extractSalary } from '../utils/salary';
 import { calculateConfidence } from '../utils/confidence';
+import { getLogoWithFallback } from '../utils/logo';
 
 export const wellfoundParser: SiteParser = {
   name: 'wellfound',
@@ -40,11 +41,12 @@ export const wellfoundParser: SiteParser = {
       '[class*="StartupHeader"] a',
     ]);
 
-    // Company logo
-    const companyLogo =
-      selectAttr(document, '[data-test="StartupLogo"] img', 'src') ||
-      selectAttr(document, '.styles_logo__JlBpT img', 'src') ||
-      selectAttr(document, '[class*="StartupHeader"] img', 'src');
+    // Company logo with Clearbit fallback
+    const companyLogo = getLogoWithFallback(document, company, [
+      '[data-test="StartupLogo"] img',
+      '.styles_logo__JlBpT img',
+      '[class*="StartupHeader"] img',
+    ]);
 
     // Location
     const location = selectFirst(document, [

@@ -64,8 +64,8 @@ export function MoreFiltersPanel({
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${
           activeCount > 0
-            ? 'border-blue-500 bg-blue-50 text-blue-700'
-            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+            ? 'border-wine bg-champagne-50 text-wine'
+            : 'border-sage/30 bg-white text-wine hover:bg-champagne-50'
         }`}
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -73,7 +73,7 @@ export function MoreFiltersPanel({
         </svg>
         <span>More Filters</span>
         {activeCount > 0 && (
-          <span className="rounded-full bg-blue-500 px-1.5 py-0.5 text-xs text-white">
+          <span className="rounded-full bg-wine px-1.5 py-0.5 text-xs text-white">
             {activeCount}
           </span>
         )}
@@ -88,7 +88,7 @@ export function MoreFiltersPanel({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-20 mt-1 w-96 rounded-md bg-white p-4 shadow-lg ring-1 ring-black ring-opacity-5">
+        <div className="absolute right-0 z-20 mt-1 w-96 rounded-md bg-white p-4 shadow-lg ring-1 ring-sage/20">
           <div className="space-y-4">
             {/* Date Range */}
             <DateRangePicker
@@ -100,42 +100,42 @@ export function MoreFiltersPanel({
 
             {/* Checkbox Filters */}
             <div className="flex flex-wrap gap-4">
-              <label className="flex cursor-pointer items-center gap-2">
+              <label className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={hasDeadline}
                   onChange={(e) => onHasDeadlineChange(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="checkbox checkbox-sm"
                 />
-                <span className="text-sm text-gray-700">Has deadline</span>
+                <span>Has deadline</span>
               </label>
 
-              <label className="flex cursor-pointer items-center gap-2">
+              <label className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={deadlineSoon}
                   onChange={(e) => onDeadlineSoonChange(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="checkbox checkbox-sm"
                 />
-                <span className="text-sm text-gray-700">Deadline within 7 days</span>
+                <span>Deadline within 7 days</span>
               </label>
 
-              <label className="flex cursor-pointer items-center gap-2">
+              <label className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={needsAction}
                   onChange={(e) => onNeedsActionChange(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="checkbox checkbox-sm"
                 />
-                <span className="text-sm text-gray-700">Needs action (stale)</span>
+                <span>Needs action (stale)</span>
               </label>
             </div>
 
             {/* Networking Filters */}
-            <div className="border-t border-gray-100 pt-3">
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500">Networking</p>
+            <div className="border-t border-sage/20 pt-3">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-sage">Networking</p>
               <div className="flex flex-wrap gap-4">
-                <label className="flex cursor-pointer items-center gap-2">
+                <label className="checkbox-label">
                   <input
                     type="checkbox"
                     checked={hasConnections}
@@ -143,12 +143,12 @@ export function MoreFiltersPanel({
                       onHasConnectionsChange(e.target.checked);
                       if (e.target.checked) onNoConnectionsChange(false);
                     }}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="checkbox checkbox-sm"
                   />
-                  <span className="text-sm text-gray-700">Has connections</span>
+                  <span>Has connections</span>
                 </label>
 
-                <label className="flex cursor-pointer items-center gap-2">
+                <label className="checkbox-label">
                   <input
                     type="checkbox"
                     checked={noConnections}
@@ -156,22 +156,22 @@ export function MoreFiltersPanel({
                       onNoConnectionsChange(e.target.checked);
                       if (e.target.checked) onHasConnectionsChange(false);
                     }}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="checkbox checkbox-sm"
                   />
-                  <span className="text-sm text-gray-700">No connections</span>
+                  <span>No connections</span>
                 </label>
               </div>
             </div>
 
             {/* Clear All */}
             {activeCount > 0 && (
-              <div className="border-t border-gray-100 pt-3">
+              <div className="border-t border-sage/20 pt-3">
                 <button
                   onClick={() => {
                     onClearAll();
                     setIsOpen(false);
                   }}
-                  className="text-sm text-blue-600 hover:text-blue-800"
+                  className="text-sm text-flatred hover:text-flatred-600"
                 >
                   Clear all filters
                 </button>

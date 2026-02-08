@@ -34,24 +34,24 @@ Classic Blue-green: #3C9C9A - Success states, secondary CTAs
 ```
 
 **Tasks:**
-- [ ] Create CSS variables for all color tokens (base + light/dark variants)
-- [ ] Define typography scale (Inter font family)
-- [ ] Define spacing scale (4px base unit)
-- [ ] Define border radius tokens
-- [ ] Define shadow tokens
-- [ ] Define transition/animation tokens
+- [x] Create CSS variables for all color tokens (base + light/dark variants)
+- [x] Define typography scale (Inter font family)
+- [x] Define spacing scale (4px base unit)
+- [x] Define border radius tokens
+- [x] Define shadow tokens
+- [x] Define transition/animation tokens
 
 ### 6.1.2 Tailwind Configuration
-- [ ] Update `tailwind.config.js` with design tokens
-- [ ] Add custom color palette
-- [ ] Configure typography plugin
-- [ ] Add animation utilities
+- [x] Update `tailwind.config.js` with design tokens
+- [x] Add custom color palette
+- [x] Configure typography plugin
+- [x] Add animation utilities
 
 ### 6.1.3 Base Component Styles
-- [ ] Create `.btn` base styles (primary, secondary, ghost, success)
-- [ ] Create `.input` base styles with focus states
-- [ ] Create `.card` base styles with hover effects
-- [ ] Create `.badge` styles for status indicators
+- [x] Create `.btn` base styles (primary, secondary, ghost, success)
+- [x] Create `.input` base styles with focus states
+- [x] Create `.card` base styles with hover effects
+- [x] Create `.badge` styles for status indicators
 
 ---
 
@@ -65,12 +65,12 @@ BOOKMARKED → APPLYING → APPLIED → INTERVIEWING → NEGOTIATING → ACCEPTE
 ```
 
 **Tasks:**
-- [ ] Create `PipelineBar` component
-- [ ] Implement stage counts with badges
-- [ ] Add click-to-filter functionality
-- [ ] Style with vintage palette colors
-- [ ] Make sticky/fixed on scroll
-- [ ] Add active stage highlighting
+- [x] Create `PipelineBar` component
+- [x] Implement stage counts with badges
+- [x] Add click-to-filter functionality
+- [x] Style with vintage palette colors
+- [x] Make sticky/fixed on scroll
+- [x] Add active stage highlighting
 
 ### 6.2.2 Stage Colors
 | Stage | Color | Hex |
@@ -87,17 +87,17 @@ BOOKMARKED → APPLYING → APPLIED → INTERVIEWING → NEGOTIATING → ACCEPTE
 ## Phase 6.3: Sidebar Navigation Redesign
 
 ### 6.3.1 Visual Updates
-- [ ] Apply Native Wine (#4F243E) background
-- [ ] Champagne Brown (#E9C593) icons for contrast
-- [ ] Flat Red (#CA423B) active state
-- [ ] Pandora (#E68342) hover state
-- [ ] Off-white (#F5F5F5) text
+- [x] Apply Native Wine (#4F243E) background
+- [x] Champagne Brown (#E9C593) icons for contrast
+- [x] Flat Red (#CA423B) active state
+- [x] Pandora (#E68342) hover state
+- [x] Off-white (#F5F5F5) text
 
 ### 6.3.2 Navigation Items
-- [ ] Add icon-based navigation items
-- [ ] Implement expandable/collapsible behavior
-- [ ] Add tooltip labels on collapsed state
-- [ ] Create smooth expand/collapse animation
+- [x] Add icon-based navigation items
+- [x] Implement expandable/collapsible behavior
+- [x] Add tooltip labels on collapsed state
+- [x] Create smooth expand/collapse animation
 
 ---
 
@@ -105,82 +105,86 @@ BOOKMARKED → APPLYING → APPLIED → INTERVIEWING → NEGOTIATING → ACCEPTE
 
 ### 6.4.1 PostingCard Redesign
 **Changes:**
-- [ ] Increase logo size (48x48 → 64x64)
-- [ ] Add softer shadows and rounded corners
-- [ ] Status color as subtle left border accent
-- [ ] Smoother hover state with lift effect
-- [ ] Better tag spacing
+- [x] Increase logo size (48x48 → 64x64 on wide columns)
+- [x] Add softer shadows and rounded corners
+- [x] Subtle selection highlight (champagne instead of red)
+- [x] Smoother hover state with lift effect
+- [x] Edit button on hover
+- [x] Responsive layout based on column width
 - [ ] Keyword match progress bar
 - [ ] Star rating display
 
 ### 6.4.2 KanbanColumn Redesign
 **Changes:**
-- [ ] Header with colored dot + count (not full background)
-- [ ] More whitespace between cards
-- [ ] Ghost "add" button at column bottom
-- [ ] Drop zone highlight on drag
+- [x] Resizable columns (drag to widen/narrow)
+- [x] Column widths persist to localStorage
+- [x] Collapsed columns moved to right side as binder tabs
+- [x] Drop zone highlight on drag
+- [x] Header with colored dot + count (not full background)
+- [x] Ghost "add" button at column bottom
 - [ ] Smooth reorder animations
 
 ### 6.4.3 DetailPanel Redesign
 **Changes:**
-- [ ] Tabbed interface (Overview, Keywords, Connections, Notes)
-- [ ] Better visual hierarchy
-- [ ] Inline status/priority editing
-- [ ] Softer dividers
-- [ ] Sticky header on scroll
-- [ ] Action buttons at bottom
+- [x] Tabbed interface (Overview, Keywords, Connections, Notes)
+- [x] Better visual hierarchy
+- [x] Inline status/priority editing
+- [x] Softer dividers
+- [x] Sticky header on scroll
+- [x] Action buttons at bottom
 
 ### 6.4.4 Popup Redesign
 **Changes:**
-- [ ] Cleaner header with Native Wine background
-- [ ] Scrape confidence indicator
-- [ ] Better form styling with Champagne Brown accents
-- [ ] Prominent save button (Flat Red)
-- [ ] Tighter recent jobs list
-- [ ] Settings/dashboard quick links
+- [x] Cleaner header with Native Wine background
+- [x] Scrape confidence indicator
+- [x] Better form styling with Champagne Brown accents
+- [x] Prominent save button (Flat Red)
+- [x] Tighter recent jobs list
+- [x] Settings/dashboard quick links
 
 ### 6.4.5 Form Elements
-- [ ] Update all inputs with design system styles
-- [ ] Add focus states with Flat Red ring
-- [ ] Style select dropdowns
-- [ ] Update checkbox/radio styles
-- [ ] Add form validation styling
+- [x] Update all inputs with design system styles
+- [x] Add focus states with Flat Red ring
+- [x] Style select dropdowns
+- [x] Update checkbox/radio styles
+- [x] Add form validation styling
 
 ### 6.4.6 Buttons
-- [ ] Primary CTA: Flat Red background
-- [ ] Secondary: Light Champagne Brown + Pumpkin Seed border
-- [ ] Success: Classic Blue-green
-- [ ] Ghost: Transparent with hover background
-- [ ] Add press/active scale effect
+- [x] Primary CTA: Flat Red background
+- [x] Secondary: Light Champagne Brown + Pumpkin Seed border
+- [x] Success: Classic Blue-green
+- [x] Ghost: Transparent with hover background
+- [x] Add press/active scale effect
+- [x] Migrated components to use .btn design system classes
 
 ### 6.4.7 Modals
-- [ ] Update modal backgrounds and borders
-- [ ] Add slide-in/fade animations
-- [ ] Consistent header/footer styling
-- [ ] Close button with proper states
+- [x] Update modal backgrounds and borders
+- [x] Add slide-in/fade animations
+- [x] Consistent header/footer styling
+- [x] Close button with proper states
 
 ---
 
 ## Phase 6.5: Data Grid/Table Improvements
 
 ### 6.5.1 Table Styling
-- [ ] Light Champagne Brown (#F5EDD8) header background
-- [ ] Native Wine (#4F243E) header text
-- [ ] White row background with hover state (#FAF7F0)
-- [ ] Pumpkin Seed borders
-- [ ] Optional striped rows
+- [x] Light Champagne Brown (#F5EDD8) header background
+- [x] Native Wine (#4F243E) header text
+- [x] White row background with hover state (#FAF7F0)
+- [x] Pumpkin Seed borders
+- [x] Optional striped rows
 
 ### 6.5.2 Table Features
-- [ ] Sortable column headers with indicators
+- [x] Sortable column headers with indicators
 - [ ] Resizable columns
 - [ ] Checkbox selection with count display
-- [ ] Status badges in cells
-- [ ] Horizontal scroll on small screens
+- [x] Status badges in cells
+- [x] Horizontal scroll on small screens
 
 ### 6.5.3 List View Updates
-- [ ] Compact layout styling
+- [x] Compact layout styling
 - [ ] Expandable row details
-- [ ] Consistent with card styling
+- [x] Consistent with card styling
 
 ---
 
@@ -195,53 +199,53 @@ BOOKMARKED → APPLYING → APPLIED → INTERVIEWING → NEGOTIATING → ACCEPTE
 ```
 
 ### 6.6.2 Card Animations
-- [ ] Hover: translateY(-2px) + shadow increase
-- [ ] Active: scale(0.98)
-- [ ] Drag: rotate(3deg) + scale(1.02) + shadow
+- [x] Hover: translateY(-2px) + shadow increase
+- [x] Active: scale(0.98)
+- [x] Drag: rotate(3deg) + scale(1.02) + shadow
 
 ### 6.6.3 Panel Animations
-- [ ] Slide-in from right for detail panel
-- [ ] Fade backdrop on modal open
-- [ ] Smooth height transitions
+- [x] Slide-in from right for detail panel
+- [x] Fade backdrop on modal open
+- [x] Smooth height transitions
 
 ### 6.6.4 Button Animations
-- [ ] Press: scale(0.98)
-- [ ] Success flash on save
-- [ ] Loading spinner integration
+- [x] Press: scale(0.98)
+- [x] Success flash on save
+- [x] Loading spinner integration
 
 ### 6.6.5 Drag & Drop
-- [ ] Smooth card pickup effect
-- [ ] Column drop zone highlight
-- [ ] Reorder animation on drop
+- [x] Smooth card pickup effect
+- [x] Column drop zone highlight
+- [x] Reorder animation on drop
 
 ---
 
 ## Phase 6.7: Loading, Empty & Error States
 
 ### 6.7.1 Skeleton Loading
-- [ ] Create skeleton component for cards
-- [ ] Skeleton for table rows
-- [ ] Skeleton for detail panel
-- [ ] Shimmer animation effect
+- [x] Create skeleton component for cards
+- [x] Skeleton for table rows
+- [x] Skeleton for detail panel
+- [x] Shimmer animation effect
 
 ### 6.7.2 Empty States
 Create illustrated empty states for:
-- [ ] No postings yet
-- [ ] No search results
-- [ ] No connections
-- [ ] No notes
-- [ ] No keywords matched
+- [x] No postings yet
+- [x] No search results
+- [x] No connections
+- [x] No notes
+- [x] No keywords matched
 
 ### 6.7.3 Error States
-- [ ] Error boundary with friendly message
-- [ ] Form validation errors (Flat Red borders)
-- [ ] Network error states
-- [ ] Retry actions
+- [x] Error boundary with friendly message
+- [x] Form validation errors (Flat Red borders)
+- [x] Network error states
+- [x] Retry actions
 
 ### 6.7.4 Loading Indicators
-- [ ] Subtle spinner for actions
-- [ ] Progress bar for bulk operations
-- [ ] Inline loading for saves
+- [x] Subtle spinner for actions
+- [x] Progress bar for bulk operations
+- [x] Inline loading for saves
 
 ---
 
@@ -320,17 +324,17 @@ Define inverted/adjusted colors for dark mode:
 ## Phase 6.11: Chrome Extension Polish
 
 ### 6.11.1 Popup Styling
-- [ ] Header: Native Wine background
-- [ ] Body: Light Champagne Brown (#F5EDD8)
-- [ ] Save button: Flat Red (#CA423B)
-- [ ] Accent line: Pandora (#E68342)
+- [x] Header: Native Wine background
+- [x] Body: Light Champagne Brown (#F5EDD8)
+- [x] Save button: Flat Red (#CA423B)
+- [x] Accent line: Pandora (#E68342)
 
 ### 6.11.2 Extension Features
-- [ ] Scrape confidence indicator
-- [ ] Already tracked indicator
-- [ ] Recent saves list
-- [ ] Quick link to dashboard
-- [ ] Settings access
+- [x] Scrape confidence indicator
+- [x] Already tracked indicator
+- [x] Recent saves list
+- [x] Quick link to dashboard
+- [x] Settings access
 
 ---
 
