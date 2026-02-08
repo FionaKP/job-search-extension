@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { SidebarStats } from './SidebarStats';
+import { DashboardStats as Stats } from '@/hooks/useDashboardStats';
 
 type NavItem = {
   id: string;
@@ -12,6 +14,7 @@ interface SidebarProps {
   onNavigate: (page: string) => void;
   jobCount?: number;
   connectionCount?: number;
+  stats?: Stats;
 }
 
 // Navigation items configuration
@@ -84,7 +87,7 @@ function Tooltip({ children, label, show }: { children: React.ReactNode; label: 
   );
 }
 
-export function Sidebar({ currentPage, onNavigate, jobCount, connectionCount }: SidebarProps) {
+export function Sidebar({ currentPage, onNavigate, jobCount, connectionCount, stats }: SidebarProps) {
   const [isExpanded, setIsExpanded] = useState(() => {
     // Load saved preference
     const saved = localStorage.getItem('sidebar-expanded');
@@ -190,6 +193,14 @@ export function Sidebar({ currentPage, onNavigate, jobCount, connectionCount }: 
           })}
         </ul>
       </nav>
+
+      {/* Stats Section */}
+      {stats && (
+        <>
+          <div className="mx-4 border-t border-wine-400/30" />
+          <SidebarStats stats={stats} isExpanded={isExpanded} />
+        </>
+      )}
 
       {/* Divider */}
       <div className="mx-4 border-t border-wine-400/30" />
