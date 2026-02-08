@@ -29,11 +29,11 @@
 * Get rid of the red highlight when on a detail of a posting
 
 ## Data and posting display fix
-* Priority (out of 3) -> Interest/Exciting (out of 5)
-* Fix expandable formatting 
-* Logo !! 
-* Details view 
-    - Edit button for bigger categories (remove from kanban view, only in detatils)
+* ~~Priority (out of 3) -> Interest/Exciting (out of 5)~~
+* ~~Fix expandable formatting ~~
+* ~~Logo !! ~~
+* ~~Details view ~~
+    - ~~Edit button for bigger categories (remove from kanban view, only in detatils)~~
     - Regular gray shade, not red
 * Update the scraping/keyword function to get technical and action words [longer term]
 * Compare with user updated resume (technical and action words)
@@ -44,4 +44,4 @@
 * Add slight tab with right arrows to stay contunuous with side tabs
 * ~~Add a slight color bar for the top tab on the right (look like folder edge)~~
 *~~ add sliding animation to tabs in and out of collapse ~~
-* Fix colors to correspond better with the status (red - rejected, applied - green, blue - interview, etc. (in vintage color scheme))
+*~~ Fix colors to correspond better with the status (red - rejected, applied - green, blue - interview, etc. (in vintage color scheme))~~

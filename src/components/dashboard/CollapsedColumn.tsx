@@ -5,8 +5,10 @@ interface CollapsedColumnProps {
   status: PostingStatus;
   count: number;
   onExpand: () => void;
+  onCollapse?: () => void;
   isOver?: boolean;
   isAnimating?: boolean; // Recently collapsed - show slide animation
+  isCollapsed?: boolean; // Whether this column is currently collapsed
 }
 
 // Vintage palette colors for collapsed column tabs
@@ -33,7 +35,15 @@ const DROP_HIGHLIGHT_COLORS: Record<PostingStatus, string> = {
   withdrawn: 'ring-sage',
 };
 
-export function CollapsedColumn({ status, count, onExpand, isOver = false, isAnimating = false }: CollapsedColumnProps) {
+export function CollapsedColumn({
+  status,
+  count,
+  onExpand,
+  onCollapse,
+  isOver = false,
+  isAnimating = false,
+  isCollapsed = true,
+}: CollapsedColumnProps) {
   const { setNodeRef } = useDroppable({
     id: status,
   });
@@ -52,6 +62,26 @@ export function CollapsedColumn({ status, count, onExpand, isOver = false, isAni
     withdrawn: 'WTHDRN',
   };
 
+  // When column is expanded, show a minimal placeholder/gap
+  if (!isCollapsed) {
+    return (
+      <div
+        className={`
+          group relative flex-1 flex items-center justify-center cursor-pointer
+          bg-champagne-100/50 hover:bg-champagne-200/70
+          border-l border-champagne-200/50
+          transition-all duration-200
+        `}
+        onClick={onCollapse}
+        title={`Collapse ${STATUS_LABELS[status]} column`}
+      >
+        {/* Small indicator dot showing the column's color */}
+        <div className={`w-2 h-2 rounded-full ${colors.bg} opacity-40 group-hover:opacity-70 transition-opacity`} />
+      </div>
+    );
+  }
+
+  // Collapsed state - full tab
   return (
     <div
       ref={setNodeRef}
