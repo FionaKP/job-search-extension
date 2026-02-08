@@ -270,26 +270,29 @@ export function KanbanBoard({
           ))}
         </div>
 
-        {/* Right-side collapsed column tabs */}
-        {collapsedColumnsOrdered.length > 0 && (
-          <div className="flex h-full">
-            {/* Collapsed tabs container - uses flexbox for equal distribution */}
-            <div className="flex flex-col w-12 h-full py-1">
-              {collapsedColumnsOrdered.map((status) => (
+        {/* Right-side fixed column tabs - always visible */}
+        <div className="flex h-full flex-shrink-0">
+          {/* Fixed tabs container - all columns have a slot */}
+          <div className="flex flex-col w-12 h-full py-1">
+            {KANBAN_COLUMNS.map((status) => {
+              const isCollapsed = collapsedColumns.includes(status);
+              return (
                 <CollapsedColumn
                   key={status}
                   status={status}
                   count={getPostingsForStatus(status).length}
                   onExpand={() => handleExpand(status)}
+                  onCollapse={() => handleCollapse(status)}
                   isOver={overId === status}
                   isAnimating={recentlyCollapsed === status}
+                  isCollapsed={isCollapsed}
                 />
-              ))}
-            </div>
-            {/* Vertical color bar matching top-most tab (folder effect) */}
-            <div className={`w-2.5 h-full ${getTopTabColor(collapsedColumnsOrdered[0])}`} />
+              );
+            })}
           </div>
-        )}
+          {/* Vertical color bar matching top-most collapsed tab (folder effect) */}
+          <div className={`w-2.5 h-full transition-colors duration-200 ${getTopTabColor(collapsedColumnsOrdered[0])}`} />
+        </div>
       </div>
 
       {/* Drag Overlay - shows card preview while dragging */}
