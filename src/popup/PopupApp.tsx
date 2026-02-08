@@ -37,8 +37,8 @@ async function savePosting(jobData: Partial<Posting>): Promise<Posting> {
     try {
       keywords = extractKeywords(jobData.description);
       keywordsExtractedAt = now;
-    } catch (err) {
-      console.warn('Failed to extract keywords:', err);
+    } catch {
+      // Keyword extraction failed silently - non-critical feature
     }
   }
 
@@ -182,8 +182,7 @@ export default function PopupApp() {
       if (response) {
         populateForm(response);
       }
-    } catch (err) {
-      console.log('Scraping not available:', err);
+    } catch {
       setScrapeStatus({
         source: '',
         confidence: 0,

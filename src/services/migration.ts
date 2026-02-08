@@ -17,25 +17,21 @@ export async function runMigrationIfNeeded(): Promise<void> {
     return;
   }
 
-  console.log(`[Migration] Current schema version: ${currentVersion}, target: ${CURRENT_SCHEMA_VERSION}`);
 
   // Check for V1 data under various possible keys
   const result = await chrome.storage.local.get([...V1_STORAGE_KEYS, 'postings']);
 
   // Find V1 data
   let v1Data: V1Application[] = [];
-  let foundKey = '';
 
   for (const key of V1_STORAGE_KEYS) {
     if (result[key] && Array.isArray(result[key]) && result[key].length > 0) {
       v1Data = result[key];
-      foundKey = key;
       break;
     }
   }
 
   if (v1Data.length > 0) {
-    console.log(`[Migration] Found ${v1Data.length} V1 postings under key: ${foundKey}`);
 
     // Migrate V1 to V2
     const migratedPostings = migrateV1ToV2(v1Data);
@@ -52,7 +48,6 @@ export async function runMigrationIfNeeded(): Promise<void> {
     // Backup V1 data
     await chrome.storage.local.set({ _v1_backup: v1Data });
 
-    console.log(`[Migration] Migrated ${newPostings.length} new postings, ${migratedPostings.length - newPostings.length} duplicates skipped`);
   }
 
   // Migrate connections from V2 to V3 (add new fields)
@@ -62,7 +57,6 @@ export async function runMigrationIfNeeded(): Promise<void> {
 
   // Set schema version
   await setSchemaVersion(CURRENT_SCHEMA_VERSION);
-  console.log(`[Migration] Schema version updated to ${CURRENT_SCHEMA_VERSION}`);
 }
 
 /**
@@ -72,7 +66,6 @@ async function migrateConnectionsToV3(): Promise<void> {
   const connections = await getConnections();
 
   if (connections.length === 0) {
-    console.log('[Migration] No connections to migrate');
     return;
   }
 
@@ -91,7 +84,6 @@ async function migrateConnectionsToV3(): Promise<void> {
   }));
 
   await saveConnections(migratedConnections as Connection[]);
-  console.log(`[Migration] Migrated ${migratedConnections.length} connections to V3 schema`);
 }
 
 /**

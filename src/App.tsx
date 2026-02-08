@@ -467,9 +467,8 @@ function App() {
     [selectedPostingId]
   );
 
-  const handleViewConnection = useCallback((connectionId: string) => {
-    // For now, just log - will be enhanced in Phase 4.12 with connections page
-    console.log('View connection:', connectionId);
+  const handleViewConnection = useCallback((_connectionId: string) => {
+    // Navigate to connection detail - handled by ConnectionDetailPanel
   }, []);
 
   const handleAddConnection = useCallback(() => {
@@ -558,7 +557,6 @@ function App() {
       setCurrentPage(page as AppPage);
     } else if (page === 'settings') {
       // Future: open settings modal
-      console.log('Settings clicked');
     } else if (page === 'help') {
       setShortcutsModalOpen(true);
     }

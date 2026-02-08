@@ -5,16 +5,11 @@
 
 export {};
 
-import { scrapeJobData, getParser, listParsers, ScrapedData } from './parsers';
+import { scrapeJobData, ScrapedData } from './parsers';
 
 declare global {
   interface Window {
     __jobTrackerScraperLoaded?: boolean;
-    __JOBFLOW_DEBUG__?: {
-      testScraper: () => ScrapedData;
-      listParsers: () => string[];
-      getParserForPage: () => string;
-    };
   }
 }
 
@@ -55,33 +50,4 @@ if (typeof window.__jobTrackerScraperLoaded === 'undefined') {
     return true; // Keep message channel open for async response
   });
 
-  // Debug tools (always available in console for testing)
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (typeof window !== 'undefined') {
-    window.__JOBFLOW_DEBUG__ = {
-      testScraper: () => {
-        const parser = getParser(window.location.href, document);
-        const data = parser.extract(document, window.location.href);
-        console.log('Parser:', parser.name);
-        console.log('Data:', data);
-        console.log('Confidence:', Math.round(data.confidence * 100) + '%');
-        return data;
-      },
-      listParsers: () => {
-        const names = listParsers();
-        console.log('Available parsers:', names);
-        return names;
-      },
-      getParserForPage: () => {
-        const parser = getParser(window.location.href, document);
-        console.log('Parser for this page:', parser.name);
-        return parser.name;
-      },
-    };
-    console.log(
-      'JobFlow Debug: Use window.__JOBFLOW_DEBUG__.testScraper() to test the scraper'
-    );
-  }
-
-  console.log('JobFlow: Content script loaded on', window.location.hostname);
 }
