@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "JobFlow - Job Application Tracker",
+  "version": "2.0.0",
+  "description": "Track and manage your job applications",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "assets/scraper.ts-loader-CmSJbb9q.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "options_page": "index.html",
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "resources": [
+        "assets/scraper.ts-LJ4uxFqz.js"
+      ],
+      "use_dynamic_url": true
+    }
+  ]
+}
