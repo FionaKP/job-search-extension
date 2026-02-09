@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "JobFlow - Job Application Tracker",
-  "version": "2.0.0",
-  "description": "Track and manage your job applications",
+  "version": "1.0.0",
+  "description": "Save jobs with one click, track applications on a Kanban board, and manage your entire job search in one place.",
   "permissions": [
     "storage",
     "activeTab",
@@ -27,7 +27,16 @@
         "assets/scraper.ts-loader-CmSJbb9q.js"
       ],
       "matches": [
-        "<all_urls>"
+        "https://www.linkedin.com/jobs/*",
+        "https://www.indeed.com/*",
+        "https://www.glassdoor.com/job-listing/*",
+        "https://www.glassdoor.com/Job/*",
+        "https://boards.greenhouse.io/*",
+        "https://jobs.greenhouse.io/*",
+        "https://jobs.lever.co/*",
+        "https://*.myworkdayjobs.com/*",
+        "https://wellfound.com/jobs/*",
+        "https://angel.co/jobs/*"
       ]
     }
   ],
@@ -35,7 +44,16 @@
   "web_accessible_resources": [
     {
       "matches": [
-        "<all_urls>"
+        "https://*.myworkdayjobs.com/*",
+        "https://angel.co/*",
+        "https://boards.greenhouse.io/*",
+        "https://jobs.greenhouse.io/*",
+        "https://jobs.lever.co/*",
+        "https://wellfound.com/*",
+        "https://www.glassdoor.com/*",
+        "https://www.glassdoor.com/*",
+        "https://www.indeed.com/*",
+        "https://www.linkedin.com/*"
       ],
       "resources": [
         "assets/scraper.ts-LJ4uxFqz.js"

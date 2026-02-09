@@ -1,6 +1,6 @@
 {
   "../../../../@crx/manifest": {
-    "file": "assets/crx-manifest.js-Cei71M8h.js",
+    "file": "assets/crx-manifest.js-B65W-ljD.js",
     "name": "crx-manifest.js",
     "src": "../../../../@crx/manifest",
     "isEntry": true
@@ -10,7 +10,7 @@
     "name": "extractor"
   },
   "index.html": {
-    "file": "assets/index-jPD0t9xS.js",
+    "file": "assets/index-NgDZj0Wu.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,

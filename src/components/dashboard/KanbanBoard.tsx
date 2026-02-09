@@ -139,10 +139,23 @@ export function KanbanBoard({
       if (!over) return;
 
       const postingId = active.id as string;
-      const newStatus = over.id as PostingStatus;
+      const overId = over.id as string;
+
+      // Parse the status from the droppable ID
+      // IDs can be either 'status' (from KanbanColumn) or 'collapsed-status' (from CollapsedColumn)
+      let newStatus: PostingStatus | null = null;
+
+      if (KANBAN_COLUMNS.includes(overId as PostingStatus)) {
+        newStatus = overId as PostingStatus;
+      } else if (overId.startsWith('collapsed-')) {
+        const extracted = overId.replace('collapsed-', '') as PostingStatus;
+        if (KANBAN_COLUMNS.includes(extracted)) {
+          newStatus = extracted;
+        }
+      }
 
       // Only update if dropping on a valid status column
-      if (KANBAN_COLUMNS.includes(newStatus)) {
+      if (newStatus) {
         const posting = postings.find((p) => p.id === postingId);
         if (posting && posting.status !== newStatus) {
           onStatusChange(postingId, newStatus);
@@ -283,7 +296,7 @@ export function KanbanBoard({
                   count={getPostingsForStatus(status).length}
                   onExpand={() => handleExpand(status)}
                   onCollapse={() => handleCollapse(status)}
-                  isOver={overId === status}
+                  isOver={overId === `collapsed-${status}`}
                   isAnimating={recentlyCollapsed === status}
                   isCollapsed={isCollapsed}
                 />

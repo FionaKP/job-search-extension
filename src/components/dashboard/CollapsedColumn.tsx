@@ -44,8 +44,10 @@ export function CollapsedColumn({
   isAnimating = false,
   isCollapsed = true,
 }: CollapsedColumnProps) {
+  // Only enable droppable when collapsed - KanbanColumn handles drops when expanded
   const { setNodeRef } = useDroppable({
-    id: status,
+    id: `collapsed-${status}`,
+    disabled: !isCollapsed,
   });
 
   const colors = TAB_COLORS[status];
