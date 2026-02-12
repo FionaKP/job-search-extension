@@ -5,8 +5,7 @@
   "description": "Save jobs with one click, track applications on a Kanban board, and manage your entire job search in one place.",
   "permissions": [
     "storage",
-    "activeTab",
-    "scripting"
+    "activeTab"
   ],
   "action": {
     "default_popup": "src/popup/popup.html",

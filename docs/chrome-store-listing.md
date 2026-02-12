@@ -61,9 +61,6 @@ JobFlow helps users save, organize, and track job applications from any job post
 #### Host Permissions (<all_urls>)
 "Host permission for all URLs is required because job postings appear on thousands of different websites (company career pages, job boards, applicant tracking systems). JobFlow needs to run its content script on any page to detect and extract job posting information when the user wants to save a job. No data is collected or transmitted - all extraction happens locally."
 
-#### Scripting
-"The scripting permission is used to inject the content script that reads job posting details from web pages. This script runs only when needed to extract job information (title, company, location, salary, description) from the current page. The script does not modify page content or interact with the page in any other way."
-
 #### Storage
 "Storage permission is used to save the user's job applications, connections, and preferences locally in Chrome's storage. All data remains on the user's device and is never transmitted to external servers. Users can export their data at any time."
 

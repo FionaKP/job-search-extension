@@ -24,13 +24,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
   {
     title: 'Status Filter',
     shortcuts: [
-      { keys: '1', description: 'Filter to Saved' },
-      { keys: '2', description: 'Filter to In Progress' },
-      { keys: '3', description: 'Filter to Applied' },
-      { keys: '4', description: 'Filter to Interviewing' },
-      { keys: '5', description: 'Filter to Offer' },
-      { keys: '6', description: 'Filter to Accepted' },
-      { keys: '7', description: 'Filter to Rejected' },
+      { keys: '1-7', description: 'Filter by status' },
       { keys: '0', description: 'Clear status filter' },
     ],
   },
@@ -39,13 +33,16 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
     shortcuts: [
       { keys: 'J / ↓', description: 'Next card' },
       { keys: 'K / ↑', description: 'Previous card' },
+      { keys: 'Space', description: 'Toggle detail panel' },
       { keys: '↵', description: 'Open detail panel' },
     ],
   },
   {
     title: 'Card Actions',
     shortcuts: [
-      { keys: 'S', description: 'Cycle priority' },
+      { keys: 'S / →', description: 'Move to next status' },
+      { keys: '⇧S / ←', description: 'Move to previous status' },
+      { keys: 'P', description: 'Cycle priority stars' },
       { keys: 'O', description: 'Open original URL' },
       { keys: 'D', description: 'Delete posting' },
     ],

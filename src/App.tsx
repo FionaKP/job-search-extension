@@ -299,7 +299,7 @@ function App() {
     searchInputRef.current?.focus();
   }, []);
 
-  // Cycle interest for selected posting
+  // Cycle interest/priority stars for selected posting
   const cycleInterest = useCallback(() => {
     if (!selectedPostingId) return;
     const posting = postings.find((p) => p.id === selectedPostingId);
@@ -307,6 +307,7 @@ function App() {
     const nextInterest = ((posting.interest % 5) + 1) as 1 | 2 | 3 | 4 | 5;
     handlePriorityChange(selectedPostingId, nextInterest);
   }, [selectedPostingId, postings]);
+
 
   // Open URL for selected posting
   const openSelectedUrl = useCallback(() => {
@@ -370,6 +371,38 @@ function App() {
     );
     savePostings(updated);
   };
+
+  // Cycle status for selected posting (move between columns)
+  const cycleStatus = useCallback(
+    (direction: 'next' | 'prev') => {
+      if (!selectedPostingId) return;
+      const posting = postings.find((p) => p.id === selectedPostingId);
+      if (!posting) return;
+
+      const statusOrder: PostingStatus[] = [
+        'saved', 'in_progress', 'applied', 'interviewing',
+        'offer', 'accepted', 'rejected', 'withdrawn',
+      ];
+      const currentIndex = statusOrder.indexOf(posting.status);
+      let newIndex: number;
+
+      if (direction === 'next') {
+        newIndex = currentIndex < statusOrder.length - 1 ? currentIndex + 1 : 0;
+      } else {
+        newIndex = currentIndex > 0 ? currentIndex - 1 : statusOrder.length - 1;
+      }
+
+      handleStatusChange(selectedPostingId, statusOrder[newIndex]);
+    },
+    [selectedPostingId, postings]
+  );
+
+  // Toggle detail panel
+  const toggleDetailPanel = useCallback(() => {
+    if (selectedPostingId) {
+      setDetailPanelOpen((prev) => !prev);
+    }
+  }, [selectedPostingId]);
 
   const handleUpdate = (id: string, updates: Partial<Posting>) => {
     const updated = postings.map((p) =>
@@ -591,16 +624,22 @@ function App() {
     { key: '7', handler: () => setStatusFilter('rejected') },
     { key: '0', handler: () => setStatusFilter(null) },
 
-    // Card navigation
+    // Card navigation (up/down)
     { key: 'j', handler: () => navigateCards('next') },
     { key: 'ArrowDown', handler: () => navigateCards('next') },
     { key: 'k', handler: () => navigateCards('prev') },
     { key: 'ArrowUp', handler: () => navigateCards('prev') },
     { key: 'Enter', handler: () => selectedPostingId && setDetailPanelOpen(true) },
+    { key: ' ', handler: toggleDetailPanel }, // Space toggles detail panel
+
+    // Status movement (left/right between columns)
+    { key: 's', handler: () => cycleStatus('next') },
+    { key: 's', shift: true, handler: () => cycleStatus('prev') },
+    { key: 'ArrowRight', handler: () => cycleStatus('next') },
+    { key: 'ArrowLeft', handler: () => cycleStatus('prev') },
 
     // Card actions
-    { key: 's', handler: cycleInterest },
-    { key: 'e', handler: () => selectedPostingId && setDetailPanelOpen(true) }, // Edit (opens detail panel)
+    { key: 'p', handler: cycleInterest }, // P for priority stars
     { key: 'o', handler: openSelectedUrl },
     { key: 'd', handler: deleteSelected },
 

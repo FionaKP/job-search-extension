@@ -3,7 +3,7 @@
 - also maybe make in-progress a tag/mark on the saved but not a whole separate column (because they aren't very different)
 
 * Compare action words from the description with resume of user and note or highlight what to change and add to optimize for the role
-* change the excitement to dissapear to not make it overwhelming visually
+* ~~change the excitement to dissapear to not make it overwhelming visually~~
 * the keyboard shortcuts need to work everywhere (connections page too)
 
 * connection, need an initial contact field too I think (in the form to create/add them to the dashboard)

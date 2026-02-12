@@ -3,7 +3,7 @@
   "name": "JobFlow - Job Application Tracker",
   "version": "1.0.0",
   "description": "Save jobs with one click, track applications on a Kanban board, and manage your entire job search in one place.",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab"],
   "action": {
     "default_popup": "src/popup/popup.html",
     "default_icon": {
