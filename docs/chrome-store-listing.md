@@ -5,38 +5,31 @@ Save jobs with one click, track applications on a Kanban board, and manage your 
 
 ## Full Store Description
 
-**JobFlow - Your Personal Job Search Command Center**
+JobFlow – Personal Job Application Tracker
 
-Tired of losing track of job applications across dozens of browser tabs and spreadsheets? JobFlow brings order to your job search with a beautiful, intuitive dashboard right in your browser.
+JobFlow is a Chrome extension that helps you track and manage job applications directly in your browser.
 
-**One-Click Saving**
-Save any job posting instantly. JobFlow automatically extracts the job title, company, location, salary, and full description from popular job sites including LinkedIn, Indeed, Glassdoor, Greenhouse, Lever, Workday, and Wellfound.
+Save job postings with one click. The extension extracts key details such as job title, company, location, salary (if available), and description, and stores them locally in your browser.
 
-**Visual Kanban Board**
-Track your applications through every stage: Saved → In Progress → Applied → Interviewing → Offer → Accepted. Drag and drop cards between columns to update status instantly. Collapse columns you don't need, resize them to fit your workflow.
+Applications are organized in a Kanban-style board with the following stages:
+Saved → In Progress → Applied → Interviewing → Offer → Accepted
 
-**Stay Organized**
-• Rate jobs by interest level (1-5 stars)
-• Add tags for easy filtering (remote, startup, contract, etc.)
-• Write notes for each application
-• See which applications need attention with stale indicators
-• Track connections and contacts at each company
+Features include:
+• Drag-and-drop status updates
+• Interest rating (1–5 stars)
+• Custom tags for filtering
+• Notes for each application
+• Contact tracking
+• Stale application indicators
 
-**Powerful Filtering**
-Find any job instantly with real-time search. Filter by status, interest level, tags, company, date range, or applications that need follow-up.
+Search and filter by status, tags, company, interest level, or date range.
 
-**Keyboard Shortcuts**
-Navigate your job search like a pro. Press `/` to search, `?` for shortcuts help, and use number keys to filter by status.
+Keyboard shortcuts:
+• / to search
+• ? to view shortcuts
+• Number keys to filter by status
 
-**Your Data, Your Privacy**
-All data stays in your browser. No accounts, no servers, no tracking. Export your data anytime as JSON for backup.
-
-**Perfect for:**
-• Active job seekers managing multiple applications
-• Career changers tracking opportunities across industries
-• Anyone who wants to stay organized during their job search
-
-Stop juggling spreadsheets. Start using JobFlow.
+All data is stored locally in your browser. No account is required. Data can be exported as JSON for backup.
 
 ---
 
