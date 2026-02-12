@@ -1,19 +1,27 @@
-# Things to still do to make the UI better
+# UI Ideas & Improvements
 
-- also maybe make in-progress a tag/mark on the saved but not a whole separate column (because they aren't very different)
+> **Note:** For comprehensive remaining items list, see [REMAINING_ITEMS.md](./REMAINING_ITEMS.md)
 
-* Compare action words from the description with resume of user and note or highlight what to change and add to optimize for the role
-* ~~change the excitement to dissapear to not make it overwhelming visually~~
-* the keyboard shortcuts need to work everywhere (connections page too)
+---
 
-* connection, need an initial contact field too I think (in the form to create/add them to the dashboard)
-    - Get image from linkedin?
-    - make a graph view, or card view where people can be moced around and connected to each other? 
-* Get rid of the red highlight when on a detail of a posting
+## High Priority
 
-## Data and posting display fix
-* Update the scraping/keyword function to get technical and action words [longer term]
-* Compare with user updated resume (technical and action words)
+- [ ] Keyboard shortcuts need to work everywhere (connections page too)
+- [ ] Get rid of the red highlight when on a detail of a posting (use gray shade styling)
+- [x] ~~Change the excitement to disappear to not make it overwhelming visually~~
 
-## Kanban Fixes
-* Add slight tab with right arrows to stay contunuous with side tabs
+## Medium Priority - Data & Display
+
+- [ ] Update scraping/keyword function to get technical and action words (see Phase 5)
+- [ ] Compare action words from description with user's resume to highlight optimization opportunities
+- [ ] Consider making "in-progress" a tag/mark on saved, not a whole separate column
+
+## Connections Enhancements
+
+- [ ] Add initial contact field to connection form
+- [ ] Get profile image from LinkedIn for connections
+- [ ] Graph view or card view where people can be moved around and connected to each other
+
+## Kanban Improvements
+
+- [ ] Add slight tab with right arrows to stay continuous with side tabs (collapsed columns)
