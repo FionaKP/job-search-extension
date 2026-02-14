@@ -23,7 +23,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/scraper.ts-loader-CmSJbb9q.js"
+        "assets/scraper.ts-loader-D_graUeU.js"
       ],
       "matches": [
         "https://www.linkedin.com/jobs/*",
@@ -55,7 +55,7 @@
         "https://www.linkedin.com/*"
       ],
       "resources": [
-        "assets/scraper.ts-LJ4uxFqz.js"
+        "assets/scraper.ts-B4GsVRiB.js"
       ],
       "use_dynamic_url": true
     }

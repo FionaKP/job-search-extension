@@ -1,0 +1,1689 @@
+{
+  "version": 3,
+  "exportDate": "2026-02-13T21:58:24.696Z",
+  "postings": [
+    {
+      "company": "Intuitive",
+      "connectionIds": [],
+      "dateAdded": 1771002665974,
+      "dateModified": 1771002665974,
+      "description": "",
+      "id": "job_1771002665974_0ohb6wl",
+      "interest": 3,
+      "location": "Sunnyvale, CA",
+      "notes": "",
+      "status": "saved",
+      "tags": [
+        "validation"
+      ],
+      "title": "Manufacturing Software Engineer",
+      "url": "https://careers.intuitive.com/en/jobs/744000109103405/JOB210199/manufacturing-software-engineer/"
+    },
+    {
+      "company": "Intuitive",
+      "connectionIds": [],
+      "dateAdded": 1771002583595,
+      "dateApplied": 1771003317604,
+      "dateModified": 1771003317604,
+      "description": "",
+      "id": "job_1771002583595_zo1sm2m",
+      "interest": 3,
+      "location": "Sunnyvale, CA",
+      "notes": "",
+      "status": "applied",
+      "tags": [
+        "vision",
+        "2-4",
+        "camera"
+      ],
+      "title": "Software Engineer - Vision Equipment",
+      "url": "https://careers.intuitive.com/en/jobs/744000106174585/JOB210934/software-engineer-vision-equipment/?gh_src=Handshake&iisn=Handshake&iis=Handshake&src=Handshake&source=Handshake&ref=Handshake&utm_medium=Handshake&referral=Handshake&utm_source=Handshake&__jvst=Handshake&__jvsd=Handshake&sourceDetails=Handshake&trid=Handshake&lever-source%5B%5D=Handshake&Source=Handshake&rb=Handshake&jobBoardSource=Handshake&channel=Handshake&rcid=Handshake"
+    },
+    {
+      "company": "Fresh Consulting",
+      "connectionIds": [],
+      "dateAdded": 1770939064579,
+      "dateModified": 1771003113702,
+      "description": "",
+      "id": "job_1770939064579_lu3a1ih",
+      "interest": 4,
+      "location": "Seattle",
+      "notes": "",
+      "status": "saved",
+      "tags": [
+        "hardware",
+        "slam",
+        "ros2"
+      ],
+      "title": "Robotics Navigation Engineer",
+      "url": "https://www.freshconsulting.com/open-positions/robotics-navigation-engineer/"
+    },
+    {
+      "company": "Fresh Consulting",
+      "connectionIds": [],
+      "dateAdded": 1770938990318,
+      "dateModified": 1770938990318,
+      "description": "",
+      "id": "job_1770938990318_tftrpqy",
+      "interest": 4,
+      "location": "Bellevue, WA",
+      "notes": "",
+      "salary": "95-130K",
+      "status": "saved",
+      "tags": [
+        "robotics",
+        "vision",
+        "entry"
+      ],
+      "title": "Robotics Engineer - Vision Focus",
+      "url": "https://www.freshconsulting.com/open-positions/robotics-engineer-computer-vision-focus/"
+    },
+    {
+      "company": "Meta Reality Labs",
+      "connectionIds": [],
+      "dateAdded": 1770938502798,
+      "dateModified": 1770939089912,
+      "description": "",
+      "id": "job_1770938502798_f1podtr",
+      "interest": 3,
+      "location": "Redmond, WA",
+      "notes": "",
+      "salary": "130K-200K",
+      "status": "applied",
+      "tags": [
+        "mechatronics",
+        "cad",
+        "embedded"
+      ],
+      "title": "Mechatronics Engineer",
+      "url": "https://www.linkedin.com/jobs/view/4370433489/?alternateChannel=search&eBP=CwEAAAGcVCfeAWt1exp8Jjb_RrPerdkDbgvsw40t6xW5Sg8FFoRJ3Bn8_4wKEXHoEc5ad9r1es0rlcS-VvRpqor1oqLVRGATibE9KswQOV6LV-mQtJxRmj8efLyePw9JcaZwvkSQGwxY8mhuXTdKV1NlxzssozlTikzKNXWSLehy6hBkQ7PlGA3XYgVAmCUp81IP5GHrNAS1p8ZlvXtBzU-_-JpzLeyygfff7_uSsegm1PPbGWB5EFQ8LUBcnjNfTFKWR5cQ6S9EhjsuLv0fc2MdYQcpz6V-Le4vAJ_Cr145igylr_gGoGIsSOUJ6jRTcvDMaEJRGOPs15jNkMJDlt8HrwqHPIgglxwXn1-GVqbkIFMNHy9LDKHbDvf8qJwhixtJfxwdklF9-lET3uB-Zbm2suqB2XW42kK0je1LnuUl-szXfwsgNyidR2oFZh1eGlGX2JvJlGvvHuQ0x0xRNGy9IWiQdfmBr6owKiqzfdhrvinr7_AqSXNNpMBQL4_BQ1s00_ka14A3a3w&trk=d_flagship3_search_srp_jobs&refId=i5ulrZ8aEhcS1Fg11bcKcQ%3D%3D&trackingId=qJVArym71emRThlWYw6qSQ%3D%3D"
+    },
+    {
+      "company": "Fresh Consulting",
+      "companyLogo": "https://media.licdn.com/dms/image/v2/C560BAQHn52SehgkC-g/company-logo_100_100/company-logo_100_100/0/1655836848943/fresh_consulting_logo?e=1772668800&v=beta&t=GclL4ii_OZGefpVPZWB5K4K0NCHjjpv1HZnRdsSYbRU",
+      "connectionIds": [],
+      "dateAdded": 1770938373911,
+      "dateModified": 1770938373911,
+      "description": "About the job We are Fresh. Together let’s build the future. With partners and clients, we practice strategy, design, development, and engineering to harness the power of technology and create what's next.Our cross-disciplinary approach blends human ingenuity and technology, empowering us to meet uncertainty with confidence. What got us to today won’t get us to tomorrow, so we test our assumptions and always strive for growth. From the products we build to the partners we collaborate with, we believe people make the difference.And we do so as a workforce representative of the communities we serve, understanding that a diverse workforce strengthens our organization. We value diversity and support a positive and welcoming environment where all of our employees can thrive.Why join Fresh?Fresh Consulting is a fast-paced, design-led, software development and hardware engineering company, offering end-to-end services to help companies innovate. We bring together amazing UX Designers, sophisticated developers, digital strategists, and top-notch engineers to help companies create fresh experiences that connect humans, systems, and machines. We've been growing fast and need someone to help us continue to manage the delivery of high quality work in a fast-paced environment. See more at freshconsulting.com.What We NeedIn this role, you will combine your passion and enthusiasm for robotics, open-source software and hardware technologies. You will work alongside Fresh customers and partners to build solutions, identify industry wide technical trends and help guide strategic technical decision making for the Fresh robotics team.The Fresh Consulting hardware and robotics team is working with customers to build and deploy fleets of robots into the field. Join us and help to build new state of the art software for both robots and the hardware backends that support them.We are now looking for a Software Engineer with a focus in computer vision and machine learning pipelines. They will also be responsible for developing and maintaining software solutions, integrating with sensors and componentry, and implementing integrations that meet our customers' needs. If you have a solid background in software engineering, are familiar with Python/C++, and want to be part of a fast-paced and exciting team, we’d love to chat!Daily Responsibilities Contribute to system design by converting business needs into robust architectures and achievable solutions.Develop modular, reusable software in Python to automate processes and tests Interfacing with sensors, actuators, componentry using Python/C++Develop software for integration with internal back-end systemsExecuting robotics software for test automation in linux environmentsDesigning procedures for robotics system troubleshooting and maintenance Skills And Qualifications BSc in Computer Science, Engineering or relevant fieldExperience as a Software Engineer or similar software engineering roleProficient with git and git workflowsStrong skills in prototyping, debugging, performance optimization, and unit testingProficient with Linux command line and shell scriptingGood knowledge of Python and/or C++ project packaging and deploymentCollaborative in an interdisciplinary team environmentCreative approach to problem solving, analytical skills and engineering fundamentalsFamiliarity and experience with machine learning, computer vision, and associated deployment pipelines Preferred Qualifications Some knowledge of robotics or hardware/software development processFamiliarity with SLAM, Path Planning, Optimization, 3D-geometry, controls & dynamics is a plusFamiliar with containerization technologies such as DockerExperience with Confluence/JiraSoftware engineering experienceExperience with using robotics middleware such as ROS The base salary hiring range for this position is $95,000 to $130,000. Compensation offered will be determined by factors such as location, level, job-related knowledge, skills, and experience.Equal employment opportunity: All qualified persons will be considered for employment without regard to race, color, religion, sex, national origin, age, marital status, familial status, gender identity, sexual orientation, disability for which a reasonable accommodation can be made or any other status protected by law. Assistance will be gladly provided upon request for any applicant with sensory or non-sensory disabilities. Fresh Consulting is an E-Verify participating company See Fresh in action",
+      "id": "job_1770938373911_unoz16c",
+      "interest": 3,
+      "location": "Bellevue, WA",
+      "notes": "",
+      "status": "saved",
+      "tags": [
+        "robotics",
+        "seattle",
+        "vision"
+      ],
+      "title": "Robotics Engineer - Computer Vision focus",
+      "url": "https://www.linkedin.com/jobs/search/?currentJobId=4310786180&keywords=robotics%20engineer&location=seattle%20wa"
+    },
+    {
+      "company": "Acuity MD",
+      "connectionIds": [],
+      "dateAdded": 1770919375330,
+      "dateApplied": 1770919524732,
+      "dateModified": 1770919524732,
+      "description": "",
+      "id": "job_1770919375330_cnble6j",
+      "interest": 3,
+      "location": "Boston, MA/Remote",
+      "notes": "",
+      "status": "applied",
+      "tags": [
+        "reach",
+        "medical",
+        "software"
+      ],
+      "title": "Software Engineer, Infrastructure",
+      "url": "https://job-boards.greenhouse.io/acuitymd/jobs/5755363004"
+    },
+    {
+      "company": "Mundane",
+      "connectionIds": [],
+      "dateAdded": 1770856406711,
+      "dateModified": 1771003117909,
+      "description": "",
+      "id": "job_1770856406711_sljm0or",
+      "interest": 3,
+      "location": "Palo Alto,CA",
+      "notes": "",
+      "status": "applied",
+      "tags": [
+        "aidan",
+        "c++"
+      ],
+      "title": "Proprioception Engineer",
+      "url": "https://airtable.com/appJtaRURYFPJILxd/pag7sY3iibHHVyczd/form"
+    },
+    {
+      "company": "Mundane",
+      "connectionIds": [],
+      "dateAdded": 1770855326736,
+      "dateApplied": 1770856337728,
+      "dateModified": 1770856337728,
+      "description": "",
+      "id": "job_1770855326736_2cx0h2w",
+      "interest": 3,
+      "location": "Palo Alto, CA",
+      "notes": "",
+      "status": "applied",
+      "tags": [
+        "aidan",
+        "ros2",
+        "ml/ai"
+      ],
+      "title": "Robot Learning Engineer",
+      "url": "https://airtable.com/appJtaRURYFPJILxd/pagv7R5sPjXp60iIV/form"
+    },
+    {
+      "company": "Amphenol RF",
+      "connectionIds": [],
+      "dateAdded": 1770478637127,
+      "dateApplied": 1770697930011,
+      "dateModified": 1770697932753,
+      "description": "<p><span style=\"font-size:12px;\"><strong>JOIN OUR TEAM @ AMPHENOL RF</strong>,&nbsp;the world's largest manufacturer of coaxial interconnect products for radio frequency, microwave, and data transmission applications, and a proven leader in enabling next-gen technology! Our global team of experienced engineers develops innovative solutions utilizing the most advanced manufacturing technology available, and we specialize in creating custom solutions that meet customer-specific design requirements. With consistent year over year growth, innovative technology, and a team that breeds success, we are always seeking top-tier, high-performing talent to join us! We are headquartered in Danbury, Connecticut, and a division of Amphenol Corporation (NYSE ticker: APH), an industry leader for more than fifty years.</span></p> <p><span style=\"font-size:12px;\"><strong>At Amphenol RF,&nbsp;you can expect a competitive salary and comprehensive benefits</strong>&nbsp;(medical, dental, vision, matching 401K, FSA, employer-paid life insurance), favorable work/life balance, a generous PTO allowance and paid holidays, an engaging and collaborative work environment, numerous opportunities for career growth, and an entrepreneurial focus that encourages employees to chart their own paths.<br /> <br /> <strong>We are currently seeking an Applications Engineer&nbsp;</strong>to serve as our NPI (New Product Introduction) champion, providing technical guidance to both customers and internal stakeholders.<br /> <br /> <strong>Job Description</strong></span></p> <ul> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Prioritize and drive NPI activities for customers within a defined geographic region to drive growth.</span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Oversee the delivery of projects on-time and on schedule with best-in-class quality with the design and development of application specific connector solutions. </span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Remain current on market trends and Amphenol product portfolio / Capabilities&nbsp;/ Technologies.</span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Determine optimum manufacturing location (prototype / production) based on customer logistics / factory capabilities in coordination with global operations team. </span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Address concerns and resolve problems as required.</span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Drive Engineering Change Orders and New Product Releases.</span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Utilize global design engineering resources to increase throughput and maximize efficiencies. </span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Build cost models for new product designs by working with manufacturing and external vendors. </span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Complete comprehensive product development projects to convert EAR opportunities into revenue.</span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Organize and publish regional EAR reports with updates to drive weekly meeting agenda.&nbsp; </span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Maintain organized project files. </span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Travel with Sales team to provide technical presentations to customers as required. (up to 15%)</span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Drive rapid resolution of technical quality and production issues related to product consumed within the region.</span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Assist in value engineering initiatives. </span></span></span></li> <li><span style=\"font-size:12px;\"><span style=\"line-height:11pt;\"><span>Any other duties as assigned.</span></span></span></li> </ul> <span style=\"font-size:12px;\"><strong>Requirements</strong></span> <ul> <li><span style=\"font-size:12px;\">Bachelor’s degree in Mechanical or Electrical Engineering with one (1) to three (3) years of related experience.&nbsp;</span></li> <li><span style=\"font-size:12px;\">Proficient in MS Office and Google for Business.</span></li> <li><span style=\"font-size:12px;\">Ability to work with multi-disciplinary teams.</span></li> <li><span style=\"font-size:12px;\">Excellent time-management and organizational skills.</span></li> <li><span style=\"font-size:12px;\">Outstanding verbal and written communication skills</span></li> <li><s...",
+      "id": "job_1770478637127_mlye64y",
+      "interest": 4,
+      "keywords": [
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...Our global team of experienced engineers develops innovative solutions utilizing the most advanced m...",
+            "...uirements. With consistent year over year growth, innovative technology, and a team that breeds succ..."
+          ],
+          "frequency": 2,
+          "importance": "high",
+          "term": "innovative"
+        },
+        {
+          "addressed": false,
+          "category": "experience",
+          "contexts": [
+            "...and data transmission applications, and a proven leader in enabling next-gen technology! Our global..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "lead"
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...ng></span> <ul> <li><span style=\"font-size:12px;\">Bachelor’s degree in Mechanical or Electrical Engi..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "Bachelor"
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...12px;\">Ability to work with multi-disciplinary teams.</span></li> <li><span style=\"font-size:12px;\">..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "ms."
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...nt-size:12px;\">Bachelor’s degree in Mechanical or Electrical Engineering with one (1) to three (3) y..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "Electrical Engineering"
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...<ul> <li><span style=\"font-size:12px;\">Bachelor’s degree in Mechanical or Electrical Engineering wit..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "degree in Mechanical or Electrical Engineering with one"
+        },
+        {
+          "addressed": false,
+          "category": "tools",
+          "contexts": [
+            "...ze:12px;\">Ability to work with multi-disciplinary teams.</span></li> <li><span style=\"font-size:12px..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "teams"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...=\"font-size:12px;\">Outstanding verbal and written communication skills</span></li> <li><s..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "communication"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...an style=\"font-size:12px;\">Outstanding verbal and written communication skills</span></li> <li><s..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "written communication"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...PTO allowance and paid holidays, an engaging and collaborative work environment, numerous opportuni..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "collaborative"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...;\"><span style=\"line-height:11pt;\"><span>Maintain organized project files. </span></span></span></li..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "organized"
+        },
+        {
+          "addressed": false,
+          "category": "values",
+          "contexts": [
+            "...numerous opportunities for career growth, and an entrepreneurial focus that encourages employees to..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "entrepreneurial"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...cation (prototype / production) based on customer logistics / factory capabilities in coordination w..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "logistics"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...l, vision, matching 401K, FSA, employer-paid life insurance), favorable work/life balance, a generou..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "insurance"
+        }
+      ],
+      "keywordsExtractedAt": 1770478637127,
+      "location": "Danbury, CT, USA",
+      "notes": "",
+      "priority": 2,
+      "status": "saved",
+      "tags": [
+        "career fair",
+        "product",
+        "rf"
+      ],
+      "title": "Application Engineer",
+      "url": "https://amphenolrf.applicantstack.com/x/detail/a2o4a2solmgz"
+    },
+    {
+      "company": "Andromeda Robotics",
+      "connectionIds": [],
+      "dateAdded": 1770424487990,
+      "dateModified": 1770576792374,
+      "description": "<h3>About Andromeda Robotics:</h3><p>At Andromeda Robotics, we’re building Abi – an emotionally intelligent humanoid companion robot designed to bring care, conversation, and joy to the people who need it most. Our mission is to replace 1 billion hours of loneliness with meaningful moments of connection, starting in aged care and healthcare and expanding to wherever humans need more empathy, presence, and support.</p><p>We’re backed by tier‑1 investors, working with real customers, and scaling a team of humans who care deeply about both craft and impact.</p><p></p><h3>What is an Expression of Interest (EOI)?:</h3><p>This <strong>General Expression of Interest</strong> is not for a specific, open role. Instead, it’s a way for you to introduce yourself, tell us what you’re great at, and join our <strong>talent community</strong> for future opportunities.</p><p>When you apply to this EOI:</p><ul><li>Your profile will be reviewed and tagged against the areas you’re best suited to.</li><li>We’ll keep your details on file as we open new roles across Australia.</li><li>We’ll reach out <strong>directly</strong> if and when a position comes up that aligns with your skills, experience, and you display qualities that we deem to be <strong>Andromedan Material!</strong></li></ul><p></p><p><u><strong>PLEASE NOTE:</strong></u><strong> Because this is a general talent pool, you should not expect to hear from us unless there is a role that looks like a strong match to your profile. </strong></p><p></p><h3>Where this EOI fits:</h3><p>We regularly hire across areas such as (but not limited to):</p><ul><li><strong>Engineering &amp; Robotics</strong> – software, hardware, mechatronics, perception, autonomy, simulation &amp; test.</li><li><strong>AI / ML &amp; Conversational AI</strong> – LLMs, speech, audio, embodied AI, experimentation.</li><li><strong>Product &amp; Design</strong> – product management, UX, service design, content.</li><li><strong>Customer &amp; Operations</strong> – customer success, deployment, training, implementation in aged care and healthcare.</li><li><strong>People, Finance &amp; Operations</strong> – people &amp; culture, talent, finance, business operations.</li></ul><p></p><p>If you don’t see your exact role here but you’re excited about what we’re building, we’d still love to hear from you.</p><h3>What “Andromedan Material” looks like</h3><p>Across every team, we tend to look for people who are:</p><ul><li><strong>Deeply empathetic</strong> – you care about people first and understand the responsibility of building technology for vulnerable communities.</li><li><strong>Playful but sharp</strong> – you take the work seriously, not yourself; you’re curious, fast, and love the craft.</li><li><strong>Never satisfied with “good enough”</strong> – you have a bias toward action, high standards, and a habit of going one layer deeper.</li><li><strong>Tenacious under pressure</strong> – you stay in motion, adapt quickly, and are comfortable in ambiguity.</li><li><strong>Mission‑driven and low‑ego</strong> – you want to build something that matters more than polishing your own title.</li></ul><p></p><h3>Who should apply to the AU Expression of Interest?</h3><p>This EOI is for people who:</p><ul><li>Are <strong>based in San Fransisco, America</strong>, or planning to relocate here in the near term.</li><li>Have <strong>full working rights in the USA</strong> (or a clear pathway to them without a need for sponsorship).</li><li>Are excited by the idea of working on humanoid robotics, AI, and products deployed in real‑world environments like aged care homes.</li></ul><p>If that sounds like you, we’d love you to introduce yourself.</p><p></p><h3>What to include in your application</h3><p>When you apply through this EOI Job Ad, you’ll be prompted to:</p><p></p><ul><li>Upload your <strong>resume/CV</strong></li><li>(Optionally) Add a <strong>cover letter</strong> if you’d like to share more about yourself.</li><li>Answer a short series of <strong>application questions</strong> that help us understand:</li><ul><li>The kinds of roles and teams you’re most interested in.</li><li>Where we feel you’ll best fit within Andromeda, so we can talent pipeline as thoughtfully &amp; carefully as possible &amp; maximise the chances of your profile getting noticed.</li></ul></ul><p></p><p>We’ll review EOIs on a rolling basis and reach out if and when there’s a strong match.</p><p>The salary for any positions within the organisation may vary depending on factors such as job-related knowledge, skills, and experience. The total compensation package may also include additional benefits or components based on the specific role. Details will be provided if an employment offer is made.</p><p>We are an equal opportunity employer and value diversity at our company. We do not discriminate on the basis of race, religion, colour, national origin, gender, sexual orientation, age, marital status, veteran status, or disability status.</p><p><u...",
+      "id": "job_1770424487990_16flpmj",
+      "interest": 3,
+      "keywords": [
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...autonomy, simulation &amp; test.</li><li><strong>AI / ML &amp; Conversational AI</strong> – LLMs, s...",
+            "...est.</li><li><strong>AI / ML &amp; Conversational AI</strong> – LLMs, speech, audio, embodied AI, ex...",
+            "...ional AI</strong> – LLMs, speech, audio, embodied AI, experimentation.</li><li><strong>Product &amp;..."
+          ],
+          "frequency": 4,
+          "importance": "high",
+          "term": "AI"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...aged care and healthcare.</li><li><strong>People, Finance &amp; Operations</strong> – people &amp; c...",
+            "...erations</strong> – people &amp; culture, talent, finance, business operations.</li></ul><p></p><p>I..."
+          ],
+          "frequency": 2,
+          "importance": "medium",
+          "term": "Finance"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...moments of connection, starting in aged care and healthcare and expanding to wherever humans need m...",
+            "...oyment, training, implementation in aged care and healthcare.</li><li><strong>People, Finance &amp;..."
+          ],
+          "frequency": 2,
+          "importance": "medium",
+          "term": "healthcare"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...nomy, simulation &amp; test.</li><li><strong>AI / ML &amp; Conversational AI</strong> – LLMs, speech..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "ML"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...strong>AI / ML &amp; Conversational AI</strong> – LLMs, speech, audio, embodied AI, experimentation...."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "LLMs"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...to:</p><p></p><ul><li>Upload your <strong>resume/CV</strong></li><li>(Optionally) Add a <strong>cov..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "CV"
+        },
+        {
+          "addressed": false,
+          "category": "tools",
+          "contexts": [
+            "...us understand:</li><ul><li>The kinds of roles and teams you’re most interested in.</li><li>Where we..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "teams"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...thcare and expanding to wherever humans need more empathy, presence, and support.</p><p>We’re backed..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "empathy"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...– you care about people first and understand the responsibility of building technology for vulnerab..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "responsibility"
+        },
+        {
+          "addressed": false,
+          "category": "values",
+          "contexts": [
+            "...am of humans who care deeply about both craft and impact.</p><p></p><h3>What is an Expression of Int..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "impact"
+        },
+        {
+          "addressed": false,
+          "category": "values",
+          "contexts": [
+            "...<p>We are an equal opportunity employer and value diversity at our company. We do not discriminate o..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "diversity"
+        }
+      ],
+      "keywordsExtractedAt": 1770424487990,
+      "location": "San Francisco, CA",
+      "notes": "Expression of interest",
+      "priority": 1,
+      "status": "saved",
+      "tags": [
+        "interest",
+        "robotics",
+        "humanoid"
+      ],
+      "title": "Future Andromedans - General Expression of Interest (San Fransisco)",
+      "url": "https://apply.workable.com/andromeda-robotics/j/1DAC86E89D/"
+    },
+    {
+      "company": "Intrinsic Robotics",
+      "connectionIds": [],
+      "dateAdded": 1770412024610,
+      "dateApplied": 1770423284958,
+      "dateModified": 1770596422218,
+      "description": "Role\nAs the Product Manager, Developer Experience and Open Source Strategy, you will be responsible for defining and executing our holistic vision for engaging the developer and open source robotics community. This is a highly strategic role with a broad portfolio. You will own our core open source experience—a platform based on ROS and tightly integrated with Flowstate, as well as the entire data and SDK layer that enables our platform offering and experiences.\n\nYour central mission is to build a vibrant ecosystem that serves as a powerful funnel for our commercial offerings. You will own the open source product offering, map out the complete developer journey from community discovery to paid customer, and define the product-led strategy for conversion. This role is deeply cross-functional, requiring you to own the product relationship and the specific roadmap of key internal engineering teams, including the SDK, Data and Architecture Evolution team, to ensure our platform is robust, scalable, and meets the needs of both open source and commercial developers. \n\nIn addition, you will manage Intrinsic's efforts and strategic contributions back to foundational community projects, including ROS, Gazebo, and OpenRMF.\n\nHow your work moves the mission forward\nDefine and articulate a clear, unified open source product strategy for our portfolio, from our core platform to our community contributions.\nOwn the product offering for our core open source platform, determining which features are included and how they provide value to developers.\nDefine the developer persona and map the complete developer journey, from initial discovery of our open source tools to successful onboarding and conversion to our paid platform.\nDefine and drive the platform APIs and SDK strategy, enabling both open source and commercial developers to integrate with the Intrinsic platform.\nDefine and advocate for best practices in API design, documentation (API references, guides, tutorials), SDKs, sandboxes, and developer support processes. \nDevelop and test product-led growth initiatives and monetization strategies to create a seamless and compelling path from community adoption to commercial success.\nEnsure tight product integration and a cohesive user experience between our open source offering and the commercial Flowstate platform, particularly in regards to commonality of the SDK and data representation / data management.\nAct as the primary product liaison for the SDK and Data/Architecture teams, translating needs from multiple sources (platform, solutions, community) into a prioritized technical roadmap.\nChampion the open source developer experience, working with design, documentation, and community teams to build a vibrant, engaged ecosystem.\nSpearhead community engagements around our open source product, including building developer funnels and driving industrial consortiums to drive standardization and adoption.\nDirect Intrinsic's strategic contributions to key open source projects (including ROS, Gazebo, and OpenRMF), ensuring they align with our platform goals and strengthen the broader robotics ecosystem.\nSkills you will need to be successful\nBachelor's degree in a technical field or equivalent industry experience.\nProven track record of success as a product manager, ideally on a technical platform or developer-focused product.\nDemonstrable experience managing open source products, including engaging with developer communities and managing public roadmaps.\nProven experience defining and driving API design principles (e.g., REST, gRPC) and versioning strategies.\nDeveloper Experience (DX): Expertise in crafting highly usable, well-documented, and performant SDKs (e.g., in Python, Java, Go, TypeScript) that minimize friction and time-to-first-use (TTFU).\nStrong strategic and analytical skills, with experience in defining customer journeys and product-led growth funnels.\nAbility to dive into complex technical concepts and collaborate effectively with SDK and platform architecture engineers.\nOutstanding communication skills, both at the executive level and with peers.\nIntegrity that fosters a culture of trust across product, business, and engineering.\nAbility to dive into and breakdown complex problems without precedence to lean on.\nSkills that will differentiate your candidacy\nM.B.A. and/or M.S. in Engineering or Computer Science.\nDeep understanding of open source licensing strategies and their business implications (e.g., GPL, AGPL, Apache, MIT).\nProven experience with open source monetization and conversion models (e.g., open-core, freemium, paid support/services like Red Hat, dual-licensing, etc).\nExperience in robotics solution development with ROS (Robot Operating System), or others.\nExperience as a software engineer or product manager for SDKs, APIs, or developer tools.\nExceptionally organized and self-driven, with a strong sense of ownership on all projects.",
+      "id": "job_1770412024610_35l50vh",
+      "interest": 5,
+      "keywords": [
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...o. You will own our core open source experience—a platform based on ROS and tightly integrated with...",
+            "...as the entire data and SDK layer that enables our platform offering and experiences. Your central m...",
+            "...ta and Architecture Evolution team, to ensure our platform is robust, scalable, and meets the needs..."
+          ],
+          "frequency": 13,
+          "importance": "high",
+          "term": "platform"
+        },
+        {
+          "addressed": false,
+          "category": "tools",
+          "contexts": [
+            "...the specific roadmap of key internal engineering teams, including the SDK, Data and Architecture Ev...",
+            "...product liaison for the SDK and Data/Architecture teams, translating needs from multiple sources (pl...",
+            "...working with design, documentation, and community teams to build a vibrant, engaged ecosystem. Spear..."
+          ],
+          "frequency": 3,
+          "importance": "high",
+          "term": "teams"
+        },
+        {
+          "addressed": false,
+          "category": "experience",
+          "contexts": [
+            "...FU). Strong strategic and analytical skills, with experience in defining customer journeys and produ..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "experience in"
+        },
+        {
+          "addressed": false,
+          "category": "experience",
+          "contexts": [
+            "...plications (e.g., GPL, AGPL, Apache, MIT). Proven experience with open source monetization and conve..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "experience with"
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...ecosystem. Skills you will need to be successful Bachelor's degree in a technical field or equivale..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "Bachelor's degree"
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...t will differentiate your candidacy M.B.A. and/or M.S. in Engineering or Computer Science. Deep unde..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "M.S."
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...ur candidacy M.B.A. and/or M.S. in Engineering or Computer Science. Deep understanding of open sourc..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "Computer Science"
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...Skills you will need to be successful Bachelor's degree in a technical field or equivalent industry..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "degree in a technical field or equivalent industry experience"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "..., and performant SDKs (e.g., in Python, Java, Go, TypeScript) that minimize friction and time-to-fir..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "TypeScript"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...e, well-documented, and performant SDKs (e.g., in Python, Java, Go, TypeScript) that minimize fricti..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Python"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...documented, and performant SDKs (e.g., in Python, Java, Go, TypeScript) that minimize friction and t..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Java"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...nted, and performant SDKs (e.g., in Python, Java, Go, TypeScript) that minimize friction and time-to..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Go"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...ng and driving API design principles (e.g., REST, gRPC) and versioning strategies. Developer Experie..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "gRPC"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...defining and driving API design principles (e.g., REST, gRPC) and versioning strategies. Developer E..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Rest"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...and their business implications (e.g., GPL, AGPL, Apache, MIT). Proven experience with open source m..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Apache"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...and platform architecture engineers. Outstanding communication skills, both at the executive level..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "communication"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...nd time-to-first-use (TTFU). Strong strategic and analytical skills, with experience in defining cus..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "analytical"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...for SDKs, APIs, or developer tools. Exceptionally organized and self-driven, with a strong sense of..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "organized"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...-led strategy for conversion. This role is deeply cross-functional, requiring you to own the product..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "cross-functional"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...organized and self-driven, with a strong sense of ownership on all projects."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "ownership"
+        }
+      ],
+      "keywordsExtractedAt": 1770595232444,
+      "location": "Mountain View, CA",
+      "notes": "OH MY GOD I WANT IT",
+      "priority": 3,
+      "status": "applied",
+      "tags": [
+        "pm",
+        "rbe",
+        "open source dev"
+      ],
+      "title": "Product Manager, Developer Experience and Open Source",
+      "url": "https://job-boards.greenhouse.io/intrinsicrobotics/jobs/5704360004?gh_jid=5704360004"
+    },
+    {
+      "company": "Anduril",
+      "connectionIds": [],
+      "dateAdded": 1770327674117,
+      "dateModified": 1770513088617,
+      "description": "<p><p>Anduril Industries is a defense technology company with a mission to transform U.S. and allied military capabilities with advanced technology. By bringing the expertise, technology, and business model of the 21st century’s most innovative companies to the defense industry, Anduril is changing how military systems are designed, built and sold. Anduril’s family of systems is powered by Lattice OS, an AI-powered operating system that turns thousands of data streams into a realtime, 3D command and control center. As the world enters an era of strategic competition, Anduril is committed to bringing cutting-edge autonomy, AI, computer vision, sensor fusion, and networking technology to the military in months, not years.</p></p><b><strong>WHAT YOU’LL DO</strong></b><p>We build Lattice, the foundation for everything we do as a defense technology company. Our engineers are talented and hard-working, motivated to see their work rapidly deployed on the front lines. Our team is not just building an experiment in waiting, we deploy what we build across the globe.&nbsp;</p><p>We have open roles across Platform Engineering, ranging from core infrastructure to distributed systems, web development, networking and more. We hire self-motivated people, those who hold a higher bar for themselves than anyone else could hold for them. If you love building infrastructure, platform services, or just working in high performing engineering cultures we invite you to apply!&nbsp;</p><p><strong>REQUIRED QUALIFICATIONS</strong></p><ul><li>1 - 3 years working with a variety of programming languages such as Rust, Go, C++, Java, Python, JavaScript/TypeScript, etc.</li><li>Have experience working with customers to deliver novel software capabilities</li><li>Want to work on building and integrating model/software/hardware-in-the-loop components by leveraging first and third party technologies (related to simulation, data management, compute infrastructure, networking, and more)</li><li>Love building platform and infrastructure tooling that enables other software engineers to scale their output</li><li>Enjoy collaborating with team members and partners in the autonomy domain, and building technologies and processes which enable users to safely and rapidly develop and deploy autonomous systems at scale</li><li>Eligible to obtain and maintain an active U.S. Secret security clearance</li></ul><p><strong><strong>PREFERRED QUALIFICATIONS:</strong>&nbsp;</strong></p><ul><li>You've built or invented something: an app, a website, game, startup</li><li>Previous experience working in an engineering setting: a startup (or startup-like environment), engineering school, etc. If you've succeeded in a low structure, high autonomy environment you'll succeed here!</li><li>Professional software development lifecycle experience using tools such as version control, CICD systems, etc.</li><li>A deep, demonstrated understanding of how computers and networks work, from a single desktop to a multi-cluster cloud node</li><li>Experience building scalable backend software systems with various data storage and processing requirements</li><li>Experience with industry standard cloud platforms (AWS, Azure), CI/CD tools, and software infrastructure fundamentals (networking, security, distributed systems)</li><li>Ability to quickly understand and navigate complex systems and established code bases</li><li>Experience implementing robot or autonomous vehicle testing frameworks in a software-in-the-loop or hardware-in-the-loop (HITL) environment</li><li>Experience with modern build and deployment tooling (e.g. NixOS, Terraform)</li><li>Experience designing complex software systems, and iterating upon designs via a technical design review process</li><li>Familiarity with industry standard monitoring, logging, and data management tools and best practices</li><li>A bias towards rapid delivery and iteration</li></ul><br><p><p><p>US Salary Range</p><p><span>$129,000</span><span>—</span><span>$171,000 USD</span></p></p></p><p><p><span>The salary range for this role is an estimate based on a wide range of compensation factors, inclusive of base salary only. Actual salary offer may vary based on (but not limited to) work experience, education and/or training, critical skills, and/or business considerations. Highly competitive equity grants are included in the majority of full time offers; and are considered part of Anduril's total compensation package. Additionally, Anduril offers top-tier benefits for full-time employees, including:</span><span>&nbsp;</span></p><p><strong><span>Healthcare Benefits&nbsp;</span></strong></p><ul><li><strong><span>US Roles:</span></strong><span>&nbsp;Comprehensive medical, dental, and vision plans at little to no cost to you.</span><span>&nbsp;</span></li><li><strong><span>UK &amp; AUS Roles:</span></strong><span>&nbsp;We cover full cost of medical insurance premiums for you and your dependents.</span><span>&nbsp;</span></li><li><strong><span>IE R...",
+      "id": "job_1770327674117_4110ner",
+      "interest": 2,
+      "keywords": [
+        {
+          "addressed": false,
+          "category": "values",
+          "contexts": [
+            "...t or invented something: an app, a website, game, startup</li><li>Previous experience working in an...",
+            "...s experience working in an engineering setting: a startup (or startup-like environment), engineering...",
+            "...working in an engineering setting: a startup (or startup-like environment), engineering school, etc..."
+          ],
+          "frequency": 3,
+          "importance": "high",
+          "term": "startup"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...the globe.&nbsp;</p><p>We have open roles across Platform Engineering, ranging from core infrastruc...",
+            "...ld for them. If you love building infrastructure, platform services, or just working in high perform...",
+            "...ture, networking, and more)</li><li>Love building platform and infrastructure tooling that enables o..."
+          ],
+          "frequency": 3,
+          "importance": "high",
+          "term": "Platform"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...ng languages such as Rust, Go, C++, Java, Python, JavaScript/TypeScript, etc.</li><li>Have experienc..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "JavaScript"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...s such as Rust, Go, C++, Java, Python, JavaScript/TypeScript, etc.</li><li>Have experience working w..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "TypeScript"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...rogramming languages such as Rust, Go, C++, Java, Python, JavaScript/TypeScript, etc.</li><li>Have e..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "Python"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...y of programming languages such as Rust, Go, C++, Java, Python, JavaScript/TypeScript, etc.</li><li>..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "Java"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...a variety of programming languages such as Rust, Go, C++, Java, Python, JavaScript/TypeScript, etc...."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "Go"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...g with a variety of programming languages such as Rust, Go, C++, Java, Python, JavaScript/TypeScript..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "Rust"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...span><span>&nbsp;</span></li><li><strong><span>IE R..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "R"
+        },
+        {
+          "addressed": false,
+          "category": "experience",
+          "contexts": [
+            "...Python, JavaScript/TypeScript, etc.</li><li>Have experience working with customers to deliver novel..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "experience working"
+        },
+        {
+          "addressed": false,
+          "category": "experience",
+          "contexts": [
+            "...gle desktop to a multi-cluster cloud node</li><li>Experience building scalable backend software syst..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "Experience building"
+        },
+        {
+          "addressed": false,
+          "category": "experience",
+          "contexts": [
+            "...data storage and processing requirements</li><li>Experience with industry standard cloud platforms..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "Experience with"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...’s family of systems is powered by Lattice OS, an AI-powered operating system that turns thousands o...",
+            "...l is committed to bringing cutting-edge autonomy, AI, computer vision, sensor fusion, and networking..."
+          ],
+          "frequency": 2,
+          "importance": "medium",
+          "term": "AI"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...ible to obtain and maintain an active U.S. Secret security clearance</li></ul><p><strong><strong>PRE...",
+            "...software infrastructure fundamentals (networking, security, distributed systems)</li><li>Ability to..."
+          ],
+          "frequency": 2,
+          "importance": "medium",
+          "term": "security"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...le users to safely and rapidly develop and deploy autonomous systems at scale</li><li>Eligible to ob...",
+            "...de bases</li><li>Experience implementing robot or autonomous vehicle testing frameworks in a softwar..."
+          ],
+          "frequency": 2,
+          "importance": "medium",
+          "term": "autonomous"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...k, from a single desktop to a multi-cluster cloud node</li><li>Experience building scalable backend..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "node"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...xperience with industry standard cloud platforms (AWS, Azure), CI/CD tools, and software infrastruct..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Aws"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...ence with industry standard cloud platforms (AWS, Azure), CI/CD tools, and software infrastructure f..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Azure"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...modern build and deployment tooling (e.g. NixOS, Terraform)</li><li>Experience designing complex so..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Terraform"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...committed to bringing cutting-edge autonomy, AI, computer vision, sensor fusion, and networking tec..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "computer vision"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...perience implementing robot or autonomous vehicle testing frameworks in a software-in-the-loop or ha..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "testing"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...ms, web development, networking and more. We hire self-motivated people, those who hold a higher bar..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "self-motivated"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...gy, and business model of the 21st century’s most innovative companies to the defense industry, Andu..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "innovative"
+        },
+        {
+          "addressed": false,
+          "category": "values",
+          "contexts": [
+            "...gic competition, Anduril is committed to bringing cutting-edge autonomy, AI, computer vision, sensor..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "cutting-edge"
+        },
+        {
+          "addressed": false,
+          "category": "values",
+          "contexts": [
+            "...te based on a wide range of compensation factors, inclusive of base salary only. Actual salary offer..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "inclusive"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...ng:</span><span>&nbsp;</span></p><p><strong><span>Healthcare Benefits&nbsp;</span></strong></p><ul><..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Healthcare"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...ry based on (but not limited to) work experience, education and/or training, critical skills, and/or..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "education"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            ".../strong><span>&nbsp;We cover full cost of medical insurance premiums for you and your dependents.</s..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "insurance"
+        }
+      ],
+      "keywordsExtractedAt": 1770327674117,
+      "location": "Seattle, Washington, USA",
+      "notes": "",
+      "priority": 2,
+      "salary": "$129,000 - $171,000",
+      "status": "saved",
+      "tags": [],
+      "title": "Software Engineer, Software Platform",
+      "url": "https://www.builtinseattle.com/job/software-engineer-software-platform/8181216"
+    },
+    {
+      "company": "Mathworks",
+      "connectionIds": [],
+      "dateAdded": 1770258326770,
+      "dateModified": 1770513095108,
+      "description": "Get alerts for jobs like thisUpdate preferences",
+      "id": "job_1770258326770_akcrlrg",
+      "interest": 1,
+      "location": "",
+      "notes": "",
+      "priority": 2,
+      "salary": "$104K",
+      "status": "saved",
+      "tags": [],
+      "title": "Engineering Development Group",
+      "url": "https://wpi.joinhandshake.com/job-search/10130975?jobType=9&employmentTypes=1&jobRoleGroups=64&locationFilter=%7B%22distance%22%3A%2250mi%22%2C%22point%22%3A%2241.829014%2C+-71.415929%22%2C%22label%22%3A%22Providence%2C+RI%22%2C%22text%22%3A%22Providence%22%7D&page=1&per_page=25"
+    },
+    {
+      "company": "Full Time Roles",
+      "connectionIds": [],
+      "dateAdded": 1770257914580,
+      "dateApplied": 1770257925039,
+      "dateModified": 1770257925039,
+      "description": "Worcester Polytechnic InstituteHigher EducationSpring 2026 Resume Book - Full Time RolesPosted 3 weeks ago∙Apply by February 27, 2026 at 6:00 AMApplied on February 4, 2026Withdraw applicationSaveShareCopy linkShare to...Send job to...ApplyFollow employerFlag or report employerAt a glance $1–99K/yrRemote, onsite, or hybrid, based in Worcester, MAEmployer is flexible for the right candidateJobFull-timeUS work authorization not requiredUpload your resume to be shared with hiring organizations for full-time job opportunities for Spring 2026 & beyond.What your school saysView all collectionsTop employers of WPI TalentThis collection contains employers with the highest representation of WPI alumni. About the employerWorcester Polytechnic InstituteHigher Education Follow250-1,000 employeesWorcester, MAco-ops within 30 milesTop employers of WPI TalentWPI educates talented individuals in engineering, science, management, and humanities in preparation for careers of professional practice, civic contribution, and leadership, facilitated by active lifelong learning. This educational process is true to the founders' directive to create, to discover, and to convey knowledge at the frontiers of academic inquiry for the betterment of society. Knowledge is created and discovered in the scholarly activities of faculty and students ranging across educational methodology, professional practice, and basic research. Knowledge is conveyed through scholarly publication and instruction.Learn moreSimilar JobsCENTRO INC.Non-Profit - OtherFood Pantry VolunteerUnpaid∙VolunteerWPI collection11 Sycamore Street, Worcester, Massachusetts 01608, United States∙AppliedTURBOCAM InternationalManufacturingECM Engineering Intern (CORP) – Spring 2026Internship∙Dec 31–May 28Barrington, New Hampshire, United States∙AppliedKodelyK-12 EducationKodely Leader - Worcester, MA$20–30/hr∙Part-time job∙Jan 11–Mar 31Worcester, Massachusetts, United States of America + 1∙AppliedRiverside Community Care, Inc.HealthcareCommunity Crisis Stabilization Counselor - Part Time Sundays$21.21–22.27/hr∙Part-time jobUpton, Massachusetts, United States of America∙AppliedHealthChannelsHealthcareMedical Scribe - Worcester, MA (Full time/Part time)$16/hr∙Part-time jobWorcester, Massachusetts, United States of America + 2∙AppliedSymbriaHealthcarePhysical Therapist Assistant - Full Time$28–37/hr∙Full-time jobWorcester, Massachusetts, United States of America∙AppliedAlumni at this employerJohn FariaInformation Security Assistant FollowSean Jan FollowSitsanok YoungSoftware Engineer I FollowTrang PhamSoftware Quality Assurance Engineer Follow",
+      "id": "job_1770257914580_xsrfaai",
+      "location": "",
+      "notes": "",
+      "priority": 2,
+      "salary": "$16/hr",
+      "status": "applied",
+      "tags": [],
+      "title": "Spring 2026 Resume Book - Full Time Roles",
+      "url": "https://wpi.joinhandshake.com/jobs/10624550"
+    },
+    {
+      "company": "Whoop",
+      "connectionIds": [],
+      "dateAdded": 1770183184069,
+      "dateModified": 1770513121850,
+      "description": "At WHOOP, we're on a mission to unlock human performance. WHOOP empowers members to perform at a higher level through a deeper understanding of their bodies and daily lives. As a Sensor Intelligence Engineer at WHOOP, you’ll be part of a core team developing algorithms, hardware, and firmware that connect sensor data to health metrics which are foundational to WHOOP. This role will focus on optimizing low-level sensor interfaces to maximize battery life while balancing performance. This will involve developing low-level hardware-control algorithms in C and Python, building tools and pipelines to analyze data, optimizing firmware, and working closely with the embedded and hardware teams at WHOOP.",
+      "id": "job_1770183184069_svkrnzv",
+      "interest": 3,
+      "keywords": [
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...ng low-level hardware-control algorithms in C and Python, building tools and pipelines to analyze da..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Python"
+        },
+        {
+          "addressed": false,
+          "category": "tools",
+          "contexts": [
+            "...nd working closely with the embedded and hardware teams at WHOOP."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "teams"
+        }
+      ],
+      "keywordsExtractedAt": 1770479000972,
+      "location": "Boston, MA",
+      "notes": "",
+      "priority": 2,
+      "status": "applied",
+      "tags": [],
+      "title": "Sensor Intelligence Engineer II (Embedded)",
+      "url": "https://jobs.lever.co/whoop/f4100df9-7b86-4d59-b67d-f36d4f783afe"
+    },
+    {
+      "company": "Whoop",
+      "connectionIds": [],
+      "dateAdded": 1770183135543,
+      "dateModified": 1770513125950,
+      "description": "At WHOOP, we're on a mission to unlock human performance and healthspan. WHOOP empowers members to perform at a higher level and live longer through a deeper understanding of their bodies and daily lives. Protecting our members’ data and ensuring our systems scale securely and reliably is core to this mission.WHOOP is hiring a Software Engineer II focused on backend development to build and enhance systems that power our platform. This role will directly contribute to delivering scalable and secure services that support millions of members worldwide. While backend development expertise is the primary focus, familiarity with cybersecurity concepts (data privacy, AuthN/AuthZ, etc) or cloud infrastructure concepts (AWS, IaC, Kubernetes, etc) will be considered a strong plus.This is a top-funnel role: depending on your background and interests, you may align more closely with our Product Security team (focused on secure-by-default guardrails, compliance, and data privacy) or our Application Infrastructure team (focused on scalability, reliability, and developer enablement). Either way, you’ll have the opportunity to shape core platform practices and help WHOOP grow to the next level.",
+      "id": "job_1770183135543_lvufmt7",
+      "interest": 3,
+      "location": "Boston, MA",
+      "notes": "maybe 2-4 years...",
+      "priority": 2,
+      "status": "applied",
+      "tags": [
+        "swe"
+      ],
+      "title": "Software Engineer II (Backend, Platform)",
+      "url": "https://jobs.lever.co/whoop/c329012d-5cf3-4d7a-9816-ba624ef0a311"
+    },
+    {
+      "company": "Whoop",
+      "connectionIds": [],
+      "dateAdded": 1770182980112,
+      "dateModified": 1770587571877,
+      "description": "At WHOOP, we're on a mission to unlock human performance and Healthspan. WHOOP empowers members to perform at a higher level through a deeper understanding of their bodies and daily lives. Our wearable technology and analytics platform help individuals optimize recovery, training, and overall health.WHOOP is seeking a Product Designer II to join the Growth team, where you’ll design cross-platform experiences that help more people discover WHOOP and successfully engage with our product. You’ll play a critical role in driving user acquisition, activation, and retention through thoughtful, data-informed, and emotionally resonant design. This role is ideal for a designer who’s passionate about user behavior, loves experimenting for impact, and thrives in fast-paced, collaborative environments.",
+      "id": "job_1770182980112_werle4n",
+      "interest": 4,
+      "keywords": [
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...aily lives. Our wearable technology and analytics platform help individuals optimize recovery, train...",
+            "...o join the Growth team, where you’ll design cross-platform experiences that help more people discove..."
+          ],
+          "frequency": 2,
+          "importance": "medium",
+          "term": "platform"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...erimenting for impact, and thrives in fast-paced, collaborative environments."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "collaborative"
+        },
+        {
+          "addressed": false,
+          "category": "values",
+          "contexts": [
+            "...r, loves experimenting for impact, and thrives in fast-paced, collaborative environments."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "fast-paced"
+        },
+        {
+          "addressed": false,
+          "category": "values",
+          "contexts": [
+            "...nate about user behavior, loves experimenting for impact, and thrives in fast-paced, collaborative e..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "impact"
+        }
+      ],
+      "keywordsExtractedAt": 1770269033012,
+      "location": "Boston, MA",
+      "notes": "Need experience with web and mobile! Also need a design portfolio, so that needs to be created!",
+      "priority": 2,
+      "status": "in_progress",
+      "tags": [],
+      "title": "Product Designer II (Growth)",
+      "url": "https://jobs.lever.co/whoop/24031086-78bd-461f-8a17-238ffc6b54d0"
+    },
+    {
+      "company": "Whoop",
+      "connectionIds": [],
+      "dateAdded": 1770182346656,
+      "dateModified": 1770513130142,
+      "description": "At WHOOP, we're on a mission to unlock human performance. WHOOP empowers users to perform at a higher level through a deeper understanding of their bodies and daily lives.WHOOP is looking for an enthusiastic Embedded Engineer II to join our Software Organization as part of the Embedded Engineering team. You will work with Hardware, Signal Processing, Manufacturing and Product teams to develop and deliver against Hardware and Software roadmaps. The Embedded team’s mission is to build and deploy stable, accurate, and power efficient firmware platforms for all our in house developed devices via a seamless 24/7 connection and interaction between our mobile apps.At Whoop, the Embedded team is at the intersection of the Hardware and Software domains, bridging the gap between the physical and the digital world. As an Embedded Engineer II you will collaborate with a diverse group of the industry’s best and brightest engineers in supporting current products, as well as developing new cutting edge products that help our members achieve their health and fitness goals with industry leading monitoring and data analysis.",
+      "id": "job_1770182346656_whjkne3",
+      "interest": 4,
+      "location": "Boston, MA (Full Time /)",
+      "notes": "",
+      "priority": 2,
+      "status": "applied",
+      "tags": [
+        "local",
+        "embedded"
+      ],
+      "title": "Embedded Engineer II",
+      "url": "https://jobs.lever.co/whoop/2efbec19-bb08-4b0d-87cd-fbac65216111"
+    },
+    {
+      "company": "Whoop",
+      "connectionIds": [],
+      "dateAdded": 1770182328594,
+      "dateModified": 1770558997568,
+      "description": "At WHOOP, we're on a mission to unlock human performance and healthspan. WHOOP empowers members to perform at a higher level through a deeper understanding of their bodies and daily lives.WHOOP is hiring an iOS Engineer II to join one of our high-impact product teams: AI Experiences or Growth. You’ll work on features that scale our systems and improve reliability, remove friction from user experiences, or help members improve their physical, emotional, and hormonal health through clinical-grade insights. Whether building shared frameworks, iterating on growth experiments, or shipping health-driven features, you'll deliver work that directly impacts our members' lives. You’ll collaborate across functions, write well-architected code, and contribute to a platform that is improving health outcomes and unlocking human potential at scale.",
+      "id": "job_1770182328594_x0hraqv",
+      "interest": 3,
+      "keywords": [
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...II to join one of our high-impact product teams: AI Experiences or Growth. You’ll work on features..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "AI"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...f their bodies and daily lives.WHOOP is hiring an iOS Engineer II to join one of our high-impact pro..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "iOS"
+        },
+        {
+          "addressed": false,
+          "category": "tools",
+          "contexts": [
+            "...ngineer II to join one of our high-impact product teams: AI Experiences or Growth. You’ll work on fe..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "teams"
+        },
+        {
+          "addressed": false,
+          "category": "values",
+          "contexts": [
+            "...hiring an iOS Engineer II to join one of our high-impact product teams: AI Experiences or Growth. Yo..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "impact"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...write well-architected code, and contribute to a platform that is improving health outcomes and unl..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "platform"
+        }
+      ],
+      "keywordsExtractedAt": 1770268982790,
+      "location": "Boston, MA",
+      "notes": "",
+      "priority": 2,
+      "status": "applied",
+      "tags": [
+        "local",
+        "mobile",
+        "ai"
+      ],
+      "title": "iOS Engineer II (Growth & AI Experiences)",
+      "url": "https://jobs.lever.co/whoop/ac5d06b2-ff4a-416c-8e60-bcbbfed730fd"
+    },
+    {
+      "company": "Arc Institute",
+      "connectionIds": [],
+      "dateAdded": 1770174954706,
+      "dateApplied": 1770174965896,
+      "dateModified": 1770513136250,
+      "description": "",
+      "id": "job_1770174954706_4gh6hwm",
+      "interest": 2,
+      "location": "Palo Alto, CA",
+      "notes": "",
+      "priority": 1,
+      "salary": "",
+      "status": "applied",
+      "tags": [
+        "product",
+        "academia"
+      ],
+      "title": "Product Manager, Virtual Cell Challenge",
+      "url": "https://job-boards.greenhouse.io/arcinstitute/jobs/5669650004?gh_src=o1za1gtu4us&source=LinkedIn"
+    },
+    {
+      "company": "Ramp",
+      "connectionIds": [],
+      "dateAdded": 1770173981552,
+      "dateModified": 1770595739729,
+      "description": "About the Role \nAs a Product Manager at Ramp, you will shape the vision, strategy, and roadmap for our AI-native products. You will be responsible for leading a core team of engineers and designers to build amazing products that serve thousands of businesses, owning a set of key customer and & business problems. You will drive the end-to-end product vision, strategy, and execution for your domain in order to meet ambitious company goals.\n\nWe’re looking for someone who is energized by ambiguity, deeply curious about the frontier of AI, and passionate about building products that elegantly balance technical depth with intuitive user experiences. You’ll need to be both hands-on with prototyping and comfortable translating complex systems into clear, human-centered solutions.\n\nPlease note that this Product Management role will require you to be comfortable with working in-person at one of our NYC or SF offices at least 2 days/week\n\nWhat You’ll Do\nOwn the vision, strategy, and roadmap for a Ramp product\n\nDrive high-velocity execution with a world-class team of engineers and designers, balancing principled intuition with data-driven decision making.\n\nMarry customer insights with technical possibilities, crafting intuitive user experiences that abstract away complexity\n\nPrototype rapidly using tools like Cursor and Bolt to accelerate the product development lifecycle and fast-forward to production-ready products.\n\nStay deeply plugged into AI research, industry trends, and emergent applications, filtering signal from noise and applying it creatively to Ramp’s product\n\nContribute to the evolution of Ramp’s product management practices as we scale AI across our platform.\n\nWhat You Need\nBA/BS in a technical or analytical field (e.g. Computer Science, Engineering, Information Systems, Analytics, Mathematics, Physics, Applied Sciences, or related)\n\nMinimum 4 years of product management or adjacent product-building experience.\n\nStrong customer empathy and design thinking\n\nPassion for AI, shown through hands-on building, prototyping, or side projects, and staying current on research and tools.\n\nFluency with core LLM concepts and systems, such as prompting, fine-tuning, embeddings, retrieval, and evaluation, and the judgment to translate these into reliable, user-facing products.\n\nFluency with modern prototyping tools (e.g. Cursor, Bolt, Claude Code) and comfort with design/collaboration environments like Figma and Git.\n\nFluency in data and experimentation, and understanding when the answer cannot be found in the data\n\nProven ability to lead small, cross-functional teams toward ambitious goals with urgency and agency.\n\nAbility to translate between technical and non-technical audiences, synthesizing complex systems into compelling narratives.\n\nExcellent communication and storytelling skills\n\nNice-to-Haves\nExperience building AI products\n\nExperience in high-growth startups\n\nExperience building in financial, enterprise, or other domains requiring complex systems thinking.",
+      "id": "job_1770173981552_ujau85z",
+      "interest": 2,
+      "keywords": [
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...l shape the vision, strategy, and roadmap for our AI-native products. You will be responsible for le...",
+            "...y ambiguity, deeply curious about the frontier of AI, and passionate about building products that el...",
+            "...duction-ready products. Stay deeply plugged into AI research, industry trends, and emergent applica..."
+          ],
+          "frequency": 6,
+          "importance": "high",
+          "term": "AI"
+        },
+        {
+          "addressed": false,
+          "category": "experience",
+          "contexts": [
+            "...hematics, Physics, Applied Sciences, or related) Minimum 4 years of product management or adjacent..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "Minimum 4 years"
+        },
+        {
+          "addressed": false,
+          "category": "experience",
+          "contexts": [
+            "...munication and storytelling skills Nice-to-Haves Experience building AI products Experience in hig..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "Experience building"
+        },
+        {
+          "addressed": false,
+          "category": "experience",
+          "contexts": [
+            "...s Nice-to-Haves Experience building AI products Experience in high-growth startups Experience bui..."
+          ],
+          "frequency": 1,
+          "importance": "high",
+          "term": "Experience in"
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...owning a set of key customer and & business problems. You will drive the end-to-end product vision,..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "ms."
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...ed BA/BS in a technical or analytical field (e.g. Computer Science, Engineering, Information Systems..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "Computer Science"
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...nce, Engineering, Information Systems, Analytics, Mathematics, Physics, Applied Sciences, or related..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "Mathematics"
+        },
+        {
+          "addressed": false,
+          "category": "education",
+          "contexts": [
+            "...ing, Information Systems, Analytics, Mathematics, Physics, Applied Sciences, or related) Minimum 4..."
+          ],
+          "frequency": 1,
+          "importance": "medium",
+          "term": "Physics"
+        },
+        {
+          "addressed": false,
+          "category": "required_skill",
+          "contexts": [
+            "...current on research and tools. Fluency with core LLM concepts and systems, such as prompting, fine-..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Llm"
+        },
+        {
+          "addressed": false,
+          "category": "tools",
+          "contexts": [
+            "...design/collaboration environments like Figma and Git. Fluency in data and experimentation, and und..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Git"
+        },
+        {
+          "addressed": false,
+          "category": "tools",
+          "contexts": [
+            "...mfort with design/collaboration environments like Figma and Git. Fluency in data and experimentatio..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "Figma"
+        },
+        {
+          "addressed": false,
+          "category": "tools",
+          "contexts": [
+            "...a Proven ability to lead small, cross-functional teams toward ambitious goals with urgency and agen..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "teams"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...ex systems into compelling narratives. Excellent communication and storytelling skills Nice-to-Hav..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "communication"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...er cannot be found in the data Proven ability to lead small, cross-functional teams toward ambitiou..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "lead"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...r AI-native products. You will be responsible for leading a core team of engineers and designers to..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "leading"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...ursor, Bolt, Claude Code) and comfort with design/collaboration environments like Figma and Git. Fl..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "collaboration"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...platform. What You Need BA/BS in a technical or analytical field (e.g. Computer Science, Engineeri..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "analytical"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...found in the data Proven ability to lead small, cross-functional teams toward ambitious goals with..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "cross-functional"
+        },
+        {
+          "addressed": false,
+          "category": "soft_skill",
+          "contexts": [
+            "...ent product-building experience. Strong customer empathy and design thinking Passion for AI, shown..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "empathy"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...rowth startups Experience building in financial, enterprise, or other domains requiring complex sys..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "enterprise"
+        },
+        {
+          "addressed": false,
+          "category": "industry",
+          "contexts": [
+            "...ct management practices as we scale AI across our platform. What You Need BA/BS in a technical or a..."
+          ],
+          "frequency": 1,
+          "importance": "low",
+          "term": "platform"
+        }
+      ],
+      "keywordsExtractedAt": 1770595739729,
+      "location": "New York, NY",
+      "notes": "",
+      "priority": 2,
+      "status": "saved",
+      "tags": [
+        "product"
+      ],
+      "title": "Product Manager (generalist - all levels)",
+      "url": "https://jobs.ashbyhq.com/ramp/9972df9e-4133-4e2c-9305-49c285b76506"
+    },
+    {
+      "company": "Garmin",
+      "connectionIds": [],
+      "dateAdded": 1770173416712,
+      "dateModified": 1770576794073,
+      "description": "",
+      "id": "job_1770173416712_13qnha0",
+      "interest": 1,
+      "location": "Kansas",
+      "notes": "",
+      "priority": 1,
+      "salary": "",
+      "status": "rejected",
+      "tags": [
+        "garmin",
+        "embedded"
+      ],
+      "title": "Embedded Software Engineer",
+      "url": "https://careers.garmin.com/jobs/16827?lang=en-us"
+    },
+    {
+      "company": "Toyota Research Institute",
+      "connectionIds": [
+        "conn_1770255058391_otr44zc"
+      ],
+      "dateAdded": 1770173113656,
+      "dateModified": 1770513148866,
+      "description": "",
+      "id": "job_1770173113656_vpttqz9",
+      "interest": 4,
+      "location": "Los Altos, CA",
+      "notes": "Connection to Paul Mitiguy",
+      "priority": 2,
+      "salary": "",
+      "status": "applied",
+      "tags": [
+        "robotics",
+        "tri",
+        "ml",
+        "research"
+      ],
+      "title": "Robotics Machine Learning Engineer - Platforms for Vision Language Action Foundation Models",
+      "url": "https://jobs.lever.co/tri/4cadccc5-8729-4ca9-91ab-d672d14694ac"
+    }
+  ],
+  "connections": [
+    {
+      "company": "Stanford and Toyota Research Institute",
+      "contactHistory": [
+        {
+          "date": "2026-02-07",
+          "id": "contact_1770481040675_xvi5ktk",
+          "notes": "Introduction from Ed Mitiguy, 1st contact",
+          "type": "email"
+        }
+      ],
+      "dateAdded": 1770255058391,
+      "dateModified": 1770481040681,
+      "howWeMet": "Brother of Ari Mitiguy's dad",
+      "id": "conn_1770255058391_otr44zc",
+      "lastContactDate": "2026-02-07",
+      "linkedPostingIds": [
+        "job_1770173113656_vpttqz9",
+        "job_1770173073414_pbext0o"
+      ],
+      "name": "Paul Mitiguy",
+      "notes": "Ed said he would try to reach out soon. Bro knows the CEO of roblox, that is so cool",
+      "relationshipStrength": 1,
+      "relationshipType": "employee",
+      "role": "Researcher and Professor"
+    },
+    {
+      "company": "Dassault Systems",
+      "contactHistory": [],
+      "dateAdded": 1770327893286,
+      "dateModified": 1770327893286,
+      "howWeMet": "Career Fair at WPI Spring 2026",
+      "id": "conn_1770327893286_lt9if8g",
+      "linkedInUrl": "https://www.linkedin.com/in/johnpantaleo/",
+      "linkedPostingIds": [],
+      "name": "John Pantaleo",
+      "notes": "Connected on linked in 2/5/2026",
+      "relationshipStrength": 2,
+      "relationshipType": "employee",
+      "role": "Global R&D Brand Leader"
+    },
+    {
+      "company": "CYVL",
+      "contactHistory": [
+        {
+          "date": "2025-10-15",
+          "id": "contact_1770409700361_atzngj7",
+          "notes": "Interview call about CYVL",
+          "type": "call"
+        }
+      ],
+      "dateAdded": 1770329678288,
+      "dateModified": 1770409700365,
+      "email": "nparker@cyvl.ai",
+      "howWeMet": "Through Kelsey, Interviewed in October 2025",
+      "id": "conn_1770329678288_6w62nq1",
+      "lastContactDate": "2025-10-15",
+      "linkedPostingIds": [],
+      "name": "Noah Parker",
+      "notes": "Follow up after career fair spring 2026",
+      "relationshipStrength": 2,
+      "relationshipType": "employee",
+      "role": "VP of Engineering"
+    },
+    {
+      "company": "SpotOn Fence",
+      "contactHistory": [
+        {
+          "date": "2026-02-06",
+          "id": "contact_1770409619504_y2rdbw9",
+          "notes": "Follow up after career fair",
+          "type": "email"
+        },
+        {
+          "date": "2026-02-07",
+          "id": "contact_1770479118772_xwgkx8b",
+          "notes": "Mentioned more career fairs to go to and will reach out later with more details.",
+          "type": "linkedin"
+        }
+      ],
+      "dateAdded": 1770409608001,
+      "dateModified": 1770479118777,
+      "email": "sung@spotonfence.com",
+      "howWeMet": "WPI Career Fair spring 2026",
+      "id": "conn_1770409608001_mu3idyt",
+      "lastContactDate": "2026-02-07",
+      "linkedPostingIds": [],
+      "name": "Sung Vivathana",
+      "notes": "",
+      "relationshipStrength": 1,
+      "relationshipType": "employee",
+      "role": "CTO, VP engineering"
+    },
+    {
+      "company": "Cartwheel Robotics",
+      "contactHistory": [],
+      "dateAdded": 1770479090752,
+      "dateModified": 1770479090752,
+      "howWeMet": "LinkedIn Connection Feb 6, 2026",
+      "id": "conn_1770479090752_z02xtj5",
+      "linkedInUrl": "https://www.linkedin.com/in/slavalley/",
+      "linkedPostingIds": [],
+      "name": "Scott LaValley",
+      "notes": "",
+      "relationshipStrength": 1,
+      "relationshipType": "employee",
+      "role": "CEO"
+    },
+    {
+      "company": "Vestmark",
+      "contactHistory": [],
+      "dateAdded": 1770484111289,
+      "dateModified": 1770484111289,
+      "howWeMet": "Vestmark Summer Internship",
+      "id": "conn_1770484111289_5ujlw3p",
+      "linkedInUrl": "https://www.linkedin.com/in/lyonschris/",
+      "linkedPostingIds": [],
+      "name": "Chris Lyons",
+      "notes": "He worked at Amazon robotics before it was that. ",
+      "relationshipStrength": 2,
+      "relationshipType": "employee",
+      "role": "Head of Learning and Development"
+    }
+  ],
+  "settings": {
+    "defaultView": "kanban",
+    "theme": "light",
+    "collapsedColumns": [
+      "rejected"
+    ]
+  }
+}
