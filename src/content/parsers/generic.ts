@@ -10,17 +10,29 @@
  */
 
 import { SiteParser, ScrapedData } from './types';
-import { selectAttr, selectFirst, selectAll } from '../utils/selectors';
+import { selectAttr, selectFirst, selectAll, selectText } from '../utils/selectors';
 import { cleanText, truncate, cleanUrl, extractCompanyFromUrl, cleanJobTitle } from '../utils/cleaners';
 import { extractSalaryFromText } from '../utils/salary';
 import { calculateConfidence } from '../utils/confidence';
 import { getLogoWithFallback } from '../utils/logo';
 
+/**
+ * Keywords that indicate job description content
+ */
+const JOB_SECTION_KEYWORDS = [
+  'responsibilities', 'requirements', 'qualifications', 'about the role',
+  'about this role', 'what you\'ll do', 'what you will do', 'your role',
+  'the role', 'job description', 'position overview', 'role overview',
+  'about the job', 'about this position', 'key responsibilities',
+  'what we\'re looking for', 'who you are', 'your responsibilities',
+  'duties', 'skills', 'experience', 'about you', 'the opportunity',
+];
+
 export const genericParser: SiteParser = {
   name: 'generic',
   domains: ['*'],
 
-  detect(): boolean {
+  detect(_url: string, _document: Document): boolean {
     return true; // Always matches as fallback
   },
 
@@ -62,9 +74,11 @@ export const genericParser: SiteParser = {
       metaData.location ??
       null;
 
+    // Description is critical for keywords - try multiple strategies
     const description =
       jsonLdData.description ??
       selectorData.description ??
+      extractDescriptionRobust(document) ??
       metaData.description ??
       null;
 
@@ -419,4 +433,128 @@ function extractSalaryFromFullPage(doc: Document): string | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Extract job description using multiple strategies
+ * This is critical for keyword extraction to work
+ */
+function extractDescriptionRobust(doc: Document): string | null {
+  // Strategy 1: Common job description containers
+  const descriptionSelectors = [
+    // Specific job description containers
+    '[class*="job-description"]',
+    '[class*="jobDescription"]',
+    '[class*="job_description"]',
+    '[class*="posting-description"]',
+    '[class*="position-description"]',
+    '[class*="role-description"]',
+    // Data attributes
+    '[data-testid*="description"]',
+    '[data-automation-id*="description"]',
+    '[data-qa*="description"]',
+    // IDs
+    '#job-description',
+    '#jobDescription',
+    '#job_description',
+    '#description',
+    '#job-details',
+    '#jobDetails',
+    // Greenhouse specific
+    '#grnhse_app',
+    '[id*="greenhouse"]',
+    '.greenhouse-job-description',
+    // Common content containers
+    '[class*="content-wrapper"]',
+    '[class*="job-content"]',
+    '[class*="posting-content"]',
+  ];
+
+  for (const selector of descriptionSelectors) {
+    const text = selectText(doc, selector);
+    if (text && text.length > 200) {
+      return text;
+    }
+  }
+
+  // Strategy 2: Look for sections with job-related headings
+  const sections = doc.querySelectorAll('section, div, article');
+  for (const section of sections) {
+    const headings = section.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    for (const heading of headings) {
+      const headingText = heading.textContent?.toLowerCase() || '';
+      if (JOB_SECTION_KEYWORDS.some(kw => headingText.includes(kw))) {
+        // Found a relevant section, get all text from parent
+        const parent = heading.parentElement;
+        if (parent) {
+          const text = parent.innerText || parent.textContent || '';
+          if (text.length > 200) {
+            return text;
+          }
+        }
+      }
+    }
+  }
+
+  // Strategy 3: Find the largest text block that looks like job content
+  const candidates: { element: Element; text: string; score: number }[] = [];
+  const contentElements = doc.querySelectorAll('main, article, section, [role="main"], .content, .main');
+
+  for (const el of contentElements) {
+    const text = (el as HTMLElement).innerText || el.textContent || '';
+    if (text.length < 200) continue;
+
+    // Score based on job-related keywords
+    let score = 0;
+    const lowerText = text.toLowerCase();
+    for (const keyword of JOB_SECTION_KEYWORDS) {
+      if (lowerText.includes(keyword)) score += 10;
+    }
+    // Bonus for bullet points (common in job descriptions)
+    score += (text.match(/[•\-\*]\s/g) || []).length * 2;
+    // Bonus for lists
+    score += el.querySelectorAll('li').length;
+
+    if (score > 0) {
+      candidates.push({ element: el, text, score });
+    }
+  }
+
+  // Sort by score and return best match
+  candidates.sort((a, b) => b.score - a.score);
+  if (candidates.length > 0 && candidates[0].text.length > 200) {
+    return candidates[0].text;
+  }
+
+  // Strategy 4: Just get the main content area
+  const mainContent =
+    selectText(doc, 'main') ||
+    selectText(doc, 'article') ||
+    selectText(doc, '[role="main"]') ||
+    selectText(doc, '.main-content') ||
+    selectText(doc, '#main-content') ||
+    selectText(doc, '#content') ||
+    selectText(doc, '.content');
+
+  if (mainContent && mainContent.length > 300) {
+    return mainContent;
+  }
+
+  // Strategy 5: Last resort - get body text excluding nav/footer
+  try {
+    const body = doc.body.cloneNode(true) as HTMLElement;
+    // Remove common non-content elements
+    const removeSelectors = ['nav', 'header', 'footer', 'aside', '[role="navigation"]', '[role="banner"]', '[role="contentinfo"]', '.nav', '.footer', '.header', '.sidebar'];
+    for (const sel of removeSelectors) {
+      body.querySelectorAll(sel).forEach(el => el.remove());
+    }
+    const text = body.innerText || '';
+    if (text.length > 500) {
+      return text;
+    }
+  } catch {
+    // Clone failed, skip this strategy
+  }
+
+  return null;
 }

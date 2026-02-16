@@ -60,7 +60,7 @@ export const indeedParser: SiteParser = {
   domains: ['indeed.com', 'indeed.co.uk', 'indeed.ca', 'indeed.de', 'indeed.fr'],
   pathPatterns: [/\/viewjob/, /\/jobs/, /\/rc\/clk/],
 
-  detect(url: string): boolean {
+  detect(url: string, _document: Document): boolean {
     return /indeed\.(com|co\.uk|ca|de|fr|in|au)/.test(url);
   },
 

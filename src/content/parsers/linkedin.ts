@@ -51,7 +51,7 @@ export const linkedinParser: SiteParser = {
   domains: ['linkedin.com'],
   pathPatterns: [/\/jobs\/view\//, /\/jobs\/collections\//, /\/jobs\/search\//],
 
-  detect(url: string): boolean {
+  detect(url: string, _document: Document): boolean {
     return url.includes('linkedin.com/jobs');
   },
 

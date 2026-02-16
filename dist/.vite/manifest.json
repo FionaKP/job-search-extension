@@ -1,6 +1,6 @@
 {
   "../../../../@crx/manifest": {
-    "file": "assets/crx-manifest.js-DV-DD5Jg.js",
+    "file": "assets/crx-manifest.js-C054bEwB.js",
     "name": "crx-manifest.js",
     "src": "../../../../@crx/manifest",
     "isEntry": true
@@ -22,11 +22,11 @@
     ]
   },
   "scraper.ts-loader.js": {
-    "file": "assets/scraper.ts-loader-D_graUeU.js",
+    "file": "assets/scraper.ts-loader-DKzQ9U_S.js",
     "src": "scraper.ts-loader.js"
   },
   "src/content/scraper.ts": {
-    "file": "assets/scraper.ts-B4GsVRiB.js",
+    "file": "assets/scraper.ts-nbhqk1XY.js",
     "name": "scraper.ts",
     "src": "src/content/scraper.ts",
     "isEntry": true

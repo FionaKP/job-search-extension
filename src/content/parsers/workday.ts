@@ -48,7 +48,7 @@ export const workdayParser: SiteParser = {
   name: 'workday',
   domains: ['myworkdayjobs.com', 'workday.com', 'wd1.myworkdayjobs.com', 'wd5.myworkdayjobs.com'],
 
-  detect(url: string): boolean {
+  detect(url: string, _document: Document): boolean {
     return url.includes('myworkdayjobs.com') ||
            url.includes('workday.com/') ||
            url.includes('wd1.') ||

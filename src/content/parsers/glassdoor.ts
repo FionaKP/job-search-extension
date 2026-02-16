@@ -60,7 +60,7 @@ export const glassdoorParser: SiteParser = {
   domains: ['glassdoor.com', 'glassdoor.co.uk', 'glassdoor.ca', 'glassdoor.de'],
   pathPatterns: [/\/job-listing\//, /\/Job\//, /\/partner\/jobListing/],
 
-  detect(url: string): boolean {
+  detect(url: string, _document: Document): boolean {
     return /glassdoor\.(com|co\.uk|ca|de|fr)/.test(url) &&
       (url.includes('/job-listing/') || url.includes('/Job/') || url.includes('/partner/'));
   },

@@ -48,7 +48,7 @@ export const wellfoundParser: SiteParser = {
   domains: ['wellfound.com', 'angel.co'],
   pathPatterns: [/\/jobs\//, /\/company\/.+\/jobs/, /\/role\//],
 
-  detect(url: string): boolean {
+  detect(url: string, _document: Document): boolean {
     return (
       (url.includes('wellfound.com') || url.includes('angel.co')) &&
       (url.includes('/jobs') || url.includes('/role/') || url.includes('/company/'))

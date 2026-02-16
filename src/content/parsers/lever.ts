@@ -52,8 +52,19 @@ export const leverParser: SiteParser = {
   name: 'lever',
   domains: ['lever.co', 'jobs.lever.co'],
 
-  detect(url: string): boolean {
-    return url.includes('lever.co');
+  detect(url: string, document: Document): boolean {
+    // Direct Lever URLs
+    if (url.includes('lever.co')) {
+      return true;
+    }
+
+    // Check for Lever embedded content
+    const hasLeverEmbed =
+      document.querySelector('iframe[src*="lever.co"]') ||
+      document.querySelector('[data-lever]') ||
+      document.querySelector('#lever-jobs-container');
+
+    return Boolean(hasLeverEmbed);
   },
 
   extract(document: Document, url: string): ScrapedData {
