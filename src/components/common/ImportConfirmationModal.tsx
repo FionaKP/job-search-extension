@@ -1,4 +1,6 @@
+import { useId } from 'react';
 import { ParsedBackupFile, ImportResult } from '@/utils/backup';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface ImportConfirmationModalProps {
   isOpen: boolean;
@@ -17,6 +19,9 @@ export function ImportConfirmationModal({
   isImporting,
   importResult,
 }: ImportConfirmationModalProps) {
+  const titleId = useId();
+  const modalRef = useFocusTrap<HTMLDivElement>(isOpen);
+
   if (!isOpen) return null;
 
   const formatDate = (dateString: string) => {
@@ -39,18 +44,28 @@ export function ImportConfirmationModal({
       <div
         className="modal-backdrop"
         onClick={!isImporting ? onCancel : undefined}
+        aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="modal-container">
-        <div className="modal modal-sm">
+      <div
+        className="modal-container"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+      >
+        <div className="modal modal-sm" ref={modalRef}>
           <div className="modal-header">
-            <h2 className="modal-title">
+            <h2 id={titleId} className="modal-title">
               {importResult ? 'Import Complete' : 'Import Backup'}
             </h2>
             {!isImporting && (
-              <button onClick={onCancel} className="modal-close">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <button
+                onClick={onCancel}
+                aria-label="Close import dialog"
+                className="modal-close focus-visible:ring-2 focus-visible:ring-wine"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>

@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useId } from 'react';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface KeyboardShortcutsModalProps {
   isOpen: boolean;
@@ -50,6 +51,9 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
 ];
 
 export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsModalProps) {
+  const titleId = useId();
+  const modalRef = useFocusTrap<HTMLDivElement>(isOpen);
+
   // Close on escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -68,15 +72,20 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
   return (
     <>
       {/* Backdrop */}
-      <div className="modal-backdrop" onClick={onClose} />
+      <div className="modal-backdrop" onClick={onClose} aria-hidden="true" />
 
       {/* Modal Container */}
-      <div className="modal-container">
-        <div className="modal modal-lg">
+      <div
+        className="modal-container"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+      >
+        <div className="modal modal-lg" ref={modalRef}>
           <div className="modal-header">
-            <h2 className="modal-title">Keyboard Shortcuts</h2>
-            <button onClick={onClose} className="modal-close">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <h2 id={titleId} className="modal-title">Keyboard Shortcuts</h2>
+            <button onClick={onClose} className="modal-close" aria-label="Close shortcuts dialog">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>

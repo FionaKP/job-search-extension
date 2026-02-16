@@ -80,9 +80,10 @@ export function EditPostingModal({ isOpen, onClose, onSave, posting }: EditPosti
           <h2 className="text-lg font-semibold text-wine">Edit Posting</h2>
           <button
             onClick={onClose}
-            className="btn btn-icon btn-ghost text-wine/50 hover:text-wine"
+            aria-label="Close edit dialog"
+            className="btn btn-icon btn-ghost text-wine/50 hover:text-wine focus-visible:ring-2 focus-visible:ring-wine"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>

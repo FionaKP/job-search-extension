@@ -25,20 +25,59 @@ export function InterestStars({ interest, onChange, size = 'md', readOnly = fals
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent, currentStar: InterestLevel) => {
+    if (readOnly || !onChange) return;
+
+    let newValue: InterestLevel | null = null;
+
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowUp':
+        e.preventDefault();
+        newValue = Math.min(5, currentStar + 1) as InterestLevel;
+        break;
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        e.preventDefault();
+        newValue = Math.max(1, currentStar - 1) as InterestLevel;
+        break;
+      case 'Home':
+        e.preventDefault();
+        newValue = 1;
+        break;
+      case 'End':
+        e.preventDefault();
+        newValue = 5;
+        break;
+    }
+
+    if (newValue !== null) {
+      onChange(newValue);
+    }
+  };
+
   return (
-    <div className={`flex ${gapClass}`} title={`Interest: ${interest}/5`}>
+    <div
+      className={`flex ${gapClass}`}
+      role="group"
+      aria-label={`Interest level: ${interest} out of 5 stars`}
+    >
       {([1, 2, 3, 4, 5] as const).map((star) => (
         <button
           key={star}
+          type="button"
           onClick={() => handleClick(star)}
+          onKeyDown={(e) => handleKeyDown(e, interest)}
           disabled={readOnly}
-          className={`${readOnly ? 'cursor-default' : 'cursor-pointer hover:scale-110'} transition-transform`}
-          title={`Interest ${star}`}
+          aria-label={`${star} star${star !== 1 ? 's' : ''}`}
+          aria-pressed={star === interest}
+          className={`${readOnly ? 'cursor-default' : 'cursor-pointer hover:scale-110'} transition-transform focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-1 rounded`}
         >
           <svg
             className={`${sizeClasses} ${star <= interest ? 'text-pandora' : 'text-sage/30'}`}
             viewBox="0 0 20 20"
             fill="currentColor"
+            aria-hidden="true"
           >
             <path
               fillRule="evenodd"

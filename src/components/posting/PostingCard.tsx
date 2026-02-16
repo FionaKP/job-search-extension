@@ -129,12 +129,23 @@ export function PostingCard({
   const daysSince = getDaysSinceModified(posting.dateModified);
   const daysColorClass = getDaysColorClass(daysSince, isStale);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onSelect(posting.id);
+    }
+  };
+
   if (variant === 'list') {
     return (
       <ContextMenu items={contextMenuItems}>
         <div
+          role="button"
+          tabIndex={0}
           onClick={() => onSelect(posting.id)}
-          className="group flex cursor-pointer items-center bg-white px-4 py-3 transition-colors hover:bg-champagne-50/50"
+          onKeyDown={handleKeyDown}
+          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}. Status: ${STATUS_LABELS[posting.status]}${isStale ? '. Needs attention' : ''}`}
+          className="group flex cursor-pointer items-center bg-white px-4 py-3 transition-colors hover:bg-champagne-50/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-wine focus-visible:bg-champagne-50/50"
         >
           {/* Logo */}
           <div className="relative w-12 flex-shrink-0">
@@ -213,8 +224,12 @@ export function PostingCard({
     return (
       <ContextMenu items={contextMenuItems}>
         <div
+          role="button"
+          tabIndex={0}
           onClick={() => onSelect(posting.id)}
-          className={`relative group cursor-pointer rounded-lg border bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md ${
+          onKeyDown={handleKeyDown}
+          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isStale ? '. Needs attention' : ''}`}
+          className={`relative group cursor-pointer rounded-lg border bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
             isStale ? 'border-flatred/30' : 'border-sage/20'
           } ${isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''} px-3 py-2`}
         >
@@ -296,8 +311,12 @@ export function PostingCard({
   return (
     <ContextMenu items={contextMenuItems}>
       <div
+        role="button"
+        tabIndex={0}
         onClick={() => onSelect(posting.id)}
-        className={`relative group cursor-pointer rounded-lg border bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md ${
+        onKeyDown={handleKeyDown}
+        aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isStale ? '. Needs attention' : ''}`}
+        className={`relative group cursor-pointer rounded-lg border bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
           isStale ? 'border-flatred/30' : 'border-sage/20'
         } ${isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''} p-3`}
       >
