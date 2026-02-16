@@ -10,6 +10,10 @@ interface ListViewProps {
   onDelete: (id: string) => void;
   getLinkedConnections?: (postingId: string) => Connection[];
   onConnectionClick?: (postingId: string) => void;
+  // Multi-select props
+  isMultiSelectMode?: boolean;
+  selectedPostingIds?: string[];
+  onMultiSelect?: (id: string) => void;
 }
 
 type SortField = 'title' | 'company' | 'dateAdded' | 'priority' | 'status' | 'location';
@@ -23,6 +27,9 @@ export function ListView({
   onDelete,
   getLinkedConnections,
   onConnectionClick,
+  isMultiSelectMode,
+  selectedPostingIds = [],
+  onMultiSelect,
 }: ListViewProps) {
   const [sortField, setSortField] = useState<SortField>('dateAdded');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -127,6 +134,9 @@ export function ListView({
             variant="list"
             linkedConnections={getLinkedConnections?.(posting.id)}
             onConnectionClick={() => onConnectionClick?.(posting.id)}
+            isMultiSelectMode={isMultiSelectMode}
+            isMultiSelected={selectedPostingIds.includes(posting.id)}
+            onMultiSelect={onMultiSelect}
           />
         ))}
         {postings.length === 0 && (

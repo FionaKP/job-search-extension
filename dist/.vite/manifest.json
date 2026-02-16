@@ -10,7 +10,7 @@
     "name": "extractor"
   },
   "index.html": {
-    "file": "assets/index-BNbHMtYj.js",
+    "file": "assets/index-lyOFEhua.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
@@ -18,7 +18,7 @@
       "_extractor-BlsyOXNW.js"
     ],
     "css": [
-      "assets/index-CZqZA74U.css"
+      "assets/index-DVyCBXbQ.css"
     ]
   },
   "scraper.ts-loader.js": {

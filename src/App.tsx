@@ -7,6 +7,7 @@ import { ListView } from '@/components/dashboard/ListView';
 import { PostingDetailPanel } from '@/components/dashboard/PostingDetailPanel';
 import { EditPostingModal } from '@/components/posting';
 import { ConnectionsList, ConnectionFormModal, ConnectionDetailPanel } from '@/components/connections';
+import { CompareKeywordsModal } from '@/components/keywords';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { KeyboardShortcutsModal } from '@/components/common';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -66,6 +67,41 @@ function App() {
 
   // Keywords extraction state
   const [isExtractingKeywords, setIsExtractingKeywords] = useState(false);
+
+  // Multi-select for keyword comparison
+  const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
+  const [selectedPostingIds, setSelectedPostingIds] = useState<string[]>([]);
+  const [compareModalOpen, setCompareModalOpen] = useState(false);
+
+  // Multi-select handlers
+  const handleToggleMultiSelect = useCallback(() => {
+    setIsMultiSelectMode((prev) => {
+      if (prev) {
+        // Exiting multi-select mode, clear selections
+        setSelectedPostingIds([]);
+      }
+      return !prev;
+    });
+  }, []);
+
+  const handlePostingMultiSelect = useCallback((postingId: string) => {
+    setSelectedPostingIds((prev) => {
+      if (prev.includes(postingId)) {
+        return prev.filter((id) => id !== postingId);
+      }
+      return [...prev, postingId];
+    });
+  }, []);
+
+  const handleCompareKeywords = useCallback(() => {
+    if (selectedPostingIds.length >= 2) {
+      setCompareModalOpen(true);
+    }
+  }, [selectedPostingIds]);
+
+  const selectedPostingsForCompare = useMemo(() => {
+    return postings.filter((p) => selectedPostingIds.includes(p.id));
+  }, [postings, selectedPostingIds]);
 
   // Dashboard stats
   const dashboardStats = useDashboardStats(postings);
@@ -710,6 +746,10 @@ function App() {
             searchInputRef={searchInputRef}
             statusFilter={statusFilter}
             onStatusFilterChange={setStatusFilter}
+            isMultiSelectMode={isMultiSelectMode}
+            onToggleMultiSelect={handleToggleMultiSelect}
+            selectedCount={selectedPostingIds.length}
+            onCompareKeywords={handleCompareKeywords}
           />
 
           <main className="flex-1 overflow-hidden">
@@ -729,6 +769,9 @@ function App() {
                 getLinkedConnections={getLinkedConnections}
                 onConnectionClick={handleConnectionClick}
                 selectedPostingId={selectedPostingId}
+                isMultiSelectMode={isMultiSelectMode}
+                selectedPostingIds={selectedPostingIds}
+                onMultiSelect={handlePostingMultiSelect}
               />
             ) : (
               <ListView
@@ -739,6 +782,9 @@ function App() {
                 onDelete={handleDelete}
                 getLinkedConnections={getLinkedConnections}
                 onConnectionClick={handleConnectionClick}
+                isMultiSelectMode={isMultiSelectMode}
+                selectedPostingIds={selectedPostingIds}
+                onMultiSelect={handlePostingMultiSelect}
               />
             )}
           </main>
@@ -831,6 +877,12 @@ function App() {
       <KeyboardShortcutsModal
         isOpen={shortcutsModalOpen}
         onClose={() => setShortcutsModalOpen(false)}
+      />
+
+      <CompareKeywordsModal
+        isOpen={compareModalOpen}
+        onClose={() => setCompareModalOpen(false)}
+        postings={selectedPostingsForCompare}
       />
     </div>
   );

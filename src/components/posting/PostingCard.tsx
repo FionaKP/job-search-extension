@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Posting, PostingStatus, STATUS_LABELS, isTerminalStatus, Connection, InterestLevel } from '@/types';
 import { PriorityStars, TagChip, ContextMenu } from '@/components/common';
 import { ConnectionBadge } from '@/components/connections';
+import { KeywordMatchBadge } from '@/components/keywords';
 import { getLogoUrl } from '@/utils/logo';
 
 // Status badge colors matching the vintage palette
@@ -29,6 +30,10 @@ interface PostingCardProps {
   onConnectionClick?: () => void;
   isSelected?: boolean;
   columnWidth?: number;
+  // Multi-select mode
+  isMultiSelectMode?: boolean;
+  isMultiSelected?: boolean;
+  onMultiSelect?: (id: string) => void;
 }
 
 function getInitials(company: string): string {
@@ -76,6 +81,9 @@ export function PostingCard({
   onConnectionClick,
   isSelected = false,
   columnWidth = 280,
+  isMultiSelectMode = false,
+  isMultiSelected = false,
+  onMultiSelect,
 }: PostingCardProps) {
   const [logoError, setLogoError] = useState(false);
 
@@ -132,9 +140,46 @@ export function PostingCard({
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
+      if (isMultiSelectMode && onMultiSelect) {
+        onMultiSelect(posting.id);
+      } else {
+        onSelect(posting.id);
+      }
+    }
+  };
+
+  const handleClick = () => {
+    if (isMultiSelectMode && onMultiSelect) {
+      onMultiSelect(posting.id);
+    } else {
       onSelect(posting.id);
     }
   };
+
+  // Checkbox for multi-select mode
+  const MultiSelectCheckbox = () => (
+    <div
+      className="flex-shrink-0 mr-2"
+      onClick={(e) => {
+        e.stopPropagation();
+        onMultiSelect?.(posting.id);
+      }}
+    >
+      <div
+        className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-colors ${
+          isMultiSelected
+            ? 'bg-indigo-600 border-indigo-600'
+            : 'border-gray-300 hover:border-indigo-400'
+        }`}
+      >
+        {isMultiSelected && (
+          <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          </svg>
+        )}
+      </div>
+    </div>
+  );
 
   if (variant === 'list') {
     return (
@@ -142,11 +187,16 @@ export function PostingCard({
         <div
           role="button"
           tabIndex={0}
-          onClick={() => onSelect(posting.id)}
+          onClick={handleClick}
           onKeyDown={handleKeyDown}
-          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}. Status: ${STATUS_LABELS[posting.status]}${isStale ? '. Needs attention' : ''}`}
-          className="group flex cursor-pointer items-center bg-white px-4 py-3 transition-colors hover:bg-champagne-50/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-wine focus-visible:bg-champagne-50/50"
+          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}. Status: ${STATUS_LABELS[posting.status]}${isStale ? '. Needs attention' : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
+          className={`group flex cursor-pointer items-center bg-white px-4 py-3 transition-colors hover:bg-champagne-50/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-wine focus-visible:bg-champagne-50/50 ${
+            isMultiSelected ? 'bg-indigo-50/50' : ''
+          }`}
         >
+          {/* Multi-select checkbox */}
+          {isMultiSelectMode && <MultiSelectCheckbox />}
+
           {/* Logo */}
           <div className="relative w-12 flex-shrink-0">
             {showLogo ? (
@@ -226,15 +276,20 @@ export function PostingCard({
         <div
           role="button"
           tabIndex={0}
-          onClick={() => onSelect(posting.id)}
+          onClick={handleClick}
           onKeyDown={handleKeyDown}
-          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isStale ? '. Needs attention' : ''}`}
+          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isStale ? '. Needs attention' : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
           className={`relative group cursor-pointer rounded-lg border bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
             isStale ? 'border-flatred/30' : 'border-sage/20'
-          } ${isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''} px-3 py-2`}
+          } ${isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''} ${
+            isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''
+          } px-3 py-2`}
         >
           {/* Compact horizontal layout */}
           <div className="flex items-center gap-3">
+            {/* Multi-select checkbox */}
+            {isMultiSelectMode && <MultiSelectCheckbox />}
+
             {/* Logo */}
             <div className="relative flex-shrink-0">
               {showLogo ? (
@@ -286,6 +341,7 @@ export function PostingCard({
                     <span className="text-xs text-sage flex-shrink-0">+{posting.tags.length - 2}</span>
                   )}
                 </div>
+                <KeywordMatchBadge keywords={posting.keywords} size="sm" />
               </div>
             </div>
 
@@ -313,14 +369,18 @@ export function PostingCard({
       <div
         role="button"
         tabIndex={0}
-        onClick={() => onSelect(posting.id)}
+        onClick={handleClick}
         onKeyDown={handleKeyDown}
-        aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isStale ? '. Needs attention' : ''}`}
+        aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isStale ? '. Needs attention' : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
         className={`relative group cursor-pointer rounded-lg border bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
           isStale ? 'border-flatred/30' : 'border-sage/20'
-        } ${isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''} p-3`}
+        } ${isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''} ${
+          isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''
+        } p-3`}
       >
         <div className="flex items-start gap-3">
+          {/* Multi-select checkbox */}
+          {isMultiSelectMode && <MultiSelectCheckbox />}
           <div className="relative flex-shrink-0">
             {showLogo ? (
               <img
@@ -362,6 +422,7 @@ export function PostingCard({
                     <span className="text-xs text-sage">+{posting.tags.length - 2}</span>
                   )}
                 </div>
+                <KeywordMatchBadge keywords={posting.keywords} size="sm" />
                 <ConnectionBadge connections={linkedConnections} onClick={onConnectionClick} size="sm" />
               </>
             )}

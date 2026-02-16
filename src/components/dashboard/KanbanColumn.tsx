@@ -19,6 +19,10 @@ interface KanbanColumnProps {
   onConnectionClick?: (postingId: string) => void;
   selectedPostingId?: string | null;
   columnWidth?: number;
+  // Multi-select props
+  isMultiSelectMode?: boolean;
+  selectedPostingIds?: string[];
+  onMultiSelect?: (id: string) => void;
 }
 
 // Vintage palette colors for each status
@@ -72,6 +76,9 @@ export function KanbanColumn({
   onConnectionClick,
   selectedPostingId,
   columnWidth,
+  isMultiSelectMode,
+  selectedPostingIds = [],
+  onMultiSelect,
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({
     id: status,
@@ -152,6 +159,9 @@ export function KanbanColumn({
               onConnectionClick={() => onConnectionClick?.(posting.id)}
               isSelected={selectedPostingId === posting.id}
               columnWidth={columnWidth}
+              isMultiSelectMode={isMultiSelectMode}
+              isMultiSelected={selectedPostingIds.includes(posting.id)}
+              onMultiSelect={onMultiSelect}
             />
           ))}
           {postings.length === 0 && (

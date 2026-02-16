@@ -30,6 +30,10 @@ interface KanbanBoardProps {
   getLinkedConnections?: (postingId: string) => Connection[];
   onConnectionClick?: (postingId: string) => void;
   selectedPostingId?: string | null;
+  // Multi-select props
+  isMultiSelectMode?: boolean;
+  selectedPostingIds?: string[];
+  onMultiSelect?: (id: string) => void;
 }
 
 // Default and min/max column widths
@@ -67,6 +71,9 @@ export function KanbanBoard({
   getLinkedConnections,
   onConnectionClick,
   selectedPostingId,
+  isMultiSelectMode,
+  selectedPostingIds = [],
+  onMultiSelect,
 }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
@@ -270,6 +277,9 @@ export function KanbanBoard({
                 onConnectionClick={onConnectionClick}
                 selectedPostingId={selectedPostingId}
                 columnWidth={columnWidths[status]}
+                isMultiSelectMode={isMultiSelectMode}
+                selectedPostingIds={selectedPostingIds}
+                onMultiSelect={onMultiSelect}
               />
 
               {/* Resize handle */}

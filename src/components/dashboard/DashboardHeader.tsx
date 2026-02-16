@@ -45,6 +45,11 @@ interface DashboardHeaderProps {
   searchInputRef?: MutableRefObject<HTMLInputElement | null>;
   statusFilter: PostingStatus | null;
   onStatusFilterChange: (status: PostingStatus | null) => void;
+  // Multi-select for keyword comparison
+  isMultiSelectMode?: boolean;
+  onToggleMultiSelect?: () => void;
+  selectedCount?: number;
+  onCompareKeywords?: () => void;
 }
 
 const priorityOptions = [
@@ -88,6 +93,11 @@ export function DashboardHeader({
   searchInputRef,
   statusFilter,
   onStatusFilterChange,
+  // Multi-select
+  isMultiSelectMode = false,
+  onToggleMultiSelect,
+  selectedCount = 0,
+  onCompareKeywords,
 }: DashboardHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -195,6 +205,42 @@ export function DashboardHeader({
             </svg>
           </button>
         </div>
+
+        {/* Multi-select for keyword comparison */}
+        {onToggleMultiSelect && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onToggleMultiSelect}
+              className={`flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                isMultiSelectMode
+                  ? 'border-indigo-300 bg-indigo-50 text-indigo-700'
+                  : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+              }`}
+              title="Toggle multi-select to compare keywords across jobs"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              {isMultiSelectMode ? 'Exit Compare' : 'Compare'}
+            </button>
+            {isMultiSelectMode && selectedCount > 0 && (
+              <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                {selectedCount} selected
+              </span>
+            )}
+            {isMultiSelectMode && selectedCount >= 2 && onCompareKeywords && (
+              <button
+                onClick={onCompareKeywords}
+                className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Compare Keywords
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Settings Menu with Export/Import */}
         <div className="relative" ref={menuRef}>

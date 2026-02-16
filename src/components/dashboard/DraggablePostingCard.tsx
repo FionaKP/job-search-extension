@@ -14,6 +14,10 @@ interface DraggablePostingCardProps {
   onConnectionClick?: () => void;
   isSelected?: boolean;
   columnWidth?: number;
+  // Multi-select props
+  isMultiSelectMode?: boolean;
+  isMultiSelected?: boolean;
+  onMultiSelect?: (id: string) => void;
 }
 
 export function DraggablePostingCard({
@@ -27,6 +31,9 @@ export function DraggablePostingCard({
   onConnectionClick,
   isSelected,
   columnWidth,
+  isMultiSelectMode,
+  isMultiSelected,
+  onMultiSelect,
 }: DraggablePostingCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: posting.id,
@@ -56,6 +63,9 @@ export function DraggablePostingCard({
         onConnectionClick={onConnectionClick}
         isSelected={isSelected}
         columnWidth={columnWidth}
+        isMultiSelectMode={isMultiSelectMode}
+        isMultiSelected={isMultiSelected}
+        onMultiSelect={onMultiSelect}
       />
     </div>
   );
