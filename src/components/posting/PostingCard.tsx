@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Posting, PostingStatus, STATUS_LABELS, isTerminalStatus, Connection, InterestLevel } from '@/types';
+import { Posting, PostingStatus, STATUS_LABELS, isTerminalStatus, Connection, InterestLevel, REJECTION_STAGE_LABELS } from '@/types';
 import { PriorityStars, TagChip, ContextMenu } from '@/components/common';
 import { ConnectionBadge } from '@/components/connections';
 import { KeywordMatchBadge } from '@/components/keywords';
@@ -181,6 +181,38 @@ function InterviewBadge({ posting }: { posting: Posting }) {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
       </svg>
       {label}
+    </span>
+  );
+}
+
+// Rejection badge component - shows rejection stage
+function RejectionBadge({ posting }: { posting: Posting }) {
+  if (posting.status !== 'rejected' || !posting.rejectionDetails) return null;
+
+  const stage = posting.rejectionDetails.stage;
+  const stageLabel = REJECTION_STAGE_LABELS[stage];
+
+  // Shorten labels for badge display
+  const shortLabels: Record<string, string> = {
+    'Application Stage': 'Applied',
+    'Phone Screen': 'Phone',
+    'Technical Interview': 'Technical',
+    'Onsite Interview': 'Onsite',
+    'Offer Stage': 'Offer',
+    'Unknown Stage': 'Unknown',
+  };
+
+  const shortLabel = shortLabels[stageLabel] || stageLabel;
+
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[10px] font-medium bg-flatred/10 text-flatred border-flatred/20"
+      title={`Rejected at ${stageLabel}`}
+    >
+      <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      </svg>
+      {shortLabel}
     </span>
   );
 }
@@ -460,6 +492,7 @@ export function PostingCard({
                 <KeywordMatchBadge keywords={posting.keywords} size="sm" />
                 <GoalDeadlineBadge posting={posting} />
                 <InterviewBadge posting={posting} />
+                <RejectionBadge posting={posting} />
               </div>
             </div>
 
@@ -543,6 +576,7 @@ export function PostingCard({
                 <KeywordMatchBadge keywords={posting.keywords} size="sm" />
                 <GoalDeadlineBadge posting={posting} />
                 <InterviewBadge posting={posting} />
+                <RejectionBadge posting={posting} />
                 <ConnectionBadge connections={linkedConnections} onClick={onConnectionClick} size="sm" />
               </>
             )}

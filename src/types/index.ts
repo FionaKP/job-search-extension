@@ -73,6 +73,8 @@ export interface Posting {
   interviews?: Interview[];
   prepNotes?: string;
   questionsToAsk?: InterviewQuestion[];
+  // Rejection Insights (V2)
+  rejectionDetails?: RejectionDetails;
 }
 
 // ============ Goal Reminders (V2) ============
@@ -155,6 +157,42 @@ export const DEFAULT_INTERVIEW_QUESTIONS = [
   'How do you measure performance?',
   'What\'s the work-life balance like?',
   'What are the next steps in the interview process?',
+];
+
+// ============ Rejection Insights (V2) ============
+
+export type RejectionStage =
+  | 'application'
+  | 'phone'
+  | 'technical'
+  | 'onsite'
+  | 'offer'
+  | 'unknown';
+
+export interface RejectionDetails {
+  stage: RejectionStage;
+  reason?: string;       // Brief reason if known
+  feedback?: string;     // Detailed feedback from company
+  takeaway?: string;     // User's lessons learned
+  rejectedAt: string;    // ISO date
+}
+
+export const REJECTION_STAGE_LABELS: Record<RejectionStage, string> = {
+  application: 'Application Stage',
+  phone: 'Phone Screen',
+  technical: 'Technical Interview',
+  onsite: 'Onsite Interview',
+  offer: 'Offer Stage',
+  unknown: 'Unknown Stage',
+};
+
+export const REJECTION_STAGE_ORDER: RejectionStage[] = [
+  'application',
+  'phone',
+  'technical',
+  'onsite',
+  'offer',
+  'unknown',
 ];
 
 // ============ Keywords (Phase 5) ============

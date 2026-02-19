@@ -5,6 +5,7 @@ import { ConnectionCard, QuickLinkModal } from '@/components/connections';
 import { KeywordsPanel } from '@/components/keywords';
 import { ApplicationGoalsPanel } from '@/components/goals';
 import { InterviewPrepPanel } from '@/components/interview';
+import { RejectionInsightsPanel } from '@/components/rejection';
 import { getLogoUrl } from '@/utils/logo';
 
 type Tab = 'details' | 'keywords' | 'connections';
@@ -348,6 +349,8 @@ function DetailsTab({
   const showGoalsPanel = posting.status === 'saved' || posting.status === 'in_progress';
   // Show interview prep for interviewing status
   const showInterviewPanel = posting.status === 'interviewing';
+  // Show rejection insights for rejected status
+  const showRejectionPanel = posting.status === 'rejected';
 
   const handleGoalUpdate = (updates: Partial<Posting>) => {
     onUpdate(posting.id, updates);
@@ -358,6 +361,10 @@ function DetailsTab({
   };
 
   const handleInterviewUpdate = (updates: Partial<Posting>) => {
+    onUpdate(posting.id, updates);
+  };
+
+  const handleRejectionUpdate = (updates: Partial<Posting>) => {
     onUpdate(posting.id, updates);
   };
 
@@ -377,6 +384,14 @@ function DetailsTab({
         <InterviewPrepPanel
           posting={posting}
           onUpdate={handleInterviewUpdate}
+        />
+      )}
+
+      {/* Rejection Insights Panel - shown for rejected */}
+      {showRejectionPanel && (
+        <RejectionInsightsPanel
+          posting={posting}
+          onUpdate={handleRejectionUpdate}
         />
       )}
 
