@@ -65,7 +65,97 @@ export interface Posting {
   // Keywords (Phase 5)
   keywords?: ExtractedKeyword[];
   keywordsExtractedAt?: number;
+  // Application Goals (V2)
+  applicationGoalDate?: string;  // ISO date - target date to apply by
+  snoozedUntil?: string;         // ISO date - hide reminders until this date
+  goalReminders?: GoalReminder[];
+  // Interview Prep (V2)
+  interviews?: Interview[];
+  prepNotes?: string;
+  questionsToAsk?: InterviewQuestion[];
 }
+
+// ============ Goal Reminders (V2) ============
+
+export type GoalReminderType = 'apply' | 'followup' | 'custom';
+
+export interface GoalReminder {
+  id: string;
+  type: GoalReminderType;
+  date: string;          // ISO date
+  message?: string;      // Custom message for 'custom' type
+  completed: boolean;
+}
+
+export const GOAL_REMINDER_TYPE_LABELS: Record<GoalReminderType, string> = {
+  apply: 'Apply Reminder',
+  followup: 'Follow Up',
+  custom: 'Custom Reminder',
+};
+
+// ============ Interview Prep (V2) ============
+
+export type InterviewType = 'phone' | 'video' | 'onsite';
+export type InterviewOutcome = 'positive' | 'neutral' | 'negative' | 'unknown';
+
+export interface Interview {
+  id: string;
+  round: number;
+  roundName: string;           // "Phone Screen", "Technical", "Onsite", etc.
+  date?: string;               // ISO date
+  time?: string;               // HH:MM format
+  type: InterviewType;
+  interviewers: string[];      // Names/roles of interviewers
+  notes: string;               // Notes about this round
+  completed: boolean;
+  outcome?: InterviewOutcome;
+}
+
+export interface InterviewQuestion {
+  id: string;
+  question: string;
+  asked: boolean;
+  answer?: string;             // Notes on their answer
+}
+
+export const INTERVIEW_TYPE_LABELS: Record<InterviewType, string> = {
+  phone: 'Phone',
+  video: 'Video',
+  onsite: 'Onsite',
+};
+
+export const INTERVIEW_OUTCOME_LABELS: Record<InterviewOutcome, string> = {
+  positive: 'Went Well',
+  neutral: 'Neutral',
+  negative: 'Could Be Better',
+  unknown: 'Unknown',
+};
+
+// Common round name suggestions
+export const COMMON_ROUND_NAMES = [
+  'Phone Screen',
+  'Recruiter Call',
+  'Technical Screen',
+  'Coding Interview',
+  'System Design',
+  'Behavioral',
+  'Hiring Manager',
+  'Team Interview',
+  'Onsite',
+  'Final Round',
+];
+
+// Default questions to suggest
+export const DEFAULT_INTERVIEW_QUESTIONS = [
+  'What does success look like in the first 90 days?',
+  'How does the team handle technical debt?',
+  'What\'s the biggest challenge the team is facing right now?',
+  'Can you describe the team structure and dynamics?',
+  'What does the typical career path look like?',
+  'How do you measure performance?',
+  'What\'s the work-life balance like?',
+  'What are the next steps in the interview process?',
+];
 
 // ============ Keywords (Phase 5) ============
 

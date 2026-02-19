@@ -3,6 +3,8 @@ import { Posting, PostingStatus, STATUS_LABELS, POSTING_STATUSES, Connection } f
 import { SlideOverPanel, PriorityStars, TagPopover, TagChip } from '@/components/common';
 import { ConnectionCard, QuickLinkModal } from '@/components/connections';
 import { KeywordsPanel } from '@/components/keywords';
+import { ApplicationGoalsPanel } from '@/components/goals';
+import { InterviewPrepPanel } from '@/components/interview';
 import { getLogoUrl } from '@/utils/logo';
 
 type Tab = 'details' | 'keywords' | 'connections';
@@ -342,8 +344,42 @@ function DetailsTab({
   handleNotesBlur: () => void;
   onUpdate: (id: string, updates: Partial<Posting>) => void;
 }) {
+  // Show goals panel for saved and in_progress statuses
+  const showGoalsPanel = posting.status === 'saved' || posting.status === 'in_progress';
+  // Show interview prep for interviewing status
+  const showInterviewPanel = posting.status === 'interviewing';
+
+  const handleGoalUpdate = (updates: Partial<Posting>) => {
+    onUpdate(posting.id, updates);
+  };
+
+  const handleGoalStatusChange = (status: 'in_progress' | 'withdrawn') => {
+    onUpdate(posting.id, { status });
+  };
+
+  const handleInterviewUpdate = (updates: Partial<Posting>) => {
+    onUpdate(posting.id, updates);
+  };
+
   return (
     <div className="space-y-4 p-4">
+      {/* Application Goals Panel - shown for saved/in_progress */}
+      {showGoalsPanel && (
+        <ApplicationGoalsPanel
+          posting={posting}
+          onUpdate={handleGoalUpdate}
+          onStatusChange={handleGoalStatusChange}
+        />
+      )}
+
+      {/* Interview Prep Panel - shown for interviewing */}
+      {showInterviewPanel && (
+        <InterviewPrepPanel
+          posting={posting}
+          onUpdate={handleInterviewUpdate}
+        />
+      )}
+
       <div className="flex items-center gap-4">
         <div className="flex-1">
           <label className="mb-1 block text-sm font-medium text-wine">Status</label>
@@ -386,15 +422,18 @@ function DetailsTab({
         </div>
       </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium text-wine">Next Action Date</label>
-        <input
-          type="date"
-          value={posting.nextActionDate || ''}
-          onChange={(e) => onUpdate(posting.id, { nextActionDate: e.target.value || undefined })}
-          className="w-full rounded-md border border-sage/30 px-3 py-2 text-sm text-wine focus:border-wine focus:outline-none focus:ring-1 focus:ring-wine"
-        />
-      </div>
+      {/* Hide Next Action Date when goals panel is shown - it's redundant */}
+      {!showGoalsPanel && (
+        <div>
+          <label className="mb-1 block text-sm font-medium text-wine">Next Action Date</label>
+          <input
+            type="date"
+            value={posting.nextActionDate || ''}
+            onChange={(e) => onUpdate(posting.id, { nextActionDate: e.target.value || undefined })}
+            className="w-full rounded-md border border-sage/30 px-3 py-2 text-sm text-wine focus:border-wine focus:outline-none focus:ring-1 focus:ring-wine"
+          />
+        </div>
+      )}
 
       {posting.salary && (
         <div>

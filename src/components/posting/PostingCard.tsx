@@ -69,6 +69,122 @@ function checkIsStale(posting: Posting): boolean {
   return getDaysSinceModified(posting.dateModified) >= 7;
 }
 
+// Get goal deadline info
+function getGoalInfo(posting: Posting): { daysUntil: number; status: 'upcoming' | 'soon' | 'overdue' } | null {
+  if (!posting.applicationGoalDate) return null;
+  if (posting.status !== 'saved' && posting.status !== 'in_progress') return null;
+
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const goalDate = new Date(posting.applicationGoalDate);
+  goalDate.setHours(0, 0, 0, 0);
+  const daysUntil = Math.floor((goalDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+  let status: 'upcoming' | 'soon' | 'overdue' = 'upcoming';
+  if (daysUntil < 0) status = 'overdue';
+  else if (daysUntil <= 3) status = 'soon';
+
+  return { daysUntil, status };
+}
+
+// Goal deadline badge component
+function GoalDeadlineBadge({ posting }: { posting: Posting }) {
+  const goalInfo = getGoalInfo(posting);
+  if (!goalInfo) return null;
+
+  const { daysUntil, status } = goalInfo;
+
+  const colors = {
+    upcoming: 'bg-teal-50 text-teal-700 border-teal-200',
+    soon: 'bg-pandora-50 text-pandora-700 border-pandora-200',
+    overdue: 'bg-flatred-50 text-flatred border-flatred-200',
+  };
+
+  const label = status === 'overdue'
+    ? `${Math.abs(daysUntil)}d late`
+    : daysUntil === 0
+      ? 'Today'
+      : `${daysUntil}d left`;
+
+  return (
+    <span
+      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[10px] font-medium ${colors[status]}`}
+      title={`Goal: Apply by ${posting.applicationGoalDate}`}
+    >
+      <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      {label}
+    </span>
+  );
+}
+
+// Interview badge component - shows next interview date
+function InterviewBadge({ posting }: { posting: Posting }) {
+  if (posting.status !== 'interviewing' || !posting.interviews?.length) return null;
+
+  // Find the next upcoming interview
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  const upcomingInterview = posting.interviews
+    .filter((i) => !i.completed && i.date)
+    .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime())
+    .find((i) => {
+      const interviewDate = new Date(i.date!);
+      interviewDate.setHours(0, 0, 0, 0);
+      return interviewDate >= now;
+    });
+
+  if (!upcomingInterview?.date) {
+    // Has interviews but none scheduled
+    const totalRounds = posting.interviews.length;
+    const completedRounds = posting.interviews.filter((i) => i.completed).length;
+    if (totalRounds > 0) {
+      return (
+        <span
+          className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[10px] font-medium bg-wine/10 text-wine border-wine/20"
+          title={`${completedRounds}/${totalRounds} rounds completed`}
+        >
+          <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          R{completedRounds}/{totalRounds}
+        </span>
+      );
+    }
+    return null;
+  }
+
+  const interviewDate = new Date(upcomingInterview.date);
+  interviewDate.setHours(0, 0, 0, 0);
+  const daysUntil = Math.floor((interviewDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+  const colors = daysUntil === 0
+    ? 'bg-flatred-50 text-flatred border-flatred-200'
+    : daysUntil <= 2
+      ? 'bg-pandora-50 text-pandora-700 border-pandora-200'
+      : 'bg-indigo-50 text-indigo-700 border-indigo-200';
+
+  const label = daysUntil === 0
+    ? 'Today!'
+    : daysUntil === 1
+      ? 'Tomorrow'
+      : `In ${daysUntil}d`;
+
+  return (
+    <span
+      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[10px] font-medium ${colors}`}
+      title={`${upcomingInterview.roundName} on ${upcomingInterview.date}${upcomingInterview.time ? ` at ${upcomingInterview.time}` : ''}`}
+    >
+      <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+      {label}
+    </span>
+  );
+}
+
 export function PostingCard({
   posting,
   onSelect,
@@ -342,6 +458,8 @@ export function PostingCard({
                   )}
                 </div>
                 <KeywordMatchBadge keywords={posting.keywords} size="sm" />
+                <GoalDeadlineBadge posting={posting} />
+                <InterviewBadge posting={posting} />
               </div>
             </div>
 
@@ -423,6 +541,8 @@ export function PostingCard({
                   )}
                 </div>
                 <KeywordMatchBadge keywords={posting.keywords} size="sm" />
+                <GoalDeadlineBadge posting={posting} />
+                <InterviewBadge posting={posting} />
                 <ConnectionBadge connections={linkedConnections} onClick={onConnectionClick} size="sm" />
               </>
             )}
