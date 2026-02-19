@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { Posting, PostingStatus, STATUS_LABELS, isTerminalStatus, Connection, InterestLevel, REJECTION_STAGE_LABELS } from '@/types';
 import { PriorityStars, TagChip, ContextMenu } from '@/components/common';
 import { ConnectionBadge } from '@/components/connections';
@@ -217,7 +217,7 @@ function RejectionBadge({ posting }: { posting: Posting }) {
   );
 }
 
-export function PostingCard({
+export const PostingCard = memo(function PostingCard({
   posting,
   onSelect,
   onPriorityChange,
@@ -593,4 +593,4 @@ export function PostingCard({
       </div>
     </ContextMenu>
   );
-}
+});

@@ -121,3 +121,5 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
     </>
   );
 }
+
+export default KeyboardShortcutsModal;
