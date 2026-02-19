@@ -31,12 +31,10 @@ interface DashboardHeaderProps {
   onDateToChange: (date: string | null) => void;
   hasDeadline: boolean;
   deadlineSoon: boolean;
-  needsAction: boolean;
   hasConnections: boolean;
   noConnections: boolean;
   onHasDeadlineChange: (value: boolean) => void;
   onDeadlineSoonChange: (value: boolean) => void;
-  onNeedsActionChange: (value: boolean) => void;
   onHasConnectionsChange: (value: boolean) => void;
   onNoConnectionsChange: (value: boolean) => void;
   onClearAllFilters: () => void;
@@ -79,12 +77,10 @@ export function DashboardHeader({
   onDateToChange,
   hasDeadline,
   deadlineSoon,
-  needsAction,
   hasConnections,
   noConnections,
   onHasDeadlineChange,
   onDeadlineSoonChange,
-  onNeedsActionChange,
   onHasConnectionsChange,
   onNoConnectionsChange,
   onClearAllFilters,
@@ -154,14 +150,12 @@ export function DashboardHeader({
           dateTo={dateTo}
           hasDeadline={hasDeadline}
           deadlineSoon={deadlineSoon}
-          needsAction={needsAction}
           hasConnections={hasConnections}
           noConnections={noConnections}
           onDateFromChange={onDateFromChange}
           onDateToChange={onDateToChange}
           onHasDeadlineChange={onHasDeadlineChange}
           onDeadlineSoonChange={onDeadlineSoonChange}
-          onNeedsActionChange={onNeedsActionChange}
           onHasConnectionsChange={onHasConnectionsChange}
           onNoConnectionsChange={onNoConnectionsChange}
           onClearAll={onClearAllFilters}

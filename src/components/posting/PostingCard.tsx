@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Posting, PostingStatus, STATUS_LABELS, isTerminalStatus, Connection, InterestLevel, REJECTION_STAGE_LABELS } from '@/types';
+import { Posting, PostingStatus, STATUS_LABELS, Connection, InterestLevel, REJECTION_STAGE_LABELS } from '@/types';
 import { PriorityStars, TagChip, ContextMenu } from '@/components/common';
 import { ConnectionBadge } from '@/components/connections';
 import { KeywordMatchBadge } from '@/components/keywords';
@@ -56,163 +56,162 @@ function getDaysSinceLabel(timestamp: number): string {
   return `${days}d`;
 }
 
-// Color coding for days: 0-3 subtle, 4-7 warning, 8+ urgent
-function getDaysColorClass(days: number, isStale: boolean): string {
-  if (days <= 3) return 'text-sage';
-  if (days <= 7) return 'text-pandora';
-  return isStale ? 'text-flatred font-semibold' : 'text-flatred';
-}
-
-// A posting is stale if non-terminal and no update in 7+ days
-function checkIsStale(posting: Posting): boolean {
-  if (isTerminalStatus(posting.status)) return false;
-  return getDaysSinceModified(posting.dateModified) >= 7;
-}
-
-// Get goal deadline info
-function getGoalInfo(posting: Posting): { daysUntil: number; status: 'upcoming' | 'soon' | 'overdue' } | null {
-  if (!posting.applicationGoalDate) return null;
-  if (posting.status !== 'saved' && posting.status !== 'in_progress') return null;
-
+// Unified date stamp - shows deadline if set, otherwise days since modified
+function DateStamp({ posting }: { posting: Posting }) {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  const goalDate = new Date(posting.applicationGoalDate);
-  goalDate.setHours(0, 0, 0, 0);
-  const daysUntil = Math.floor((goalDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-  let status: 'upcoming' | 'soon' | 'overdue' = 'upcoming';
-  if (daysUntil < 0) status = 'overdue';
-  else if (daysUntil <= 3) status = 'soon';
+  // Check for goal deadline (saved/in_progress)
+  if (posting.applicationGoalDate && (posting.status === 'saved' || posting.status === 'in_progress')) {
+    const goalDate = new Date(posting.applicationGoalDate);
+    goalDate.setHours(0, 0, 0, 0);
+    const daysUntil = Math.floor((goalDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-  return { daysUntil, status };
-}
+    const isOverdue = daysUntil < 0;
+    const isSoon = daysUntil >= 0 && daysUntil <= 3;
 
-// Goal deadline badge component
-function GoalDeadlineBadge({ posting }: { posting: Posting }) {
-  const goalInfo = getGoalInfo(posting);
-  if (!goalInfo) return null;
+    const colorClass = isOverdue
+      ? 'text-flatred font-semibold'
+      : isSoon
+        ? 'text-pandora-600 font-semibold'
+        : 'text-teal-600';
 
-  const { daysUntil, status } = goalInfo;
+    const label = isOverdue
+      ? `${Math.abs(daysUntil)}d late`
+      : daysUntil === 0
+        ? 'Today'
+        : `${daysUntil}d`;
 
-  const colors = {
-    upcoming: 'bg-teal-50 text-teal-700 border-teal-200',
-    soon: 'bg-pandora-50 text-pandora-700 border-pandora-200',
-    overdue: 'bg-flatred-50 text-flatred border-flatred-200',
-  };
+    return (
+      <div className={`flex items-center gap-1 text-xs ${colorClass}`} title={`Goal: Apply by ${posting.applicationGoalDate}`}>
+        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        {label}
+      </div>
+    );
+  }
 
-  const label = status === 'overdue'
-    ? `${Math.abs(daysUntil)}d late`
-    : daysUntil === 0
-      ? 'Today'
-      : `${daysUntil}d left`;
+  // Check for upcoming interview (interviewing)
+  if (posting.status === 'interviewing' && posting.interviews?.length) {
+    const upcomingInterview = posting.interviews
+      .filter((i) => !i.completed && i.date)
+      .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime())
+      .find((i) => {
+        const interviewDate = new Date(i.date!);
+        interviewDate.setHours(0, 0, 0, 0);
+        return interviewDate >= now;
+      });
 
+    if (upcomingInterview?.date) {
+      const interviewDate = new Date(upcomingInterview.date);
+      interviewDate.setHours(0, 0, 0, 0);
+      const daysUntil = Math.floor((interviewDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+      const colorClass = daysUntil === 0
+        ? 'text-flatred font-semibold'
+        : daysUntil <= 2
+          ? 'text-pandora-600 font-semibold'
+          : 'text-indigo-600';
+
+      const label = daysUntil === 0 ? 'Today' : daysUntil === 1 ? '1d' : `${daysUntil}d`;
+
+      return (
+        <div
+          className={`flex items-center gap-1 text-xs ${colorClass}`}
+          title={`${upcomingInterview.roundName} on ${upcomingInterview.date}${upcomingInterview.time ? ` at ${upcomingInterview.time}` : ''}`}
+        >
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          {label}
+        </div>
+      );
+    }
+  }
+
+  // Check for offer deadline
+  if (posting.status === 'offer' && posting.offerDetails?.deadline) {
+    const deadlineDate = new Date(posting.offerDetails.deadline);
+    deadlineDate.setHours(0, 0, 0, 0);
+    const daysUntil = Math.floor((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+
+    const isExpired = daysUntil < 0;
+    const isUrgent = daysUntil >= 0 && daysUntil <= 2;
+
+    const colorClass = isExpired
+      ? 'text-flatred font-semibold'
+      : isUrgent
+        ? 'text-pandora-600 font-semibold'
+        : 'text-teal-600';
+
+    const label = isExpired
+      ? `${Math.abs(daysUntil)}d ago`
+      : daysUntil === 0
+        ? 'Today'
+        : `${daysUntil}d`;
+
+    return (
+      <div className={`flex items-center gap-1 text-xs ${colorClass}`} title={`Offer deadline: ${posting.offerDetails.deadline}`}>
+        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        {label}
+      </div>
+    );
+  }
+
+  // Default: days since modified (neutral)
   return (
-    <span
-      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[10px] font-medium ${colors[status]}`}
-      title={`Goal: Apply by ${posting.applicationGoalDate}`}
-    >
-      <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-      {label}
-    </span>
+    <div className="text-xs text-wine/50">
+      {getDaysSinceLabel(posting.dateModified)}
+    </div>
   );
 }
 
-// Interview badge component - shows next interview date
+// Interview badge - only shows round progress (e.g., "R2/3"), date info is in DateStamp
 function InterviewBadge({ posting }: { posting: Posting }) {
   if (posting.status !== 'interviewing' || !posting.interviews?.length) return null;
 
-  // Find the next upcoming interview
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
+  const totalRounds = posting.interviews.length;
+  const completedRounds = posting.interviews.filter((i) => i.completed).length;
 
-  const upcomingInterview = posting.interviews
-    .filter((i) => !i.completed && i.date)
-    .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime())
-    .find((i) => {
-      const interviewDate = new Date(i.date!);
-      interviewDate.setHours(0, 0, 0, 0);
-      return interviewDate >= now;
-    });
-
-  if (!upcomingInterview?.date) {
-    // Has interviews but none scheduled
-    const totalRounds = posting.interviews.length;
-    const completedRounds = posting.interviews.filter((i) => i.completed).length;
-    if (totalRounds > 0) {
-      return (
-        <span
-          className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[10px] font-medium bg-wine/10 text-wine border-wine/20"
-          title={`${completedRounds}/${totalRounds} rounds completed`}
-        >
-          <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          R{completedRounds}/{totalRounds}
-        </span>
-      );
-    }
-    return null;
-  }
-
-  const interviewDate = new Date(upcomingInterview.date);
-  interviewDate.setHours(0, 0, 0, 0);
-  const daysUntil = Math.floor((interviewDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-  const colors = daysUntil === 0
-    ? 'bg-flatred-50 text-flatred border-flatred-200'
-    : daysUntil <= 2
-      ? 'bg-pandora-50 text-pandora-700 border-pandora-200'
-      : 'bg-indigo-50 text-indigo-700 border-indigo-200';
-
-  const label = daysUntil === 0
-    ? 'Today!'
-    : daysUntil === 1
-      ? 'Tomorrow'
-      : `In ${daysUntil}d`;
+  if (totalRounds === 0) return null;
 
   return (
     <span
-      className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[10px] font-medium ${colors}`}
-      title={`${upcomingInterview.roundName} on ${upcomingInterview.date}${upcomingInterview.time ? ` at ${upcomingInterview.time}` : ''}`}
+      className="flex-shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-wine/10 text-wine"
+      title={`${completedRounds}/${totalRounds} rounds completed`}
     >
-      <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-      </svg>
-      {label}
+      R{completedRounds}/{totalRounds}
     </span>
   );
 }
 
-// Rejection badge component - shows rejection stage
+// Rejection badge component - simple pill showing stage reached
 function RejectionBadge({ posting }: { posting: Posting }) {
   if (posting.status !== 'rejected' || !posting.rejectionDetails) return null;
 
   const stage = posting.rejectionDetails.stage;
-  const stageLabel = REJECTION_STAGE_LABELS[stage];
 
-  // Shorten labels for badge display
+  // Very short labels for badge
   const shortLabels: Record<string, string> = {
-    'Application Stage': 'Applied',
-    'Phone Screen': 'Phone',
-    'Technical Interview': 'Technical',
-    'Onsite Interview': 'Onsite',
-    'Offer Stage': 'Offer',
-    'Unknown Stage': 'Unknown',
+    application: 'App',
+    phone: 'Phone',
+    technical: 'Tech',
+    onsite: 'Onsite',
+    offer: 'Offer',
+    unknown: '?',
   };
 
-  const shortLabel = shortLabels[stageLabel] || stageLabel;
+  const shortLabel = shortLabels[stage] || stage;
 
   return (
     <span
-      className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border text-[10px] font-medium bg-flatred/10 text-flatred border-flatred/20"
-      title={`Rejected at ${stageLabel}`}
+      className="flex-shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-sage/20 text-wine/60"
+      title={`Rejected at ${REJECTION_STAGE_LABELS[stage]}`}
     >
-      <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-      </svg>
-      {shortLabel}
+      @{shortLabel}
     </span>
   );
 }
@@ -281,9 +280,6 @@ export function PostingCard({
     },
   ];
 
-  const isStale = checkIsStale(posting);
-  const daysSince = getDaysSinceModified(posting.dateModified);
-  const daysColorClass = getDaysColorClass(daysSince, isStale);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -337,7 +333,7 @@ export function PostingCard({
           tabIndex={0}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
-          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}. Status: ${STATUS_LABELS[posting.status]}${isStale ? '. Needs attention' : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
+          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}. Status: ${STATUS_LABELS[posting.status]}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
           className={`group flex cursor-pointer items-center bg-white px-4 py-3 transition-colors hover:bg-champagne-50/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-wine focus-visible:bg-champagne-50/50 ${
             isMultiSelected ? 'bg-indigo-50/50' : ''
           }`}
@@ -346,7 +342,7 @@ export function PostingCard({
           {isMultiSelectMode && <MultiSelectCheckbox />}
 
           {/* Logo */}
-          <div className="relative w-12 flex-shrink-0">
+          <div className="w-12 flex-shrink-0">
             {showLogo ? (
               <img
                 src={logoUrl}
@@ -358,11 +354,6 @@ export function PostingCard({
             ) : (
               <div className="flex h-9 w-9 items-center justify-center rounded-md bg-champagne-100 text-xs font-semibold text-wine/70">
                 {getInitials(posting.company)}
-              </div>
-            )}
-            {isStale && (
-              <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-flatred text-white">
-                <span className="text-[10px] font-bold">!</span>
               </div>
             )}
           </div>
@@ -403,9 +394,9 @@ export function PostingCard({
             <PriorityStars priority={posting.interest} onChange={(p) => onPriorityChange(posting.id, p)} size="sm" />
           </div>
 
-          {/* Updated */}
-          <div className={`w-[50px] flex-shrink-0 px-2 text-right text-xs ${daysColorClass}`}>
-            {getDaysSinceLabel(posting.dateModified)}
+          {/* Updated / Deadline */}
+          <div className="w-[60px] flex-shrink-0 px-2 flex justify-end">
+            <DateStamp posting={posting} />
           </div>
 
           {/* Connections */}
@@ -426,12 +417,10 @@ export function PostingCard({
           tabIndex={0}
           onClick={handleClick}
           onKeyDown={handleKeyDown}
-          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isStale ? '. Needs attention' : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
-          className={`relative group cursor-pointer rounded-lg border bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
-            isStale ? 'border-flatred/30' : 'border-sage/20'
-          } ${isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''} ${
-            isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''
-          } px-3 py-2`}
+          aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
+          className={`relative group cursor-pointer rounded-lg border border-sage/20 bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
+            isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''
+          } ${isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''} px-3 py-2`}
         >
           {/* Compact horizontal layout */}
           <div className="flex items-center gap-3">
@@ -439,7 +428,7 @@ export function PostingCard({
             {isMultiSelectMode && <MultiSelectCheckbox />}
 
             {/* Logo */}
-            <div className="relative flex-shrink-0">
+            <div className="flex-shrink-0">
               {showLogo ? (
                 <img
                   src={logoUrl}
@@ -453,13 +442,6 @@ export function PostingCard({
                   {getInitials(posting.company)}
                 </div>
               )}
-              {isStale && (
-                <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-flatred-50">
-                  <svg className="h-3 w-3 text-flatred" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                </div>
-              )}
             </div>
 
             {/* Title & details - horizontal flow */}
@@ -470,43 +452,32 @@ export function PostingCard({
                 <span className="text-wine/30 flex-shrink-0">•</span>
                 <p className="truncate text-sm text-wine/60">{posting.company}</p>
               </div>
-              {/* Row 2: Location | Stars | Tags */}
-              <div className="flex items-center gap-2 mt-0.5">
+              {/* Row 2: Location | Stars | Tags | Badges */}
+              <div className="flex items-center gap-1.5 mt-0.5 overflow-hidden">
                 {posting.location && (
-                  <>
-                    <p className="truncate text-xs text-wine/50 max-w-[120px]">{posting.location}</p>
-                    <span className="text-wine/20 flex-shrink-0">|</span>
-                  </>
+                  <p className="truncate text-xs text-wine/50 max-w-[100px] flex-shrink-0">{posting.location}</p>
                 )}
-                <div className="flex items-center gap-1.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                   <PriorityStars priority={posting.interest} onChange={(p) => onPriorityChange(posting.id, p)} size="sm" />
                 </div>
-                <div className="flex gap-1 overflow-hidden">
-                  {posting.tags.slice(0, 2).map((tag) => (
+                <div className="flex gap-1 overflow-hidden min-w-0">
+                  {posting.tags.slice(0, 1).map((tag) => (
                     <TagChip key={tag} tag={tag} size="sm" />
                   ))}
-                  {posting.tags.length > 2 && (
-                    <span className="text-xs text-sage flex-shrink-0">+{posting.tags.length - 2}</span>
+                  {posting.tags.length > 1 && (
+                    <span className="text-[10px] text-sage flex-shrink-0">+{posting.tags.length - 1}</span>
                   )}
                 </div>
                 <KeywordMatchBadge keywords={posting.keywords} size="sm" />
-                <GoalDeadlineBadge posting={posting} />
                 <InterviewBadge posting={posting} />
                 <RejectionBadge posting={posting} />
               </div>
             </div>
 
-            {/* Right side: connections & days */}
+            {/* Right side: connections & date/deadline */}
             <div className="flex items-center gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
               <ConnectionBadge connections={linkedConnections} onClick={onConnectionClick} size="sm" />
-              <div className={`flex items-center gap-1 text-xs ${daysColorClass}`}>
-                {isStale && (
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                )}
-                {getDaysSinceLabel(posting.dateModified)}
-              </div>
+              <DateStamp posting={posting} />
             </div>
           </div>
         </div>
@@ -522,17 +493,15 @@ export function PostingCard({
         tabIndex={0}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
-        aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isStale ? '. Needs attention' : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
-        className={`relative group cursor-pointer rounded-lg border bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
-          isStale ? 'border-flatred/30' : 'border-sage/20'
-        } ${isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''} ${
-          isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''
-        } p-3`}
+        aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
+        className={`relative group cursor-pointer rounded-lg border border-sage/20 bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
+          isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''
+        } ${isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''} p-3`}
       >
         <div className="flex items-start gap-3">
           {/* Multi-select checkbox */}
           {isMultiSelectMode && <MultiSelectCheckbox />}
-          <div className="relative flex-shrink-0">
+          <div className="flex-shrink-0">
             {showLogo ? (
               <img
                 src={logoUrl}
@@ -546,13 +515,6 @@ export function PostingCard({
                 {getInitials(posting.company)}
               </div>
             )}
-            {isStale && (
-              <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-flatred-50">
-                <svg className="h-3 w-3 text-flatred" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-              </div>
-            )}
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate font-medium text-wine">{posting.title}</p>
@@ -560,35 +522,27 @@ export function PostingCard({
             {!isCompact && <p className="truncate text-xs text-wine/50">{posting.location}</p>}
           </div>
         </div>
-        <div className="flex items-center justify-between mt-3">
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mt-3 gap-2">
+          <div className="flex items-center gap-1.5 overflow-hidden min-w-0" onClick={(e) => e.stopPropagation()}>
             <PriorityStars priority={posting.interest} onChange={(p) => onPriorityChange(posting.id, p)} size="sm" />
             {!isCompact && (
               <>
-                <div className="flex gap-1 overflow-hidden">
-                  {posting.tags.slice(0, 2).map((tag) => (
+                <div className="flex gap-1 overflow-hidden min-w-0">
+                  {posting.tags.slice(0, 1).map((tag) => (
                     <TagChip key={tag} tag={tag} size="sm" />
                   ))}
-                  {posting.tags.length > 2 && (
-                    <span className="text-xs text-sage">+{posting.tags.length - 2}</span>
+                  {posting.tags.length > 1 && (
+                    <span className="text-[10px] text-sage flex-shrink-0">+{posting.tags.length - 1}</span>
                   )}
                 </div>
                 <KeywordMatchBadge keywords={posting.keywords} size="sm" />
-                <GoalDeadlineBadge posting={posting} />
                 <InterviewBadge posting={posting} />
                 <RejectionBadge posting={posting} />
                 <ConnectionBadge connections={linkedConnections} onClick={onConnectionClick} size="sm" />
               </>
             )}
           </div>
-          <div className={`flex items-center gap-1 text-xs ${daysColorClass}`}>
-            {isStale && (
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            )}
-            {getDaysSinceLabel(posting.dateModified)}
-          </div>
+          <DateStamp posting={posting} />
         </div>
       </div>
     </ContextMenu>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Posting, PostingStatus, ViewMode, isTerminalStatus, Connection } from '@/types';
+import { Posting, PostingStatus, ViewMode, Connection } from '@/types';
 import { Sidebar } from '@/components/layout';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { KanbanBoard } from '@/components/dashboard/KanbanBoard';
@@ -56,7 +56,6 @@ function App() {
   const [dateTo, setDateTo] = useState<string | null>(null);
   const [hasDeadline, setHasDeadline] = useState(false);
   const [deadlineSoon, setDeadlineSoon] = useState(false);
-  const [needsAction, setNeedsAction] = useState(false);
   const [hasConnectionsFilter, setHasConnectionsFilter] = useState(false);
   const [noConnectionsFilter, setNoConnectionsFilter] = useState(false);
 
@@ -201,13 +200,6 @@ function App() {
     return Array.from(companies).sort();
   }, [postings]);
 
-  // Helper: check if posting is stale (no update in 7+ days, non-terminal status)
-  const isStale = (posting: Posting): boolean => {
-    if (isTerminalStatus(posting.status)) return false;
-    const daysSinceUpdate = (Date.now() - posting.dateModified) / (1000 * 60 * 60 * 24);
-    return daysSinceUpdate >= 7;
-  };
-
   // Helper: check if deadline is soon (within 7 days)
   const isDeadlineSoon = (posting: Posting): boolean => {
     if (!posting.nextActionDate) return false;
@@ -257,9 +249,6 @@ function App() {
       // Deadline soon filter
       const matchesDeadlineSoon = !deadlineSoon || isDeadlineSoon(posting);
 
-      // Needs action filter
-      const matchesNeedsAction = !needsAction || isStale(posting);
-
       // Networking filters
       const linkedConnections = connections.filter((c) => c.linkedPostingIds.includes(posting.id));
       const matchesHasConnections = !hasConnectionsFilter || linkedConnections.length > 0;
@@ -275,7 +264,6 @@ function App() {
         matchesDateTo &&
         matchesHasDeadline &&
         matchesDeadlineSoon &&
-        matchesNeedsAction &&
         matchesHasConnections &&
         matchesNoConnections
       );
@@ -292,7 +280,6 @@ function App() {
     dateTo,
     hasDeadline,
     deadlineSoon,
-    needsAction,
     hasConnectionsFilter,
     noConnectionsFilter,
   ]);
@@ -308,11 +295,10 @@ function App() {
     if (dateFrom || dateTo) count++;
     if (hasDeadline) count++;
     if (deadlineSoon) count++;
-    if (needsAction) count++;
     if (hasConnectionsFilter) count++;
     if (noConnectionsFilter) count++;
     return count;
-  }, [searchQuery, priorityFilter, statusFilter, tagFilters, companyFilter, dateFrom, dateTo, hasDeadline, deadlineSoon, needsAction, hasConnectionsFilter, noConnectionsFilter]);
+  }, [searchQuery, priorityFilter, statusFilter, tagFilters, companyFilter, dateFrom, dateTo, hasDeadline, deadlineSoon, hasConnectionsFilter, noConnectionsFilter]);
 
   // Clear all filters
   const handleClearAllFilters = useCallback(() => {
@@ -325,7 +311,6 @@ function App() {
     setDateTo(null);
     setHasDeadline(false);
     setDeadlineSoon(false);
-    setNeedsAction(false);
     setHasConnectionsFilter(false);
     setNoConnectionsFilter(false);
   }, []);
@@ -733,12 +718,10 @@ function App() {
             onDateToChange={setDateTo}
             hasDeadline={hasDeadline}
             deadlineSoon={deadlineSoon}
-            needsAction={needsAction}
             hasConnections={hasConnectionsFilter}
             noConnections={noConnectionsFilter}
             onHasDeadlineChange={setHasDeadline}
             onDeadlineSoonChange={setDeadlineSoon}
-            onNeedsActionChange={setNeedsAction}
             onHasConnectionsChange={setHasConnectionsFilter}
             onNoConnectionsChange={setNoConnectionsFilter}
             onClearAllFilters={handleClearAllFilters}

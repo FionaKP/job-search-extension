@@ -75,6 +75,8 @@ export interface Posting {
   questionsToAsk?: InterviewQuestion[];
   // Rejection Insights (V2)
   rejectionDetails?: RejectionDetails;
+  // Offer Details (V2)
+  offerDetails?: OfferDetails;
 }
 
 // ============ Goal Reminders (V2) ============
@@ -193,6 +195,56 @@ export const REJECTION_STAGE_ORDER: RejectionStage[] = [
   'onsite',
   'offer',
   'unknown',
+];
+
+// ============ Offer Details (V2) ============
+
+export type BonusType = 'percentage' | 'fixed';
+export type WorkLocation = 'remote' | 'hybrid' | 'onsite';
+
+export interface OfferDetails {
+  baseSalary?: number;
+  bonus?: {
+    type: BonusType;
+    value: number;
+  };
+  equity?: {
+    shares?: number;
+    value?: number;          // Estimated annual value
+    vestingYears?: number;   // Typically 4
+  };
+  signOn?: number;
+  benefits: string[];
+  workLocation?: WorkLocation;
+  pto?: string;              // e.g., "Unlimited", "20 days"
+  deadline?: string;         // ISO date - offer expiration
+  notes: string;
+  negotiationHistory?: NegotiationNote[];
+}
+
+export interface NegotiationNote {
+  id: string;
+  date: string;              // ISO date
+  note: string;
+}
+
+export const WORK_LOCATION_LABELS: Record<WorkLocation, string> = {
+  remote: 'Remote',
+  hybrid: 'Hybrid',
+  onsite: 'Onsite',
+};
+
+export const COMMON_BENEFITS = [
+  'Health Insurance',
+  'Dental/Vision',
+  '401k Match',
+  'Unlimited PTO',
+  'Remote Work',
+  'Stock Options',
+  'Signing Bonus',
+  'Relocation Assistance',
+  'Parental Leave',
+  'Learning Budget',
 ];
 
 // ============ Keywords (Phase 5) ============
@@ -325,7 +377,6 @@ export interface FilterState {
   };
   hasDeadline: boolean;
   deadlineSoon: boolean; // Within 7 days
-  needsAction: boolean; // No update in 7+ days, non-terminal status
 }
 
 export const TERMINAL_STATUSES: PostingStatus[] = ['accepted', 'rejected', 'withdrawn'];

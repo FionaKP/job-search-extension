@@ -40,35 +40,21 @@ export function KeywordMatchBadge({
 
   const sizeClasses = size === 'sm' ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2 py-1';
 
-  // Color based on coverage
+  // Color based on coverage - simple pill style without border
   const coverageColor =
     stats.percentage >= 75
-      ? 'bg-teal-50 text-teal-700 border-teal-200'
+      ? 'bg-teal-100 text-teal-700'
       : stats.percentage >= 50
-        ? 'bg-pandora-50 text-pandora-700 border-pandora-200'
-        : 'bg-sage-50 text-sage-600 border-sage-200';
+        ? 'bg-pandora-100 text-pandora-700'
+        : 'bg-sage/20 text-sage-600';
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 flex-shrink-0">
       {/* Coverage badge */}
       <span
-        className={`inline-flex items-center gap-0.5 rounded border font-medium ${sizeClasses} ${coverageColor}`}
+        className={`rounded-full font-medium ${sizeClasses} ${coverageColor}`}
         title={`${stats.addressed}/${stats.total} keywords addressed (${stats.percentage}%)`}
       >
-        <svg
-          className={size === 'sm' ? 'w-2.5 h-2.5' : 'w-3 h-3'}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-          />
-        </svg>
         {stats.percentage}%
       </span>
 

@@ -6,6 +6,7 @@ import { KeywordsPanel } from '@/components/keywords';
 import { ApplicationGoalsPanel } from '@/components/goals';
 import { InterviewPrepPanel } from '@/components/interview';
 import { RejectionInsightsPanel } from '@/components/rejection';
+import { OfferDetailsPanel } from '@/components/offer';
 import { getLogoUrl } from '@/utils/logo';
 
 type Tab = 'details' | 'keywords' | 'connections';
@@ -349,6 +350,8 @@ function DetailsTab({
   const showGoalsPanel = posting.status === 'saved' || posting.status === 'in_progress';
   // Show interview prep for interviewing status
   const showInterviewPanel = posting.status === 'interviewing';
+  // Show offer details for offer status
+  const showOfferPanel = posting.status === 'offer';
   // Show rejection insights for rejected status
   const showRejectionPanel = posting.status === 'rejected';
 
@@ -368,6 +371,14 @@ function DetailsTab({
     onUpdate(posting.id, updates);
   };
 
+  const handleOfferUpdate = (updates: Partial<Posting>) => {
+    onUpdate(posting.id, updates);
+  };
+
+  const handleOfferStatusChange = (status: 'accepted' | 'rejected' | 'withdrawn') => {
+    onUpdate(posting.id, { status });
+  };
+
   return (
     <div className="space-y-4 p-4">
       {/* Application Goals Panel - shown for saved/in_progress */}
@@ -384,6 +395,15 @@ function DetailsTab({
         <InterviewPrepPanel
           posting={posting}
           onUpdate={handleInterviewUpdate}
+        />
+      )}
+
+      {/* Offer Details Panel - shown for offer */}
+      {showOfferPanel && (
+        <OfferDetailsPanel
+          posting={posting}
+          onUpdate={handleOfferUpdate}
+          onStatusChange={handleOfferStatusChange}
         />
       )}
 

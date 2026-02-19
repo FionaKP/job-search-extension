@@ -6,14 +6,12 @@ interface MoreFiltersPanelProps {
   dateTo: string | null;
   hasDeadline: boolean;
   deadlineSoon: boolean;
-  needsAction: boolean;
   hasConnections: boolean;
   noConnections: boolean;
   onDateFromChange: (date: string | null) => void;
   onDateToChange: (date: string | null) => void;
   onHasDeadlineChange: (value: boolean) => void;
   onDeadlineSoonChange: (value: boolean) => void;
-  onNeedsActionChange: (value: boolean) => void;
   onHasConnectionsChange: (value: boolean) => void;
   onNoConnectionsChange: (value: boolean) => void;
   onClearAll: () => void;
@@ -24,14 +22,12 @@ export function MoreFiltersPanel({
   dateTo,
   hasDeadline,
   deadlineSoon,
-  needsAction,
   hasConnections,
   noConnections,
   onDateFromChange,
   onDateToChange,
   onHasDeadlineChange,
   onDeadlineSoonChange,
-  onNeedsActionChange,
   onHasConnectionsChange,
   onNoConnectionsChange,
   onClearAll,
@@ -53,7 +49,6 @@ export function MoreFiltersPanel({
     dateFrom !== null || dateTo !== null,
     hasDeadline,
     deadlineSoon,
-    needsAction,
     hasConnections,
     noConnections,
   ].filter(Boolean).length;
@@ -118,16 +113,6 @@ export function MoreFiltersPanel({
                   className="checkbox checkbox-sm"
                 />
                 <span>Deadline within 7 days</span>
-              </label>
-
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  checked={needsAction}
-                  onChange={(e) => onNeedsActionChange(e.target.checked)}
-                  className="checkbox checkbox-sm"
-                />
-                <span>Needs action (stale)</span>
               </label>
             </div>
 

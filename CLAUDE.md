@@ -78,11 +78,12 @@ After building, load `dist/` folder as unpacked extension in Chrome.
 - **Scraper:** Parsers for LinkedIn, Indeed, Greenhouse, Lever, Workday, Glassdoor, Wellfound, generic (~98%)
 - **Visual Polish:** Collapsible columns, stale indicators, date coding, empty states (~75%)
 - **Accessibility:** Initial pass completed and verified (recent commit)
-- **Application Goals Panel:** Added to detail panel for Saved status
-- **Interview Prep Panel:** Added to detail panel for Interview status
+- **Application Goals Panel:** Added to detail panel for Saved/In Progress status
+- **Interview Prep Panel:** Added to detail panel for Interviewing status
+- **Offer Details Panel:** Added to detail panel for Offer status
 - **Rejection Insights Panel:** Added to detail panel for Rejected status
 
-### Current Branch: `feature/status-rejected-insights`
+### Current Branch: `feature/status-interview-prep`
 
 ## Do Not Touch (Active Development)
 
@@ -95,6 +96,8 @@ src/components/interview/InterviewPrepPanel.tsx
 src/components/interview/index.ts
 src/components/rejection/RejectionInsightsPanel.tsx
 src/components/rejection/index.ts
+src/components/offer/OfferDetailsPanel.tsx
+src/components/offer/index.ts
 src/components/dashboard/PostingDetailPanel.tsx  # Integrates status panels
 ```
 
@@ -132,11 +135,11 @@ src/components/dashboard/PostingDetailPanel.tsx  # Integrates status panels
 - **Scope:** Multi-select mode on dashboard, keyword tags on PostingCard
 - **Files:** `src/components/keywords/*`, `src/components/posting/PostingCard.tsx`
 
-### 6. Offer Comparison (Status Feature - Not Started)
+### 6. Offer Comparison Enhancement (Optional)
 - **Doc:** `docs/v2/V2_STATUS_FEATURES.md` (Section 4)
 - **Branch:** `feature/status-offer-compare`
-- **Scope:** Offer details entry, side-by-side comparison, weighted scoring
-- **Files to create:** `src/components/offer/*`
+- **Scope:** Side-by-side comparison modal for multiple offers (basic offer details entry is complete)
+- **Files:** `src/components/offer/*`
 
 ## File Organization
 
@@ -148,7 +151,22 @@ src/components/dashboard/PostingDetailPanel.tsx  # Integrates status panels
 
 ## Git Workflow
 
-- Main branch: `main`
-- Feature branches: `feature/*`
-- Fix branches: `fix/*`
+**Long-lived branches:**
+- `main` - Production releases only
+- `develop` - Integration branch for V2 work
+
+**Short-lived branches:**
+- `feature/*` - New features, branched from `develop`
+- `fix/*` - Bug fixes, branched from `develop`
+
+**Branch lifecycle:**
+1. Create branch from `develop`: `git checkout -b feature/my-feature develop`
+2. Work on feature, run `npm run build` before commits
+3. Merge back to `develop` when complete
+4. Delete branch after merge: `git branch -d feature/my-feature`
+5. If using worktrees, remove after branch is merged: `git worktree remove ../path-to-worktree`
+
+**Rules:**
+- Never commit directly to `main` or `develop`
 - Always run `npm run build` before committing to verify no type errors
+- Delete feature/fix branches after merging (don't let them linger)
