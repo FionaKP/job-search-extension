@@ -1,9 +1,43 @@
 import { useState, memo } from 'react';
-import { Posting, PostingStatus, STATUS_LABELS, Connection, InterestLevel, REJECTION_STAGE_LABELS } from '@/types';
+import { Posting, PostingStatus, STATUS_LABELS, Connection, InterestLevel, REJECTION_STAGE_LABELS, SECONDARY_STATUSES, SECONDARY_STATUS_CONFIG } from '@/types';
 import { PriorityStars, TagChip, ContextMenu } from '@/components/common';
 import { ConnectionBadge } from '@/components/connections';
 import { KeywordMatchBadge } from '@/components/keywords';
 import { getLogoUrl } from '@/utils/logo';
+
+// Dog-ear indicator for sub-statuses (in_progress, accepted)
+function DogEarIndicator({ status }: { status: PostingStatus }) {
+  if (!SECONDARY_STATUSES.includes(status)) return null;
+
+  const config = SECONDARY_STATUS_CONFIG[status];
+  if (!config) return null;
+
+  // Both in_progress and accepted use the same wine/red bookmark color
+  const color = '#7A4A63'; // wine-400 - bold enough to stand out
+
+  return (
+    <div
+      className="absolute top-0 right-0 pointer-events-none z-10"
+      title={config.label}
+      aria-label={config.label}
+    >
+      {/* Triangle fold - colored in TOP RIGHT corner */}
+      <div
+        className="w-6 h-6"
+        style={{
+          background: `linear-gradient(225deg, ${color} 50%, transparent 50%)`,
+        }}
+      />
+      {/* Inner highlight for fold depth */}
+      <div
+        className="absolute top-0 right-0 w-4 h-4"
+        style={{
+          background: `linear-gradient(225deg, rgba(255,255,255,0.3) 50%, transparent 50%)`,
+        }}
+      />
+    </div>
+  );
+}
 
 // Status badge colors matching the vintage palette
 // Red = rejected, Green = applied, Blue/Wine = interviewing
@@ -325,6 +359,13 @@ export const PostingCard = memo(function PostingCard({
     </div>
   );
 
+  // Sub-status left border for list view
+  const listSubStatusBorder = SECONDARY_STATUSES.includes(posting.status)
+    ? posting.status === 'in_progress'
+      ? 'border-l-4 border-l-champagne-400'
+      : 'border-l-4 border-l-teal-600'
+    : '';
+
   if (variant === 'list') {
     return (
       <ContextMenu items={contextMenuItems}>
@@ -336,7 +377,7 @@ export const PostingCard = memo(function PostingCard({
           aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}. Status: ${STATUS_LABELS[posting.status]}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
           className={`group flex cursor-pointer items-center bg-white px-4 py-3 transition-colors hover:bg-champagne-50/50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-wine focus-visible:bg-champagne-50/50 ${
             isMultiSelected ? 'bg-indigo-50/50' : ''
-          }`}
+          } ${listSubStatusBorder}`}
         >
           {/* Multi-select checkbox */}
           {isMultiSelectMode && <MultiSelectCheckbox />}
@@ -420,8 +461,11 @@ export const PostingCard = memo(function PostingCard({
           aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
           className={`relative group cursor-pointer rounded-lg border border-sage/20 bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
             isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''
-          } ${isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''} px-3 py-2`}
+          } ${isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''} px-3 py-2 overflow-hidden`}
         >
+          {/* Dog-ear indicator for sub-statuses */}
+          <DogEarIndicator status={posting.status} />
+
           {/* Compact horizontal layout */}
           <div className="flex items-center gap-3">
             {/* Multi-select checkbox */}
@@ -496,8 +540,11 @@ export const PostingCard = memo(function PostingCard({
         aria-label={`${posting.title} at ${posting.company}${posting.location ? `, ${posting.location}` : ''}${isMultiSelectMode ? `. ${isMultiSelected ? 'Selected' : 'Not selected'}` : ''}`}
         className={`relative group cursor-pointer rounded-lg border border-sage/20 bg-white shadow-sm transition-all duration-base hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-wine focus-visible:ring-offset-2 ${
           isSelected ? 'bg-champagne-50 ring-2 ring-champagne-300' : ''
-        } ${isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''} p-3`}
+        } ${isMultiSelected ? 'ring-2 ring-indigo-400 bg-indigo-50/30' : ''} p-3 overflow-hidden`}
       >
+        {/* Dog-ear indicator for sub-statuses */}
+        <DogEarIndicator status={posting.status} />
+
         <div className="flex items-start gap-3">
           {/* Multi-select checkbox */}
           {isMultiSelectMode && <MultiSelectCheckbox />}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Posting, PostingStatus, STATUS_LABELS, POSTING_STATUSES, Connection } from '@/types';
+import { Posting, PostingStatus, STATUS_LABELS, POSTING_STATUSES, Connection, SECONDARY_STATUSES, SECONDARY_STATUS_CONFIG } from '@/types';
 import { SlideOverPanel, PriorityStars, TagPopover, TagChip } from '@/components/common';
 import { ConnectionCard, QuickLinkModal } from '@/components/connections';
 import { KeywordsPanel } from '@/components/keywords';
@@ -144,7 +144,15 @@ export function PostingDetailPanel({
                 );
               })()}
               <div className="min-w-0">
-                <h2 className="text-lg font-semibold text-wine">{posting.title}</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-wine">{posting.title}</h2>
+                  {/* Sub-status badge for in_progress and accepted */}
+                  {SECONDARY_STATUSES.includes(posting.status) && SECONDARY_STATUS_CONFIG[posting.status] && (
+                    <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium border ${SECONDARY_STATUS_CONFIG[posting.status].colorClass}`}>
+                      {SECONDARY_STATUS_CONFIG[posting.status].label}
+                    </span>
+                  )}
+                </div>
                 <p className="text-wine/80">{posting.company}</p>
                 {posting.location && <p className="text-sm text-wine/60">{posting.location}</p>}
               </div>

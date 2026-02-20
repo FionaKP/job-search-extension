@@ -12,9 +12,10 @@ import {
   DragOverEvent,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Posting, PostingStatus, KANBAN_COLUMNS, Connection, InterestLevel } from '@/types';
+import { Posting, PostingStatus, VISUAL_COLUMNS, VisualColumn, VisualColumnId, Connection, InterestLevel } from '@/types';
 import { KanbanColumn } from './KanbanColumn';
 import { CollapsedColumn } from './CollapsedColumn';
+import { WithdrawnDrawer } from './WithdrawnDrawer';
 import { PostingCard } from '@/components/posting';
 
 interface KanbanBoardProps {
@@ -25,8 +26,8 @@ interface KanbanBoardProps {
   onDelete: (id: string) => void;
   onEdit?: (id: string) => void;
   onAdd?: (status: PostingStatus) => void;
-  collapsedColumns: PostingStatus[];
-  onCollapseChange: (columns: PostingStatus[]) => void;
+  collapsedColumns: VisualColumnId[];
+  onCollapseChange: (columns: VisualColumnId[]) => void;
   getLinkedConnections?: (postingId: string) => Connection[];
   onConnectionClick?: (postingId: string) => void;
   selectedPostingId?: string | null;
@@ -42,20 +43,17 @@ const MIN_COLUMN_WIDTH = 220;
 const MAX_COLUMN_WIDTH = 500;
 
 // Color mapping for collapsed tab vertical bar (folder effect)
-const TAB_BG_COLORS: Record<PostingStatus, string> = {
+const TAB_BG_COLORS: Record<VisualColumnId, string> = {
   saved: 'bg-pandora',
-  in_progress: 'bg-champagne-400',
   applied: 'bg-teal',
   interviewing: 'bg-wine',
-  offer: 'bg-pandora-500',
-  accepted: 'bg-teal-600',
+  offer: 'bg-champagne-400',
   rejected: 'bg-flatred',
-  withdrawn: 'bg-sage',
 };
 
-function getTopTabColor(status: PostingStatus | undefined): string {
-  if (!status) return 'bg-sage/30';
-  return TAB_BG_COLORS[status];
+function getTopTabColor(columnId: VisualColumnId | undefined): string {
+  if (!columnId) return 'bg-sage/30';
+  return TAB_BG_COLORS[columnId];
 }
 
 export function KanbanBoard({
@@ -79,14 +77,14 @@ export function KanbanBoard({
   const [overId, setOverId] = useState<string | null>(null);
 
   // Track recently animated columns for slide effects
-  const [recentlyExpanded, setRecentlyExpanded] = useState<PostingStatus | null>(null);
-  const [recentlyCollapsed, setRecentlyCollapsed] = useState<PostingStatus | null>(null);
-  const [collapsingColumn, setCollapsingColumn] = useState<PostingStatus | null>(null);
+  const [recentlyExpanded, setRecentlyExpanded] = useState<VisualColumnId | null>(null);
+  const [recentlyCollapsed, setRecentlyCollapsed] = useState<VisualColumnId | null>(null);
+  const [collapsingColumn, setCollapsingColumn] = useState<VisualColumnId | null>(null);
 
   // Column widths state
-  const [columnWidths, setColumnWidths] = useState<Record<PostingStatus, number>>(() => {
+  const [columnWidths, setColumnWidths] = useState<Record<VisualColumnId, number>>(() => {
     // Load saved widths from localStorage
-    const saved = localStorage.getItem('kanban-column-widths');
+    const saved = localStorage.getItem('kanban-column-widths-v2');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -94,19 +92,19 @@ export function KanbanBoard({
         // Fall through to default
       }
     }
-    return KANBAN_COLUMNS.reduce((acc, status) => {
-      acc[status] = DEFAULT_COLUMN_WIDTH;
+    return VISUAL_COLUMNS.reduce((acc, col) => {
+      acc[col.id] = DEFAULT_COLUMN_WIDTH;
       return acc;
-    }, {} as Record<PostingStatus, number>);
+    }, {} as Record<VisualColumnId, number>);
   });
 
   // Save column widths when they change
   useEffect(() => {
-    localStorage.setItem('kanban-column-widths', JSON.stringify(columnWidths));
+    localStorage.setItem('kanban-column-widths-v2', JSON.stringify(columnWidths));
   }, [columnWidths]);
 
   // Resizing state
-  const [resizingColumn, setResizingColumn] = useState<PostingStatus | null>(null);
+  const [resizingColumn, setResizingColumn] = useState<VisualColumnId | null>(null);
   const resizeStartX = useRef(0);
   const resizeStartWidth = useRef(0);
 
@@ -122,9 +120,13 @@ export function KanbanBoard({
     })
   );
 
-  const getPostingsForStatus = (status: PostingStatus): Posting[] => {
-    return postings.filter((p) => p.status === status);
+  // Get postings for a visual column (may include multiple statuses)
+  const getPostingsForColumn = (column: VisualColumn): Posting[] => {
+    return postings.filter((p) => column.statuses.includes(p.status));
   };
+
+  // Get withdrawn postings
+  const withdrawnPostings = postings.filter((p) => p.status === 'withdrawn');
 
   const activePosting = activeId ? postings.find((p) => p.id === activeId) : null;
 
@@ -146,22 +148,31 @@ export function KanbanBoard({
       if (!over) return;
 
       const postingId = active.id as string;
-      const overId = over.id as string;
+      const dropId = over.id as string;
 
-      // Parse the status from the droppable ID
-      // IDs can be either 'status' (from KanbanColumn) or 'collapsed-status' (from CollapsedColumn)
+      // Parse the column from the droppable ID
+      // IDs can be:
+      // - 'columnId' (from KanbanColumn) -> use primaryStatus
+      // - 'collapsed-columnId' (from CollapsedColumn) -> use primaryStatus
+      // - 'withdrawn' (from WithdrawnDrawer) -> set to withdrawn
       let newStatus: PostingStatus | null = null;
 
-      if (KANBAN_COLUMNS.includes(overId as PostingStatus)) {
-        newStatus = overId as PostingStatus;
-      } else if (overId.startsWith('collapsed-')) {
-        const extracted = overId.replace('collapsed-', '') as PostingStatus;
-        if (KANBAN_COLUMNS.includes(extracted)) {
-          newStatus = extracted;
+      // Check if dropped on withdrawn drawer
+      if (dropId === 'withdrawn') {
+        newStatus = 'withdrawn';
+      } else {
+        // Find the visual column by ID
+        const columnId = dropId.startsWith('collapsed-')
+          ? dropId.replace('collapsed-', '')
+          : dropId;
+
+        const column = VISUAL_COLUMNS.find((c) => c.id === columnId);
+        if (column) {
+          newStatus = column.primaryStatus;
         }
       }
 
-      // Only update if dropping on a valid status column
+      // Only update if dropping on a valid column
       if (newStatus) {
         const posting = postings.find((p) => p.id === postingId);
         if (posting && posting.status !== newStatus) {
@@ -178,16 +189,16 @@ export function KanbanBoard({
   }, []);
 
   const handleCollapse = useCallback(
-    (status: PostingStatus) => {
-      if (!collapsedColumns.includes(status) && collapsingColumn === null) {
+    (columnId: VisualColumnId) => {
+      if (!collapsedColumns.includes(columnId) && collapsingColumn === null) {
         // Start slide-out animation on the column
-        setCollapsingColumn(status);
+        setCollapsingColumn(columnId);
 
         // After animation, actually collapse and show tab with slide-in
         setTimeout(() => {
           setCollapsingColumn(null);
-          setRecentlyCollapsed(status);
-          onCollapseChange([...collapsedColumns, status]);
+          setRecentlyCollapsed(columnId);
+          onCollapseChange([...collapsedColumns, columnId]);
 
           // Clear tab animation state
           setTimeout(() => setRecentlyCollapsed(null), 250);
@@ -198,26 +209,26 @@ export function KanbanBoard({
   );
 
   const handleExpand = useCallback(
-    (status: PostingStatus) => {
-      setRecentlyExpanded(status);
-      onCollapseChange(collapsedColumns.filter((s) => s !== status));
+    (columnId: VisualColumnId) => {
+      setRecentlyExpanded(columnId);
+      onCollapseChange(collapsedColumns.filter((id) => id !== columnId));
       // Clear animation state after animation completes
       setTimeout(() => setRecentlyExpanded(null), 200);
     },
     [collapsedColumns, onCollapseChange]
   );
 
-  // Get collapsed columns in their original order
-  const collapsedColumnsOrdered = KANBAN_COLUMNS.filter((s) => collapsedColumns.includes(s));
-  const expandedColumns = KANBAN_COLUMNS.filter((s) => !collapsedColumns.includes(s));
+  // Get collapsed and expanded columns
+  const collapsedColumnsOrdered = VISUAL_COLUMNS.filter((c) => collapsedColumns.includes(c.id));
+  const expandedColumns = VISUAL_COLUMNS.filter((c) => !collapsedColumns.includes(c.id));
 
   // Resize handlers
-  const handleResizeStart = useCallback((status: PostingStatus, e: React.MouseEvent) => {
+  const handleResizeStart = useCallback((columnId: VisualColumnId, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setResizingColumn(status);
+    setResizingColumn(columnId);
     resizeStartX.current = e.clientX;
-    resizeStartWidth.current = columnWidths[status];
+    resizeStartWidth.current = columnWidths[columnId];
   }, [columnWidths]);
 
   useEffect(() => {
@@ -253,30 +264,30 @@ export function KanbanBoard({
       <div className="flex h-full">
         {/* Main columns area */}
         <div className="flex flex-1 gap-3 overflow-x-auto p-4">
-          {expandedColumns.map((status) => (
+          {expandedColumns.map((column) => (
             <div
-              key={status}
+              key={column.id}
               className={`relative flex-shrink-0 group origin-right ${
-                recentlyExpanded === status ? 'animate-slide-in-right' : ''
-              } ${collapsingColumn === status ? 'animate-slide-out-right' : ''}`}
-              style={{ width: columnWidths[status] }}
+                recentlyExpanded === column.id ? 'animate-slide-in-right' : ''
+              } ${collapsingColumn === column.id ? 'animate-slide-out-right' : ''}`}
+              style={{ width: columnWidths[column.id] }}
             >
               <KanbanColumn
-                status={status}
-                postings={getPostingsForStatus(status)}
+                column={column}
+                postings={getPostingsForColumn(column)}
                 onPostingSelect={onPostingSelect}
                 onPriorityChange={onPriorityChange}
                 onStatusChange={onStatusChange}
                 onDelete={onDelete}
                 onEdit={onEdit}
                 onAdd={onAdd}
-                onCollapse={() => handleCollapse(status)}
-                isOver={overId === status}
+                onCollapse={() => handleCollapse(column.id)}
+                isOver={overId === column.id}
                 isDragging={activeId !== null}
                 getLinkedConnections={getLinkedConnections}
                 onConnectionClick={onConnectionClick}
                 selectedPostingId={selectedPostingId}
-                columnWidth={columnWidths[status]}
+                columnWidth={columnWidths[column.id]}
                 isMultiSelectMode={isMultiSelectMode}
                 selectedPostingIds={selectedPostingIds}
                 onMultiSelect={onMultiSelect}
@@ -285,9 +296,9 @@ export function KanbanBoard({
               {/* Resize handle */}
               <div
                 className={`absolute top-0 right-0 w-1 h-full cursor-col-resize
-                  ${resizingColumn === status ? 'bg-flatred' : 'bg-transparent hover:bg-sage/50'}
+                  ${resizingColumn === column.id ? 'bg-flatred' : 'bg-transparent hover:bg-sage/50'}
                   transition-colors`}
-                onMouseDown={(e) => handleResizeStart(status, e)}
+                onMouseDown={(e) => handleResizeStart(column.id, e)}
               />
             </div>
           ))}
@@ -297,31 +308,51 @@ export function KanbanBoard({
         <div className="flex h-full flex-shrink-0">
           {/* Fixed tabs container - all columns have a slot */}
           <div className="flex flex-col w-12 h-full py-1">
-            {KANBAN_COLUMNS.map((status) => {
-              const isCollapsed = collapsedColumns.includes(status);
+            {VISUAL_COLUMNS.map((column) => {
+              const isCollapsed = collapsedColumns.includes(column.id);
               return (
                 <CollapsedColumn
-                  key={status}
-                  status={status}
-                  count={getPostingsForStatus(status).length}
-                  onExpand={() => handleExpand(status)}
-                  onCollapse={() => handleCollapse(status)}
-                  isOver={overId === `collapsed-${status}`}
-                  isAnimating={recentlyCollapsed === status}
+                  key={column.id}
+                  column={column}
+                  count={getPostingsForColumn(column).length}
+                  onExpand={() => handleExpand(column.id)}
+                  onCollapse={() => handleCollapse(column.id)}
+                  isOver={overId === `collapsed-${column.id}`}
+                  isAnimating={recentlyCollapsed === column.id}
                   isCollapsed={isCollapsed}
                 />
               );
             })}
+
+            {/* Withdrawn drawer - at bottom of tabs column */}
+            <WithdrawnDrawer
+              postings={withdrawnPostings}
+              onPostingSelect={onPostingSelect}
+              onPriorityChange={onPriorityChange}
+              onStatusChange={onStatusChange}
+              onDelete={onDelete}
+              getLinkedConnections={getLinkedConnections}
+              onConnectionClick={onConnectionClick}
+              isOver={overId === 'withdrawn'}
+            />
           </div>
           {/* Vertical color bar matching top-most collapsed tab (folder effect) */}
-          <div className={`w-2.5 h-full transition-colors duration-200 ${getTopTabColor(collapsedColumnsOrdered[0])}`} />
+          <div className={`w-2.5 h-full transition-colors duration-200 ${getTopTabColor(collapsedColumnsOrdered[0]?.id)}`} />
         </div>
       </div>
 
       {/* Drag Overlay - shows card preview while dragging */}
       <DragOverlay dropAnimation={null}>
         {activePosting ? (
-          <div className="rotate-3 opacity-90">
+          <div
+            className={`
+              transition-all duration-300 ease-out
+              ${overId === 'withdrawn'
+                ? 'rotate-6 scale-95 opacity-75'
+                : 'rotate-3 opacity-90'
+              }
+            `}
+          >
             <PostingCard
               posting={activePosting}
               onSelect={() => {}}

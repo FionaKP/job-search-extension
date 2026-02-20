@@ -5,3 +5,4 @@ export { DashboardHeader } from './DashboardHeader';
 export { PostingDetailPanel } from './PostingDetailPanel';
 export { VirtualizedListView } from './VirtualizedListView';
 export { VirtualizedKanbanColumn } from './VirtualizedKanbanColumn';
+export { WithdrawnDrawer } from './WithdrawnDrawer';

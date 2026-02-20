@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
-import { Posting, PostingStatus, ViewMode, Connection } from '@/types';
+import { Posting, PostingStatus, ViewMode, Connection, VisualColumnId } from '@/types';
 import { Sidebar } from '@/components/layout';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { KanbanBoard } from '@/components/dashboard/KanbanBoard';
@@ -56,7 +56,7 @@ function App() {
   const [detailPanelOpen, setDetailPanelOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingPosting, setEditingPosting] = useState<Posting | null>(null);
-  const [collapsedColumns, setCollapsedColumns] = useState<PostingStatus[]>(['rejected']);
+  const [collapsedColumns, setCollapsedColumns] = useState<VisualColumnId[]>(['rejected']);
 
   // Connection page state
   const [selectedConnectionId, setSelectedConnectionId] = useState<string | null>(null);
@@ -193,7 +193,7 @@ function App() {
   }, []);
 
   // Handle collapsed columns change with persistence
-  const handleCollapseChange = useCallback(async (columns: PostingStatus[]) => {
+  const handleCollapseChange = useCallback(async (columns: VisualColumnId[]) => {
     setCollapsedColumns(columns);
     try {
       await saveCollapsedColumns(columns);

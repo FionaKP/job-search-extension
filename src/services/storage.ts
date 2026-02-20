@@ -1,4 +1,4 @@
-import { Posting, Connection, AppSettings, ViewMode, PostingStatus } from '@/types';
+import { Posting, Connection, AppSettings, ViewMode, VisualColumnId, VISUAL_COLUMNS } from '@/types';
 import { debounce } from '@/utils/debounce';
 
 export const STORAGE_KEYS = {
@@ -197,13 +197,57 @@ export async function saveViewPreference(view: ViewMode): Promise<void> {
 
 // ============ Collapsed Columns ============
 
-export async function getCollapsedColumns(): Promise<PostingStatus[]> {
-  const result = await chrome.storage.local.get(STORAGE_KEYS.COLLAPSED_COLUMNS);
-  // Default to ['rejected'] if not set
-  return result[STORAGE_KEYS.COLLAPSED_COLUMNS] ?? ['rejected'];
+// Valid visual column IDs for migration
+const VALID_VISUAL_COLUMN_IDS = VISUAL_COLUMNS.map((c) => c.id);
+
+// Migrate old PostingStatus-based collapsed columns to VisualColumnId
+function migrateCollapsedColumns(columns: string[]): VisualColumnId[] {
+  const migrated: VisualColumnId[] = [];
+
+  for (const col of columns) {
+    // Map old statuses to visual column IDs
+    if (col === 'in_progress') {
+      // in_progress is now merged into 'saved' - skip (don't collapse saved)
+      continue;
+    }
+    if (col === 'accepted') {
+      // accepted is now merged into 'offer' - skip (don't collapse offer)
+      continue;
+    }
+    if (col === 'withdrawn') {
+      // withdrawn is no longer a column - skip
+      continue;
+    }
+    // If it's a valid visual column ID, keep it
+    if (VALID_VISUAL_COLUMN_IDS.includes(col as VisualColumnId)) {
+      migrated.push(col as VisualColumnId);
+    }
+  }
+
+  return migrated;
 }
 
-export async function saveCollapsedColumns(columns: PostingStatus[]): Promise<void> {
+export async function getCollapsedColumns(): Promise<VisualColumnId[]> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.COLLAPSED_COLUMNS);
+  const stored = result[STORAGE_KEYS.COLLAPSED_COLUMNS];
+
+  if (!stored) {
+    // Default to ['rejected'] if not set
+    return ['rejected'];
+  }
+
+  // Migrate old format if needed
+  const migrated = migrateCollapsedColumns(stored);
+
+  // Save migrated version if different
+  if (JSON.stringify(migrated) !== JSON.stringify(stored)) {
+    await saveCollapsedColumns(migrated);
+  }
+
+  return migrated;
+}
+
+export async function saveCollapsedColumns(columns: VisualColumnId[]): Promise<void> {
   await chrome.storage.local.set({ [STORAGE_KEYS.COLLAPSED_COLUMNS]: columns });
 }
 

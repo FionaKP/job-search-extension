@@ -1,8 +1,8 @@
 import { useDroppable } from '@dnd-kit/core';
-import { PostingStatus, STATUS_LABELS } from '@/types';
+import { VisualColumn, VisualColumnId } from '@/types';
 
 interface CollapsedColumnProps {
-  status: PostingStatus;
+  column: VisualColumn;
   count: number;
   onExpand: () => void;
   onCollapse?: () => void;
@@ -12,31 +12,33 @@ interface CollapsedColumnProps {
 }
 
 // Vintage palette colors for collapsed column tabs
-// Red = rejected, Green = applied, Wine = interviewing
-const TAB_COLORS: Record<PostingStatus, { bg: string; text: string; border: string; hover: string }> = {
+const TAB_COLORS: Record<VisualColumnId, { bg: string; text: string; border: string; hover: string }> = {
   saved: { bg: 'bg-pandora', text: 'text-white', border: 'border-pandora-600', hover: 'hover:bg-pandora-500' },
-  in_progress: { bg: 'bg-champagne-400', text: 'text-wine', border: 'border-champagne-500', hover: 'hover:bg-champagne-300' },
   applied: { bg: 'bg-teal', text: 'text-white', border: 'border-teal-600', hover: 'hover:bg-teal-400' },
   interviewing: { bg: 'bg-wine', text: 'text-white', border: 'border-wine-700', hover: 'hover:bg-wine-400' },
-  offer: { bg: 'bg-pandora-500', text: 'text-white', border: 'border-pandora-600', hover: 'hover:bg-pandora-400' },
-  accepted: { bg: 'bg-teal-600', text: 'text-white', border: 'border-teal-700', hover: 'hover:bg-teal-500' },
+  offer: { bg: 'bg-champagne-400', text: 'text-wine', border: 'border-champagne-500', hover: 'hover:bg-champagne-300' },
   rejected: { bg: 'bg-flatred', text: 'text-white', border: 'border-flatred-700', hover: 'hover:bg-flatred-400' },
-  withdrawn: { bg: 'bg-sage', text: 'text-wine', border: 'border-sage-600', hover: 'hover:bg-sage-300' },
 };
 
-const DROP_HIGHLIGHT_COLORS: Record<PostingStatus, string> = {
+const DROP_HIGHLIGHT_COLORS: Record<VisualColumnId, string> = {
   saved: 'ring-pandora',
-  in_progress: 'ring-champagne-400',
   applied: 'ring-teal',
   interviewing: 'ring-wine',
-  offer: 'ring-pandora-500',
-  accepted: 'ring-teal-600',
+  offer: 'ring-champagne-400',
   rejected: 'ring-flatred',
-  withdrawn: 'ring-sage',
+};
+
+// Short labels for vertical tabs
+const SHORT_LABELS: Record<VisualColumnId, string> = {
+  saved: 'SAVED',
+  applied: 'APPLIED',
+  interviewing: 'INTRVW',
+  offer: 'OFFER',
+  rejected: 'REJECT',
 };
 
 export function CollapsedColumn({
-  status,
+  column,
   count,
   onExpand,
   onCollapse,
@@ -46,23 +48,11 @@ export function CollapsedColumn({
 }: CollapsedColumnProps) {
   // Only enable droppable when collapsed - KanbanColumn handles drops when expanded
   const { setNodeRef } = useDroppable({
-    id: `collapsed-${status}`,
+    id: `collapsed-${column.id}`,
     disabled: !isCollapsed,
   });
 
-  const colors = TAB_COLORS[status];
-
-  // Get short label for the tab
-  const shortLabels: Record<PostingStatus, string> = {
-    saved: 'SAVED',
-    in_progress: 'IN PROG',
-    applied: 'APPLIED',
-    interviewing: 'INTRVW',
-    offer: 'OFFER',
-    accepted: 'ACCEPT',
-    rejected: 'REJECT',
-    withdrawn: 'WTHDRN',
-  };
+  const colors = TAB_COLORS[column.id];
 
   // When column is expanded, show a minimal placeholder/gap
   if (!isCollapsed) {
@@ -75,7 +65,7 @@ export function CollapsedColumn({
           transition-all duration-200
         `}
         onClick={onCollapse}
-        title={`Collapse ${STATUS_LABELS[status]} column`}
+        title={`Collapse ${column.label} column`}
       >
         {/* Small indicator dot showing the column's color */}
         <div className={`w-2 h-2 rounded-full ${colors.bg} opacity-40 group-hover:opacity-70 transition-opacity`} />
@@ -90,7 +80,7 @@ export function CollapsedColumn({
       className={`
         group relative flex-1 flex items-center justify-center cursor-pointer
         ${colors.bg} ${colors.hover}
-        ${isOver ? `ring-2 ${DROP_HIGHLIGHT_COLORS[status]} ring-inset` : ''}
+        ${isOver ? `ring-2 ${DROP_HIGHLIGHT_COLORS[column.id]} ring-inset` : ''}
         rounded-l-lg
         transition-all duration-200 ease-out
         hover:flex-[1.5] hover:shadow-lg hover:z-10
@@ -98,7 +88,7 @@ export function CollapsedColumn({
         ${isAnimating ? 'animate-tab-slide-in' : ''}
       `}
       onClick={onExpand}
-      title={`Expand ${STATUS_LABELS[status]} column (${count})`}
+      title={`Expand ${column.label} column (${count})`}
     >
       <div className="flex flex-col items-center justify-center h-full py-2 gap-1">
         {/* Count badge - prominent at top */}
@@ -111,7 +101,7 @@ export function CollapsedColumn({
           className={`text-[9px] font-bold tracking-wider whitespace-nowrap ${colors.text} opacity-90 flex-1 flex items-center`}
           style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}
         >
-          {shortLabels[status]}
+          {SHORT_LABELS[column.id]}
         </span>
 
         {/* Right arrow indicator - shows on hover */}

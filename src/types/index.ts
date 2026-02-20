@@ -42,6 +42,54 @@ export const KANBAN_COLUMNS: PostingStatus[] = [
   'rejected',
 ];
 
+// ============ Visual Columns (Simplified Kanban) ============
+
+export type VisualColumnId = 'saved' | 'applied' | 'interviewing' | 'offer' | 'rejected';
+
+export interface VisualColumn {
+  id: VisualColumnId;
+  label: string;
+  statuses: PostingStatus[];  // All statuses this column displays
+  primaryStatus: PostingStatus;  // Status assigned on drop
+  color: string;  // Header background color class
+}
+
+export const VISUAL_COLUMNS: VisualColumn[] = [
+  { id: 'saved', label: 'Saved', statuses: ['saved', 'in_progress'], primaryStatus: 'saved', color: 'bg-pandora' },
+  { id: 'applied', label: 'Applied', statuses: ['applied'], primaryStatus: 'applied', color: 'bg-teal' },
+  { id: 'interviewing', label: 'Interviewing', statuses: ['interviewing'], primaryStatus: 'interviewing', color: 'bg-wine' },
+  { id: 'offer', label: 'Offer', statuses: ['offer', 'accepted'], primaryStatus: 'offer', color: 'bg-champagne-400' },
+  { id: 'rejected', label: 'Rejected', statuses: ['rejected'], primaryStatus: 'rejected', color: 'bg-flatred' },
+];
+
+// Map from actual status to visual column
+export const STATUS_TO_VISUAL_COLUMN: Record<PostingStatus, VisualColumnId | 'withdrawn'> = {
+  saved: 'saved',
+  in_progress: 'saved',
+  applied: 'applied',
+  interviewing: 'interviewing',
+  offer: 'offer',
+  accepted: 'offer',
+  rejected: 'rejected',
+  withdrawn: 'withdrawn',
+};
+
+// Secondary statuses that show dog-ear indicators
+export const SECONDARY_STATUSES: PostingStatus[] = ['in_progress', 'accepted'];
+
+export const SECONDARY_STATUS_CONFIG: Record<string, { label: string; colorClass: string; dogEarColor: string }> = {
+  in_progress: {
+    label: 'In Progress',
+    colorClass: 'bg-wine-400/20 text-wine-500 border-wine-400/30',
+    dogEarColor: 'wine-400',
+  },
+  accepted: {
+    label: 'Accepted',
+    colorClass: 'bg-wine-400/20 text-wine-500 border-wine-400/30',
+    dogEarColor: 'wine-400',
+  },
+};
+
 export type InterestLevel = 1 | 2 | 3 | 4 | 5;
 
 export interface Posting {
@@ -361,7 +409,7 @@ export type ViewMode = 'kanban' | 'list';
 export interface AppSettings {
   defaultView: ViewMode;
   theme: 'light' | 'dark';
-  collapsedColumns: PostingStatus[];
+  collapsedColumns: VisualColumnId[];
 }
 
 export interface FilterState {
