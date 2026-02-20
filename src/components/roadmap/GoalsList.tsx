@@ -1,5 +1,47 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Goal, GoalType, GOAL_TYPE_LABELS, GOAL_TYPE_ICONS, GoalAnalytics } from '@/types';
+import { Goal, GoalType, GOAL_TYPE_LABELS, GoalAnalytics } from '@/types';
+
+// SVG Icon components for goal types
+const GoalTypeIcon: React.FC<{ type: GoalType; className?: string }> = ({ type, className = "h-5 w-5" }) => {
+  switch (type) {
+    case 'application':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      );
+    case 'networking':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      );
+    case 'interview':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+      );
+    case 'followup':
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      );
+    case 'custom':
+    default:
+      return (
+        <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+        </svg>
+      );
+  }
+};
+
+// Small icon for filter buttons
+const GoalTypeIconSmall: React.FC<{ type: GoalType }> = ({ type }) => (
+  <GoalTypeIcon type={type} className="h-4 w-4" />
+);
 
 interface GoalsListProps {
   goals: Goal[];
@@ -77,18 +119,18 @@ export const GoalsList: React.FC<GoalsListProps> = ({
     const dueDate = new Date(goal.dueDate);
     const isOverdue = !goal.completed && dueDate < new Date();
 
-    if (goal.completed) return 'bg-emerald-500';
-    if (isOverdue) return 'bg-red-500';
-    if (progress >= 75) return 'bg-emerald-400';
-    if (progress >= 50) return 'bg-amber-400';
-    if (progress >= 25) return 'bg-amber-300';
-    return 'bg-gray-300';
+    if (goal.completed) return 'bg-teal-500';
+    if (isOverdue) return 'bg-flatred';
+    if (progress >= 75) return 'bg-teal-400';
+    if (progress >= 50) return 'bg-pandora-400';
+    if (progress >= 25) return 'bg-champagne-400';
+    return 'bg-sage-300';
   }, [getProgress]);
 
   // Get due date label
   const getDueDateLabel = useCallback((goal: Goal): { label: string; color: string } => {
     if (goal.completed) {
-      return { label: 'Completed', color: 'text-emerald-600' };
+      return { label: 'Completed', color: 'text-teal-600' };
     }
 
     const dueDate = new Date(goal.dueDate);
@@ -99,18 +141,18 @@ export const GoalsList: React.FC<GoalsListProps> = ({
     const diffDays = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
-      return { label: `${Math.abs(diffDays)} days overdue`, color: 'text-red-600' };
+      return { label: `${Math.abs(diffDays)} days overdue`, color: 'text-flatred' };
     }
     if (diffDays === 0) {
-      return { label: 'Due today', color: 'text-amber-600' };
+      return { label: 'Due today', color: 'text-pandora-600' };
     }
     if (diffDays === 1) {
-      return { label: 'Due tomorrow', color: 'text-amber-500' };
+      return { label: 'Due tomorrow', color: 'text-pandora-500' };
     }
     if (diffDays <= 7) {
-      return { label: `Due in ${diffDays} days`, color: 'text-blue-600' };
+      return { label: `Due in ${diffDays} days`, color: 'text-wine' };
     }
-    return { label: dueDate.toLocaleDateString(), color: 'text-gray-500' };
+    return { label: dueDate.toLocaleDateString(), color: 'text-wine/60' };
   }, []);
 
   // Increment goal progress
@@ -136,7 +178,9 @@ export const GoalsList: React.FC<GoalsListProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-wine flex items-center gap-2">
-          <span>🎯</span>
+          <svg className="h-5 w-5 text-wine" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
           Active Goals
           <span className="ml-1 rounded-full bg-wine/10 px-2 py-0.5 text-sm text-wine">
             {filteredGoals.filter((g) => !g.completed).length}
@@ -153,21 +197,21 @@ export const GoalsList: React.FC<GoalsListProps> = ({
       {/* Analytics Summary */}
       {analytics && (
         <div className="mb-4 grid grid-cols-4 gap-2">
-          <div className="rounded-lg bg-emerald-50 p-3 text-center">
-            <div className="text-2xl font-bold text-emerald-600">{analytics.totalGoalsCompleted}</div>
-            <div className="text-xs text-emerald-700">Completed</div>
+          <div className="rounded-lg bg-teal-50 p-3 text-center">
+            <div className="text-2xl font-bold text-teal-600">{analytics.totalGoalsCompleted}</div>
+            <div className="text-xs text-teal-700">Completed</div>
           </div>
-          <div className="rounded-lg bg-blue-50 p-3 text-center">
-            <div className="text-2xl font-bold text-blue-600">{Math.round(analytics.completionRate * 100)}%</div>
-            <div className="text-xs text-blue-700">Success Rate</div>
+          <div className="rounded-lg bg-wine/5 p-3 text-center">
+            <div className="text-2xl font-bold text-wine">{Math.round(analytics.completionRate * 100)}%</div>
+            <div className="text-xs text-wine/70">Success Rate</div>
           </div>
-          <div className="rounded-lg bg-amber-50 p-3 text-center">
-            <div className="text-2xl font-bold text-amber-600">{analytics.currentStreak}</div>
-            <div className="text-xs text-amber-700">Day Streak</div>
+          <div className="rounded-lg bg-pandora-50 p-3 text-center">
+            <div className="text-2xl font-bold text-pandora-600">{analytics.currentStreak}</div>
+            <div className="text-xs text-pandora-700">Day Streak</div>
           </div>
-          <div className="rounded-lg bg-purple-50 p-3 text-center">
-            <div className="text-2xl font-bold text-purple-600">{analytics.longestStreak}</div>
-            <div className="text-xs text-purple-700">Best Streak</div>
+          <div className="rounded-lg bg-champagne-100 p-3 text-center">
+            <div className="text-2xl font-bold text-wine">{analytics.longestStreak}</div>
+            <div className="text-xs text-wine/70">Best Streak</div>
           </div>
         </div>
       )}
@@ -187,11 +231,12 @@ export const GoalsList: React.FC<GoalsListProps> = ({
             <button
               key={type}
               onClick={() => setFilter(type)}
-              className={`rounded px-2 py-1 text-xs font-medium transition-colors ${
+              className={`rounded px-2 py-1 text-xs font-medium transition-colors flex items-center justify-center ${
                 filter === type ? 'bg-wine text-white' : 'text-wine/70 hover:bg-wine/10'
               }`}
+              title={GOAL_TYPE_LABELS[type]}
             >
-              {GOAL_TYPE_ICONS[type]}
+              <GoalTypeIconSmall type={type} />
             </button>
           ))}
         </div>
@@ -221,9 +266,11 @@ export const GoalsList: React.FC<GoalsListProps> = ({
       {/* Goals List */}
       <div className="flex-1 overflow-y-auto space-y-2">
         {filteredGoals.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-gray-500">
-            <div className="text-4xl mb-2">🎯</div>
-            <div className="font-medium">No goals yet</div>
+          <div className="flex flex-col items-center justify-center py-12 text-wine/50">
+            <svg className="h-12 w-12 text-wine/30 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <div className="font-medium text-wine">No goals yet</div>
             <div className="text-sm">Create your first goal to start tracking progress</div>
             <button
               onClick={onAddGoal}
@@ -241,20 +288,20 @@ export const GoalsList: React.FC<GoalsListProps> = ({
             return (
               <div
                 key={goal.id}
-                className={`rounded-lg border bg-white p-3 transition-all ${
+                className={`rounded-lg border bg-white p-3 transition-all duration-base ${
                   goal.completed
-                    ? 'border-emerald-200 bg-emerald-50/50'
-                    : 'border-wine/10 hover:border-wine/30'
+                    ? 'border-teal-200 bg-teal-50/50'
+                    : 'border-wine/10 hover:border-wine/30 hover:shadow-sm'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   {/* Completion Checkbox / Icon */}
                   <button
                     onClick={() => goal.completed ? null : onGoalComplete?.(goal.id)}
-                    className={`mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                    className={`mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 transition-all duration-base ${
                       goal.completed
-                        ? 'border-emerald-500 bg-emerald-500 text-white'
-                        : 'border-gray-300 hover:border-wine'
+                        ? 'border-teal-500 bg-teal-500 text-white'
+                        : 'border-sage-300 hover:border-wine hover:bg-wine/5'
                     }`}
                     disabled={goal.completed}
                   >
@@ -268,41 +315,47 @@ export const GoalsList: React.FC<GoalsListProps> = ({
                   {/* Goal Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{GOAL_TYPE_ICONS[goal.type]}</span>
+                      <span className="text-wine/70"><GoalTypeIcon type={goal.type} className="h-5 w-5" /></span>
                       <h3
-                        className={`font-medium cursor-pointer hover:text-wine ${
-                          goal.completed ? 'text-gray-500 line-through' : 'text-gray-900'
+                        className={`font-medium cursor-pointer hover:text-wine transition-colors ${
+                          goal.completed ? 'text-wine/40 line-through' : 'text-wine'
                         }`}
                         onClick={() => onGoalClick?.(goal.id)}
                       >
                         {goal.title}
                       </h3>
                       {goal.isRecurring && (
-                        <span className="rounded bg-blue-100 px-1.5 py-0.5 text-xs text-blue-700">
-                          🔄 Recurring
+                        <span className="rounded bg-pandora-100 px-1.5 py-0.5 text-xs text-pandora-700 flex items-center gap-1">
+                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Recurring
                         </span>
                       )}
                       {goal.dependsOn && goal.dependsOn.length > 0 && (
-                        <span className="rounded bg-purple-100 px-1.5 py-0.5 text-xs text-purple-700">
-                          🔗 Has Dependencies
+                        <span className="rounded bg-wine/10 px-1.5 py-0.5 text-xs text-wine flex items-center gap-1">
+                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                          </svg>
+                          Has Dependencies
                         </span>
                       )}
                     </div>
 
                     <div className="mt-1 flex items-center gap-3 text-sm">
                       <span className={dueColor}>{dueLabel}</span>
-                      <span className="text-gray-400">|</span>
-                      <span className="text-gray-500">{GOAL_TYPE_LABELS[goal.type]}</span>
+                      <span className="text-wine/30">|</span>
+                      <span className="text-wine/60">{GOAL_TYPE_LABELS[goal.type]}</span>
                     </div>
 
                     {/* Progress Bar */}
                     {goal.targetCount && (
                       <div className="mt-2">
-                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                        <div className="flex items-center justify-between text-xs text-wine/60 mb-1">
                           <span>Progress: {goal.currentCount}/{goal.targetCount}</span>
                           <span>{progress}%</span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-gray-200">
+                        <div className="h-2 w-full rounded-full bg-champagne-200">
                           <div
                             className={`h-full rounded-full transition-all ${getProgressColor(goal)}`}
                             style={{ width: `${progress}%` }}
@@ -315,18 +368,18 @@ export const GoalsList: React.FC<GoalsListProps> = ({
                             <button
                               onClick={() => handleDecrementProgress(goal)}
                               disabled={goal.currentCount <= 0}
-                              className="rounded bg-gray-100 px-2 py-0.5 text-sm text-gray-600 hover:bg-gray-200 disabled:opacity-50"
+                              className="rounded bg-champagne-100 px-2 py-0.5 text-sm text-wine hover:bg-champagne-200 disabled:opacity-50 transition-colors"
                             >
                               -
                             </button>
                             <button
                               onClick={() => handleIncrementProgress(goal)}
                               disabled={goal.currentCount >= goal.targetCount}
-                              className="rounded bg-wine/10 px-2 py-0.5 text-sm text-wine hover:bg-wine/20 disabled:opacity-50"
+                              className="rounded bg-wine/10 px-2 py-0.5 text-sm text-wine hover:bg-wine/20 disabled:opacity-50 transition-colors"
                             >
                               +
                             </button>
-                            <span className="text-xs text-gray-400">Quick update</span>
+                            <span className="text-xs text-wine/40">Quick update</span>
                           </div>
                         )}
                       </div>
@@ -334,21 +387,21 @@ export const GoalsList: React.FC<GoalsListProps> = ({
 
                     {/* Expanded Details */}
                     {isExpanded && (
-                      <div className="mt-3 pt-3 border-t border-gray-100">
+                      <div className="mt-3 pt-3 border-t border-wine/10">
                         {goal.notes && (
-                          <p className="text-sm text-gray-600 mb-2">{goal.notes}</p>
+                          <p className="text-sm text-wine/70 mb-2">{goal.notes}</p>
                         )}
                         {goal.linkedPostingIds.length > 0 && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-wine/50">
                             Linked to {goal.linkedPostingIds.length} posting(s)
                           </div>
                         )}
                         {goal.linkedConnectionIds.length > 0 && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-wine/50">
                             Linked to {goal.linkedConnectionIds.length} connection(s)
                           </div>
                         )}
-                        <div className="text-xs text-gray-400 mt-2">
+                        <div className="text-xs text-wine/40 mt-2">
                           Created: {new Date(goal.createdAt).toLocaleDateString()}
                         </div>
                       </div>
@@ -359,11 +412,11 @@ export const GoalsList: React.FC<GoalsListProps> = ({
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => setExpandedGoalId(isExpanded ? null : goal.id)}
-                      className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                      className="rounded p-1 text-wine/40 hover:bg-wine/10 hover:text-wine transition-colors"
                       title={isExpanded ? 'Collapse' : 'Expand'}
                     >
                       <svg
-                        className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                        className={`h-4 w-4 transition-transform duration-base ${isExpanded ? 'rotate-180' : ''}`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -373,7 +426,7 @@ export const GoalsList: React.FC<GoalsListProps> = ({
                     </button>
                     <button
                       onClick={() => onGoalDelete?.(goal.id)}
-                      className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                      className="rounded p-1 text-wine/40 hover:bg-flatred-50 hover:text-flatred transition-colors"
                       title="Delete"
                     >
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
