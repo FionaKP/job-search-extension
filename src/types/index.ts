@@ -455,3 +455,158 @@ export interface Stats {
   rejected: number;
   withdrawn: number;
 }
+
+// ============ Roadmap Goals (V2) ============
+
+export type GoalType = 'application' | 'networking' | 'interview' | 'followup' | 'custom';
+
+export interface Goal {
+  id: string;
+  title: string;
+  type: GoalType;
+
+  // Progress tracking
+  targetCount?: number;
+  currentCount: number;
+  completed: boolean;
+  completedAt?: string;
+
+  // Timing
+  dueDate: string;  // ISO date
+  createdAt: string;
+
+  // Recurring goals
+  isRecurring?: boolean;
+  recurringPattern?: RecurringPattern;
+
+  // Dependencies
+  dependsOn?: string[];  // Goal IDs this goal depends on
+
+  // Links
+  linkedPostingIds: string[];
+  linkedConnectionIds: string[];
+
+  // Reminders
+  reminders: GoalReminderConfig[];
+
+  notes?: string;
+}
+
+export interface RecurringPattern {
+  frequency: 'daily' | 'weekly' | 'monthly';
+  interval: number;  // Every N days/weeks/months
+  endDate?: string;  // ISO date - when to stop recurring
+  daysOfWeek?: number[];  // 0-6 for weekly patterns
+}
+
+export interface GoalReminderConfig {
+  id: string;
+  goalId: string;
+  type: 'before_due' | 'daily' | 'custom';
+  timing: number;          // Minutes before (e.g., 1440 = 1 day)
+  sent: boolean;
+  dismissed: boolean;
+  customTime?: string;     // HH:MM format for custom reminders
+}
+
+export const GOAL_TYPE_LABELS: Record<GoalType, string> = {
+  application: 'Application',
+  networking: 'Networking',
+  interview: 'Interview Prep',
+  followup: 'Follow-up',
+  custom: 'Custom',
+};
+
+export const GOAL_TYPE_ICONS: Record<GoalType, string> = {
+  application: '📝',
+  networking: '👥',
+  interview: '🎯',
+  followup: '📧',
+  custom: '⭐',
+};
+
+// ============ Timeline Events (V2) ============
+
+export type TimelineEventType = 'interview' | 'followup' | 'deadline' | 'goal' | 'connection' | 'status_change';
+
+export interface TimelineEvent {
+  id: string;
+  type: TimelineEventType;
+  date: string;  // ISO date
+  postingId?: string;
+  connectionId?: string;
+  goalId?: string;
+  title: string;
+  notes?: string;
+  metadata?: {
+    fromStatus?: PostingStatus;
+    toStatus?: PostingStatus;
+    interviewRound?: number;
+    eventType?: ContactEventType;
+  };
+}
+
+export const TIMELINE_EVENT_COLORS: Record<TimelineEventType, string> = {
+  interview: '#8B5CF6',      // Purple
+  followup: '#F59E0B',       // Amber
+  deadline: '#EF4444',       // Red
+  goal: '#10B981',           // Emerald
+  connection: '#3B82F6',     // Blue
+  status_change: '#6B7280',  // Gray
+};
+
+// ============ Goal Analytics (V2) ============
+
+export interface GoalAnalytics {
+  totalGoalsCreated: number;
+  totalGoalsCompleted: number;
+  completionRate: number;  // 0-1
+  currentStreak: number;   // Days in a row with goal completions
+  longestStreak: number;
+  averageCompletionTime: number;  // Days from creation to completion
+  goalsByType: Record<GoalType, { created: number; completed: number }>;
+  weeklyCompletions: { week: string; count: number }[];
+}
+
+// ============ Notification Settings (V2) ============
+
+export interface NotificationSettings {
+  enabled: boolean;
+  goalReminders: boolean;
+  interviewReminders: boolean;
+  offerDeadlines: boolean;
+  weeklySummary: boolean;
+  networkingNudges: boolean;
+  quietHoursEnabled: boolean;
+  quietHoursStart: string;    // "22:00"
+  quietHoursEnd: string;      // "08:00"
+  goalReminderTiming: number; // Minutes before
+  interviewReminderTiming: number;
+}
+
+export interface RoadmapSettings {
+  defaultZoom: 'week' | 'month' | 'quarter';
+  showConnections: boolean;
+  showCompletedGoals: boolean;
+  defaultView: 'timeline' | 'board';
+}
+
+// ============ Goal Templates (V2) ============
+
+export interface GoalTemplate {
+  id: string;
+  category: GoalType;
+  title: string;
+  defaultTargetCount?: number;
+  suggestedTiming: 'weekly' | 'monthly' | 'before_event';
+}
+
+export const GOAL_TEMPLATES: GoalTemplate[] = [
+  { id: 'apply-5', category: 'application', title: 'Apply to 5 roles', defaultTargetCount: 5, suggestedTiming: 'weekly' },
+  { id: 'apply-10-month', category: 'application', title: 'Submit 10 applications this month', defaultTargetCount: 10, suggestedTiming: 'monthly' },
+  { id: 'reach-out-3', category: 'networking', title: 'Reach out to 3 connections', defaultTargetCount: 3, suggestedTiming: 'weekly' },
+  { id: 'coffee-chats', category: 'networking', title: 'Schedule 2 coffee chats', defaultTargetCount: 2, suggestedTiming: 'monthly' },
+  { id: 'interview-prep', category: 'interview', title: 'Complete interview prep', suggestedTiming: 'before_event' },
+  { id: 'follow-up', category: 'followup', title: 'Follow up on applications', defaultTargetCount: 3, suggestedTiming: 'weekly' },
+  { id: 'research-companies', category: 'custom', title: 'Research 5 companies', defaultTargetCount: 5, suggestedTiming: 'weekly' },
+];
