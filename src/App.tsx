@@ -1,18 +1,32 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
 import { Posting, PostingStatus, ViewMode, Connection } from '@/types';
 import { Sidebar } from '@/components/layout';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { KanbanBoard } from '@/components/dashboard/KanbanBoard';
 import { ListView } from '@/components/dashboard/ListView';
-import { PostingDetailPanel } from '@/components/dashboard/PostingDetailPanel';
-import { EditPostingModal } from '@/components/posting';
-import { ConnectionsList, ConnectionFormModal, ConnectionDetailPanel } from '@/components/connections';
-import { CompareKeywordsModal } from '@/components/keywords';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { KeyboardShortcutsModal } from '@/components/common';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { runMigrationIfNeeded } from '@/services/migration';
 import { extractKeywords } from '@/services/keywords';
+// useDebouncedCallback is available for future use from '@/hooks/useDebounce'
+
+// Lazy load heavy components that are not immediately needed
+const PostingDetailPanel = lazy(() => import('@/components/dashboard/PostingDetailPanel'));
+const EditPostingModal = lazy(() => import('@/components/posting/EditPostingModal'));
+const ConnectionsList = lazy(() => import('@/components/connections/ConnectionsList'));
+const ConnectionFormModal = lazy(() => import('@/components/connections/ConnectionFormModal'));
+const ConnectionDetailPanel = lazy(() => import('@/components/connections/ConnectionDetailPanel'));
+const CompareKeywordsModal = lazy(() => import('@/components/keywords/CompareKeywordsModal'));
+const KeyboardShortcutsModal = lazy(() => import('@/components/common/KeyboardShortcutsModal'));
+
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <div className="flex items-center justify-center p-8">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-flatred border-t-transparent"></div>
+    </div>
+  );
+}
 
 type AppPage = 'jobs' | 'connections';
 import {
@@ -772,101 +786,117 @@ function App() {
             )}
           </main>
 
-          <PostingDetailPanel
-            posting={selectedPosting}
-            isOpen={detailPanelOpen}
-            onClose={() => setDetailPanelOpen(false)}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-            onEdit={handleEditPosting}
-            connections={connections}
-            linkedConnections={selectedPosting ? getLinkedConnections(selectedPosting.id) : []}
-            onLinkConnection={handleLinkConnection}
-            onUnlinkConnection={handleUnlinkConnection}
-            onViewConnection={handleViewConnection}
-            onAddConnection={handleAddConnection}
-            onExtractKeywords={handleExtractKeywords}
-            isExtractingKeywords={isExtractingKeywords}
-          />
+          <Suspense fallback={<LoadingFallback />}>
+            <PostingDetailPanel
+              posting={selectedPosting}
+              isOpen={detailPanelOpen}
+              onClose={() => setDetailPanelOpen(false)}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+              onEdit={handleEditPosting}
+              connections={connections}
+              linkedConnections={selectedPosting ? getLinkedConnections(selectedPosting.id) : []}
+              onLinkConnection={handleLinkConnection}
+              onUnlinkConnection={handleUnlinkConnection}
+              onViewConnection={handleViewConnection}
+              onAddConnection={handleAddConnection}
+              onExtractKeywords={handleExtractKeywords}
+              isExtractingKeywords={isExtractingKeywords}
+            />
+          </Suspense>
         </>
       ) : (
-          <ConnectionsList
-            connections={connections}
-            onSelectConnection={handleConnectionSelect}
-            onAddConnection={handleAddConnection}
-            onEditConnection={handleEditConnection}
-          />
+          <Suspense fallback={<LoadingFallback />}>
+            <ConnectionsList
+              connections={connections}
+              onSelectConnection={handleConnectionSelect}
+              onAddConnection={handleAddConnection}
+              onEditConnection={handleEditConnection}
+            />
+          </Suspense>
         )}
       </div>
 
-      {/* Connection Form Modal */}
-      <ConnectionFormModal
-        isOpen={connectionFormOpen}
-        onClose={() => {
-          setConnectionFormOpen(false);
-          setEditingConnection(null);
-        }}
-        onSave={handleSaveConnection}
-        connection={editingConnection}
-      />
-
-      {/* Connection Detail Panel */}
-      {selectedConnection && (
-        <ConnectionDetailPanel
-          connection={selectedConnection}
-          isOpen={connectionDetailOpen}
+      {/* Connection Form Modal - Lazy loaded */}
+      <Suspense fallback={null}>
+        <ConnectionFormModal
+          isOpen={connectionFormOpen}
           onClose={() => {
-            setConnectionDetailOpen(false);
-            setSelectedConnectionId(null);
+            setConnectionFormOpen(false);
+            setEditingConnection(null);
           }}
-          onEdit={() => handleEditConnection(selectedConnection.id)}
-          onDelete={() => handleDeleteConnection(selectedConnection.id)}
-          linkedPostings={getLinkedPostingsForConnection(selectedConnection.id)}
-          onViewPosting={(postingId) => {
-            setSelectedPostingId(postingId);
-            setDetailPanelOpen(true);
-            setCurrentPage('jobs');
-          }}
-          onLogContact={async (event) => {
-            const updated = {
-              ...selectedConnection,
-              contactHistory: [...selectedConnection.contactHistory, event],
-              lastContactDate: event.date,
-            };
-            await handleConnectionUpdate(selectedConnection.id, updated);
-          }}
-          onUnlinkPosting={async (postingId) => {
-            await unlinkConnectionFromPosting(selectedConnection.id, postingId);
-            const updatedConnections = await getConnections();
-            setConnections(updatedConnections);
-          }}
-          onUpdateFollowUp={async (date) => {
-            await handleConnectionUpdate(selectedConnection.id, { nextFollowUp: date });
-          }}
+          onSave={handleSaveConnection}
+          connection={editingConnection}
         />
+      </Suspense>
+
+      {/* Connection Detail Panel - Lazy loaded */}
+      {selectedConnection && (
+        <Suspense fallback={<LoadingFallback />}>
+          <ConnectionDetailPanel
+            connection={selectedConnection}
+            isOpen={connectionDetailOpen}
+            onClose={() => {
+              setConnectionDetailOpen(false);
+              setSelectedConnectionId(null);
+            }}
+            onEdit={() => handleEditConnection(selectedConnection.id)}
+            onDelete={() => handleDeleteConnection(selectedConnection.id)}
+            linkedPostings={getLinkedPostingsForConnection(selectedConnection.id)}
+            onViewPosting={(postingId) => {
+              setSelectedPostingId(postingId);
+              setDetailPanelOpen(true);
+              setCurrentPage('jobs');
+            }}
+            onLogContact={async (event) => {
+              const updated = {
+                ...selectedConnection,
+                contactHistory: [...selectedConnection.contactHistory, event],
+                lastContactDate: event.date,
+              };
+              await handleConnectionUpdate(selectedConnection.id, updated);
+            }}
+            onUnlinkPosting={async (postingId) => {
+              await unlinkConnectionFromPosting(selectedConnection.id, postingId);
+              const updatedConnections = await getConnections();
+              setConnections(updatedConnections);
+            }}
+            onUpdateFollowUp={async (date) => {
+              await handleConnectionUpdate(selectedConnection.id, { nextFollowUp: date });
+            }}
+          />
+        </Suspense>
       )}
 
-      {/* Edit Posting Modal */}
-      <EditPostingModal
-        isOpen={editModalOpen}
-        onClose={() => {
-          setEditModalOpen(false);
-          setEditingPosting(null);
-        }}
-        onSave={handleSaveEditedPosting}
-        posting={editingPosting}
-      />
+      {/* Edit Posting Modal - Lazy loaded */}
+      <Suspense fallback={null}>
+        <EditPostingModal
+          isOpen={editModalOpen}
+          onClose={() => {
+            setEditModalOpen(false);
+            setEditingPosting(null);
+          }}
+          onSave={handleSaveEditedPosting}
+          posting={editingPosting}
+        />
+      </Suspense>
 
-      <KeyboardShortcutsModal
-        isOpen={shortcutsModalOpen}
-        onClose={() => setShortcutsModalOpen(false)}
-      />
+      {/* Keyboard Shortcuts Modal - Lazy loaded */}
+      <Suspense fallback={null}>
+        <KeyboardShortcutsModal
+          isOpen={shortcutsModalOpen}
+          onClose={() => setShortcutsModalOpen(false)}
+        />
+      </Suspense>
 
-      <CompareKeywordsModal
-        isOpen={compareModalOpen}
-        onClose={() => setCompareModalOpen(false)}
-        postings={selectedPostingsForCompare}
-      />
+      {/* Compare Keywords Modal - Lazy loaded */}
+      <Suspense fallback={null}>
+        <CompareKeywordsModal
+          isOpen={compareModalOpen}
+          onClose={() => setCompareModalOpen(false)}
+          postings={selectedPostingsForCompare}
+        />
+      </Suspense>
     </div>
   );
 }

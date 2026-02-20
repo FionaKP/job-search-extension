@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Posting, PostingStatus, Connection, InterestLevel } from '@/types';
@@ -20,7 +21,7 @@ interface DraggablePostingCardProps {
   onMultiSelect?: (id: string) => void;
 }
 
-export function DraggablePostingCard({
+export const DraggablePostingCard = memo(function DraggablePostingCard({
   posting,
   onSelect,
   onPriorityChange,
@@ -69,4 +70,4 @@ export function DraggablePostingCard({
       />
     </div>
   );
-}
+});

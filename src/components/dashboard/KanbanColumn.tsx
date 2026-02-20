@@ -105,12 +105,24 @@ export function KanbanColumn({
     const el = scrollRef.current;
     if (!el) return;
 
-    el.addEventListener('scroll', checkScroll);
-    window.addEventListener('resize', checkScroll);
+    // Throttle scroll checks for better performance
+    let ticking = false;
+    const throttledCheck = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          checkScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    el.addEventListener('scroll', throttledCheck, { passive: true });
+    window.addEventListener('resize', throttledCheck);
 
     return () => {
-      el.removeEventListener('scroll', checkScroll);
-      window.removeEventListener('resize', checkScroll);
+      el.removeEventListener('scroll', throttledCheck);
+      window.removeEventListener('resize', throttledCheck);
     };
   }, [checkScroll]);
 

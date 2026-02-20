@@ -182,3 +182,5 @@ export function EditPostingModal({ isOpen, onClose, onSave, posting }: EditPosti
     </div>
   );
 }
+
+export default EditPostingModal;

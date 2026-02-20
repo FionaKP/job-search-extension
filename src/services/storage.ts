@@ -1,4 +1,5 @@
 import { Posting, Connection, AppSettings, ViewMode, PostingStatus } from '@/types';
+import { debounce } from '@/utils/debounce';
 
 export const STORAGE_KEYS = {
   POSTINGS: 'postings',
@@ -9,6 +10,9 @@ export const STORAGE_KEYS = {
   COLLAPSED_COLUMNS: 'collapsedColumns',
 } as const;
 
+// Debounce delay for storage operations (ms)
+const STORAGE_DEBOUNCE_DELAY = 300;
+
 // ============ Postings ============
 
 export async function getPostings(): Promise<Posting[]> {
@@ -18,6 +22,15 @@ export async function getPostings(): Promise<Posting[]> {
 
 export async function savePostings(postings: Posting[]): Promise<void> {
   await chrome.storage.local.set({ [STORAGE_KEYS.POSTINGS]: postings });
+}
+
+// Debounced version for frequent updates
+const debouncedSavePostingsInternal = debounce(async (postings: Posting[]) => {
+  await chrome.storage.local.set({ [STORAGE_KEYS.POSTINGS]: postings });
+}, STORAGE_DEBOUNCE_DELAY);
+
+export function savePostingsDebounced(postings: Posting[]): void {
+  debouncedSavePostingsInternal(postings);
 }
 
 export async function savePosting(posting: Posting): Promise<void> {
@@ -48,6 +61,15 @@ export async function getConnections(): Promise<Connection[]> {
 
 export async function saveConnections(connections: Connection[]): Promise<void> {
   await chrome.storage.local.set({ [STORAGE_KEYS.CONNECTIONS]: connections });
+}
+
+// Debounced version for frequent updates
+const debouncedSaveConnectionsInternal = debounce(async (connections: Connection[]) => {
+  await chrome.storage.local.set({ [STORAGE_KEYS.CONNECTIONS]: connections });
+}, STORAGE_DEBOUNCE_DELAY);
+
+export function saveConnectionsDebounced(connections: Connection[]): void {
+  debouncedSaveConnectionsInternal(connections);
 }
 
 export async function saveConnection(connection: Connection): Promise<void> {

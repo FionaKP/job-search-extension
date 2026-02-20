@@ -552,3 +552,5 @@ function ConnectionsTab({
     </div>
   );
 }
+
+export default PostingDetailPanel;
