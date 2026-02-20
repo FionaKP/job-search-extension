@@ -220,7 +220,9 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
       <div className="flex items-center justify-between border-b border-wine/10 bg-white px-6 py-4">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold text-wine flex items-center gap-2">
-            <span>📅</span>
+            <svg className="h-6 w-6 text-wine" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
             Your Job Search Roadmap
           </h1>
           <div className="flex rounded-lg border border-wine/20 bg-champagne-50 p-0.5">
@@ -455,7 +457,7 @@ const BoardView: React.FC<BoardViewProps> = ({
             <div
               key={goal.id}
               className={`rounded-lg border bg-white p-3 shadow-sm cursor-pointer transition-all hover:shadow-md ${
-                isOverdue ? 'border-red-200' : 'border-gray-100'
+                isOverdue ? 'border-flatred-200' : 'border-wine/10'
               } ${goal.completed ? 'opacity-60' : ''}`}
               onClick={() => onGoalClick(goal.id)}
             >
@@ -467,8 +469,8 @@ const BoardView: React.FC<BoardViewProps> = ({
                   }}
                   className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
                     goal.completed
-                      ? 'border-emerald-500 bg-emerald-500 text-white'
-                      : 'border-gray-300 hover:border-wine'
+                      ? 'border-teal-500 bg-teal-500 text-white'
+                      : 'border-sage-300 hover:border-wine'
                   }`}
                 >
                   {goal.completed && (
@@ -478,24 +480,24 @@ const BoardView: React.FC<BoardViewProps> = ({
                   )}
                 </button>
                 <div className="flex-1 min-w-0">
-                  <div className={`font-medium text-sm ${goal.completed ? 'line-through text-gray-400' : 'text-gray-800'}`}>
+                  <div className={`font-medium text-sm ${goal.completed ? 'line-through text-wine/40' : 'text-wine'}`}>
                     {goal.title}
                   </div>
-                  <div className={`text-xs mt-1 ${isOverdue ? 'text-red-600' : 'text-gray-500'}`}>
+                  <div className={`text-xs mt-1 ${isOverdue ? 'text-flatred' : 'text-wine/60'}`}>
                     {isOverdue ? 'Overdue: ' : ''}
                     {dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </div>
                   {progress !== null && (
                     <div className="mt-2">
-                      <div className="h-1.5 w-full rounded-full bg-gray-200">
+                      <div className="h-1.5 w-full rounded-full bg-champagne-200">
                         <div
                           className={`h-full rounded-full ${
-                            goal.completed ? 'bg-emerald-500' : isOverdue ? 'bg-red-400' : 'bg-wine'
+                            goal.completed ? 'bg-teal-500' : isOverdue ? 'bg-flatred-400' : 'bg-wine'
                           }`}
                           style={{ width: `${Math.min(100, progress)}%` }}
                         />
                       </div>
-                      <div className="text-xs text-gray-400 mt-0.5">
+                      <div className="text-xs text-wine/50 mt-0.5">
                         {goal.currentCount}/{goal.targetCount}
                       </div>
                     </div>
@@ -507,7 +509,7 @@ const BoardView: React.FC<BoardViewProps> = ({
         })}
 
         {goals.length === 0 && (
-          <div className="py-8 text-center text-sm text-gray-400">
+          <div className="py-8 text-center text-sm text-wine/40">
             No goals
           </div>
         )}
