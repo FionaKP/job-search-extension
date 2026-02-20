@@ -101,13 +101,13 @@ export const GoalModal: React.FC<GoalModalProps> = ({
   useEffect(() => {
     if (goal) {
       setTitle(goal.title);
-      setType(goal.type);
+      setType(goal.type ?? 'custom');
       setDueDate(goal.dueDate.split('T')[0]);
       setTargetCount(goal.targetCount);
-      setCurrentCount(goal.currentCount);
+      setCurrentCount(goal.currentCount ?? 0);
       setNotes(goal.notes || '');
-      setLinkedPostingIds(goal.linkedPostingIds);
-      setLinkedConnectionIds(goal.linkedConnectionIds);
+      setLinkedPostingIds(goal.linkedPostingIds ?? []);
+      setLinkedConnectionIds(goal.linkedConnectionIds ?? []);
       setDependsOn(goal.dependsOn || []);
       setIsRecurring(goal.isRecurring || false);
       if (goal.recurringPattern) {
@@ -540,7 +540,7 @@ export const GoalModal: React.FC<GoalModalProps> = ({
                         onChange={() => toggleDependency(g.id)}
                         className="rounded border-wine/30 text-wine focus:ring-wine"
                       />
-                      <span className="text-wine/70"><GoalTypeIcon type={g.type} className="h-4 w-4" /></span>
+                      <span className="text-wine/70"><GoalTypeIcon type={g.type ?? 'custom'} className="h-4 w-4" /></span>
                       <span className="text-sm text-wine truncate">{g.title}</span>
                     </label>
                   ))}

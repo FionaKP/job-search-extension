@@ -463,17 +463,17 @@ export type GoalType = 'application' | 'networking' | 'interview' | 'followup' |
 export interface Goal {
   id: string;
   title: string;
-  type: GoalType;
+  type?: GoalType;
 
   // Progress tracking
   targetCount?: number;
-  currentCount: number;
+  currentCount?: number;
   completed: boolean;
-  completedAt?: string;
+  completedAt?: string | number;
 
   // Timing
   dueDate: string;  // ISO date
-  createdAt: string;
+  createdAt: string | number;
 
   // Recurring goals
   isRecurring?: boolean;
@@ -483,11 +483,11 @@ export interface Goal {
   dependsOn?: string[];  // Goal IDs this goal depends on
 
   // Links
-  linkedPostingIds: string[];
-  linkedConnectionIds: string[];
+  linkedPostingIds?: string[];
+  linkedConnectionIds?: string[];
 
   // Reminders
-  reminders: GoalReminderConfig[];
+  reminders?: GoalReminderConfig[];
 
   notes?: string;
 }
@@ -610,3 +610,69 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
   { id: 'follow-up', category: 'followup', title: 'Follow up on applications', defaultTargetCount: 3, suggestedTiming: 'weekly' },
   { id: 'research-companies', category: 'custom', title: 'Research 5 companies', defaultTargetCount: 5, suggestedTiming: 'weekly' },
 ];
+
+// ============ Roadmap Goal Stops (V2) ============
+
+export type GoalStopItemType =
+  | 'application-goal'
+  | 'interview'
+  | 'offer-deadline'
+  | 'follow-up'
+  | 'goal';
+
+export interface GoalStopItemBase {
+  id: string;
+  type: GoalStopItemType;
+  date: Date;
+  completed: boolean;
+}
+
+export interface ApplicationGoalItem extends GoalStopItemBase {
+  type: 'application-goal';
+  posting: Posting;
+}
+
+export interface InterviewItem extends GoalStopItemBase {
+  type: 'interview';
+  posting: Posting;
+  interview: Interview;
+}
+
+export interface OfferDeadlineItem extends GoalStopItemBase {
+  type: 'offer-deadline';
+  posting: Posting;
+  deadline: string;
+}
+
+export interface FollowUpItem extends GoalStopItemBase {
+  type: 'follow-up';
+  connection: Connection;
+}
+
+export interface GoalItem extends GoalStopItemBase {
+  type: 'goal';
+  goal: Goal;
+}
+
+export type GoalStopItem =
+  | ApplicationGoalItem
+  | InterviewItem
+  | OfferDeadlineItem
+  | FollowUpItem
+  | GoalItem;
+
+export interface GoalStopProgress {
+  completed: number;
+  total: number;
+}
+
+export interface GoalStop {
+  id: string;
+  date: Date;
+  weekLabel: string;
+  items: GoalStopItem[];
+  progress: GoalStopProgress;
+}
+
+// Snooze options for roadmap items
+export type SnoozeDuration = 1 | 3 | 7; // days

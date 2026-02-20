@@ -79,7 +79,7 @@ export async function scheduleGoalReminders(): Promise<void> {
   const now = Date.now();
 
   for (const goal of goals) {
-    if (goal.completed) continue;
+    if (goal.completed || !goal.reminders) continue;
 
     for (const reminder of goal.reminders) {
       if (reminder.sent || reminder.dismissed) continue;
@@ -284,7 +284,7 @@ export async function handleAlarm(alarm: chrome.alarms.Alarm): Promise<void> {
     const goals = await getGoals();
     const goal = goals.find((g) => g.id === notification.goalId);
 
-    if (goal) {
+    if (goal && goal.reminders) {
       const reminderIndex = goal.reminders.findIndex(
         (r) => notification.id.includes(r.id)
       );

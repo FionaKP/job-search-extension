@@ -93,11 +93,11 @@ export const GoalsList: React.FC<GoalsListProps> = ({
         case 'dueDate':
           return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
         case 'progress':
-          const progressA = a.targetCount ? a.currentCount / a.targetCount : (a.completed ? 1 : 0);
-          const progressB = b.targetCount ? b.currentCount / b.targetCount : (b.completed ? 1 : 0);
+          const progressA = a.targetCount ? (a.currentCount ?? 0) / a.targetCount : (a.completed ? 1 : 0);
+          const progressB = b.targetCount ? (b.currentCount ?? 0) / b.targetCount : (b.completed ? 1 : 0);
           return progressB - progressA;
         case 'type':
-          return a.type.localeCompare(b.type);
+          return (a.type ?? 'custom').localeCompare(b.type ?? 'custom');
         case 'created':
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         default:
@@ -110,7 +110,7 @@ export const GoalsList: React.FC<GoalsListProps> = ({
   const getProgress = useCallback((goal: Goal): number => {
     if (goal.completed) return 100;
     if (!goal.targetCount) return 0;
-    return Math.min(100, Math.round((goal.currentCount / goal.targetCount) * 100));
+    return Math.min(100, Math.round(((goal.currentCount ?? 0) / goal.targetCount) * 100));
   }, []);
 
   // Get progress bar color
@@ -158,7 +158,7 @@ export const GoalsList: React.FC<GoalsListProps> = ({
   // Increment goal progress
   const handleIncrementProgress = useCallback((goal: Goal) => {
     if (!goal.targetCount || goal.completed) return;
-    const newCount = Math.min(goal.currentCount + 1, goal.targetCount);
+    const newCount = Math.min((goal.currentCount ?? 0) + 1, goal.targetCount);
     onGoalUpdate?.(goal.id, { currentCount: newCount });
 
     // Auto-complete if target reached
@@ -169,8 +169,8 @@ export const GoalsList: React.FC<GoalsListProps> = ({
 
   // Decrement goal progress
   const handleDecrementProgress = useCallback((goal: Goal) => {
-    if (!goal.targetCount || goal.completed || goal.currentCount <= 0) return;
-    onGoalUpdate?.(goal.id, { currentCount: goal.currentCount - 1 });
+    if (!goal.targetCount || goal.completed || (goal.currentCount ?? 0) <= 0) return;
+    onGoalUpdate?.(goal.id, { currentCount: (goal.currentCount ?? 0) - 1 });
   }, [onGoalUpdate]);
 
   return (
@@ -315,7 +315,7 @@ export const GoalsList: React.FC<GoalsListProps> = ({
                   {/* Goal Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-wine/70"><GoalTypeIcon type={goal.type} className="h-5 w-5" /></span>
+                      <span className="text-wine/70"><GoalTypeIcon type={goal.type ?? 'custom'} className="h-5 w-5" /></span>
                       <h3
                         className={`font-medium cursor-pointer hover:text-wine transition-colors ${
                           goal.completed ? 'text-wine/40 line-through' : 'text-wine'
@@ -345,14 +345,14 @@ export const GoalsList: React.FC<GoalsListProps> = ({
                     <div className="mt-1 flex items-center gap-3 text-sm">
                       <span className={dueColor}>{dueLabel}</span>
                       <span className="text-wine/30">|</span>
-                      <span className="text-wine/60">{GOAL_TYPE_LABELS[goal.type]}</span>
+                      <span className="text-wine/60">{GOAL_TYPE_LABELS[goal.type ?? 'custom']}</span>
                     </div>
 
                     {/* Progress Bar */}
                     {goal.targetCount && (
                       <div className="mt-2">
                         <div className="flex items-center justify-between text-xs text-wine/60 mb-1">
-                          <span>Progress: {goal.currentCount}/{goal.targetCount}</span>
+                          <span>Progress: {goal.currentCount ?? 0}/{goal.targetCount}</span>
                           <span>{progress}%</span>
                         </div>
                         <div className="h-2 w-full rounded-full bg-champagne-200">
@@ -367,14 +367,14 @@ export const GoalsList: React.FC<GoalsListProps> = ({
                           <div className="mt-2 flex items-center gap-2">
                             <button
                               onClick={() => handleDecrementProgress(goal)}
-                              disabled={goal.currentCount <= 0}
+                              disabled={(goal.currentCount ?? 0) <= 0}
                               className="rounded bg-champagne-100 px-2 py-0.5 text-sm text-wine hover:bg-champagne-200 disabled:opacity-50 transition-colors"
                             >
                               -
                             </button>
                             <button
                               onClick={() => handleIncrementProgress(goal)}
-                              disabled={goal.currentCount >= goal.targetCount}
+                              disabled={(goal.currentCount ?? 0) >= (goal.targetCount ?? 0)}
                               className="rounded bg-wine/10 px-2 py-0.5 text-sm text-wine hover:bg-wine/20 disabled:opacity-50 transition-colors"
                             >
                               +
@@ -391,14 +391,14 @@ export const GoalsList: React.FC<GoalsListProps> = ({
                         {goal.notes && (
                           <p className="text-sm text-wine/70 mb-2">{goal.notes}</p>
                         )}
-                        {goal.linkedPostingIds.length > 0 && (
+                        {(goal.linkedPostingIds ?? []).length > 0 && (
                           <div className="text-xs text-wine/50">
-                            Linked to {goal.linkedPostingIds.length} posting(s)
+                            Linked to {(goal.linkedPostingIds ?? []).length} posting(s)
                           </div>
                         )}
-                        {goal.linkedConnectionIds.length > 0 && (
+                        {(goal.linkedConnectionIds ?? []).length > 0 && (
                           <div className="text-xs text-wine/50">
-                            Linked to {goal.linkedConnectionIds.length} connection(s)
+                            Linked to {(goal.linkedConnectionIds ?? []).length} connection(s)
                           </div>
                         )}
                         <div className="text-xs text-wine/40 mt-2">

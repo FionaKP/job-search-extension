@@ -1,25 +1,395 @@
-import { Goal, TimelineEvent, GoalAnalytics, NotificationSettings, RoadmapSettings } from '@/types';
+import {
+  Posting,
+  Connection,
+  Goal,
+  GoalStop,
+  GoalStopItem,
+  GoalStopProgress,
+  ApplicationGoalItem,
+  InterviewItem,
+  OfferDeadlineItem,
+  FollowUpItem,
+  GoalItem,
+  SnoozeDuration,
+} from '@/types';
 
-export const ROADMAP_STORAGE_KEYS = {
-  GOALS: 'jobflow_goals',
-  COMPLETED_GOALS: 'jobflow_completed_goals',
-  TIMELINE_EVENTS: 'jobflow_timeline_events',
-  NOTIFICATION_SETTINGS: 'jobflow_notification_settings',
-  ROADMAP_SETTINGS: 'jobflow_roadmap_settings',
-  GOAL_ANALYTICS: 'jobflow_goal_analytics',
-} as const;
+// Storage key for goals
+export const GOALS_STORAGE_KEY = 'goals';
 
-// ============ Goals ============
+// ============ Date Utilities ============
 
+/**
+ * Get the start of the week (Monday) for a given date
+ */
+function getWeekStart(date: Date): Date {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
+  d.setDate(diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/**
+ * Format a week label like "Week of Feb 24"
+ */
+function formatWeekLabel(date: Date): string {
+  const weekStart = getWeekStart(date);
+  const month = weekStart.toLocaleDateString('en-US', { month: 'short' });
+  const day = weekStart.getDate();
+  return `Week of ${month} ${day}`;
+}
+
+/**
+ * Get a unique key for a week (YYYY-WW format)
+ */
+function getWeekKey(date: Date): string {
+  const weekStart = getWeekStart(date);
+  const year = weekStart.getFullYear();
+  const startOfYear = new Date(year, 0, 1);
+  const days = Math.floor((weekStart.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+  const weekNum = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+  return `${year}-W${weekNum.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Parse an ISO date string to Date object
+ */
+function parseDate(dateStr: string | undefined): Date | null {
+  if (!dateStr) return null;
+  const date = new Date(dateStr);
+  return isNaN(date.getTime()) ? null : date;
+}
+
+// ============ Item Extraction Functions ============
+
+/**
+ * Extract application goal items from postings with applicationGoalDate
+ */
+function extractApplicationGoals(postings: Posting[]): ApplicationGoalItem[] {
+  return postings
+    .filter((p) => p.applicationGoalDate && (p.status === 'saved' || p.status === 'in_progress'))
+    .map((p) => {
+      const date = parseDate(p.applicationGoalDate);
+      if (!date) return null;
+
+      // Check if snoozed
+      if (p.snoozedUntil) {
+        const snoozedUntil = parseDate(p.snoozedUntil);
+        if (snoozedUntil && snoozedUntil > new Date()) {
+          return null; // Item is snoozed
+        }
+      }
+
+      return {
+        id: `app-goal-${p.id}`,
+        type: 'application-goal' as const,
+        date,
+        completed: false, // Application goals aren't completed until status changes
+        posting: p,
+      };
+    })
+    .filter((item): item is ApplicationGoalItem => item !== null);
+}
+
+/**
+ * Extract interview items from postings with scheduled interviews
+ */
+function extractInterviews(postings: Posting[]): InterviewItem[] {
+  const items: InterviewItem[] = [];
+
+  postings
+    .filter((p) => p.status === 'interviewing' && p.interviews && p.interviews.length > 0)
+    .forEach((p) => {
+      p.interviews?.forEach((interview) => {
+        if (!interview.date) return;
+
+        const date = parseDate(interview.date);
+        if (!date) return;
+
+        items.push({
+          id: `interview-${p.id}-${interview.id}`,
+          type: 'interview' as const,
+          date,
+          completed: interview.completed,
+          posting: p,
+          interview,
+        });
+      });
+    });
+
+  return items;
+}
+
+/**
+ * Extract offer deadline items from postings with offers
+ */
+function extractOfferDeadlines(postings: Posting[]): OfferDeadlineItem[] {
+  return postings
+    .filter((p) => p.status === 'offer')
+    .map((p) => {
+      // Look for nextActionDate as offer deadline
+      const deadlineStr = p.nextActionDate;
+      if (!deadlineStr) return null;
+
+      const date = parseDate(deadlineStr);
+      if (!date) return null;
+
+      return {
+        id: `offer-deadline-${p.id}`,
+        type: 'offer-deadline' as const,
+        date,
+        completed: false,
+        posting: p,
+        deadline: deadlineStr,
+      };
+    })
+    .filter((item): item is OfferDeadlineItem => item !== null);
+}
+
+/**
+ * Extract follow-up items from connections with nextFollowUp
+ */
+function extractFollowUps(connections: Connection[]): FollowUpItem[] {
+  return connections
+    .filter((c) => c.nextFollowUp)
+    .map((c) => {
+      const date = parseDate(c.nextFollowUp);
+      if (!date) return null;
+
+      return {
+        id: `followup-${c.id}`,
+        type: 'follow-up' as const,
+        date,
+        completed: false,
+        connection: c,
+      };
+    })
+    .filter((item): item is FollowUpItem => item !== null);
+}
+
+/**
+ * Extract goal items from standalone goals
+ */
+function extractGoals(goals: Goal[]): GoalItem[] {
+  return goals
+    .map((g) => {
+      const date = parseDate(g.dueDate);
+      if (!date) return null;
+
+      return {
+        id: `goal-${g.id}`,
+        type: 'goal' as const,
+        date,
+        completed: g.completed,
+        goal: g,
+      };
+    })
+    .filter((item): item is GoalItem => item !== null);
+}
+
+// ============ Main Aggregation Function ============
+
+/**
+ * Aggregate all timed items into weekly goal stops
+ */
+export function aggregateGoalStops(
+  postings: Posting[],
+  connections: Connection[],
+  goals: Goal[]
+): GoalStop[] {
+  // Extract all items
+  const applicationGoals = extractApplicationGoals(postings);
+  const interviews = extractInterviews(postings);
+  const offerDeadlines = extractOfferDeadlines(postings);
+  const followUps = extractFollowUps(connections);
+  const goalItems = extractGoals(goals);
+
+  // Combine all items
+  const allItems: GoalStopItem[] = [
+    ...applicationGoals,
+    ...interviews,
+    ...offerDeadlines,
+    ...followUps,
+    ...goalItems,
+  ];
+
+  // Group items by week
+  const weekGroups = new Map<string, GoalStopItem[]>();
+
+  allItems.forEach((item) => {
+    const weekKey = getWeekKey(item.date);
+    const existing = weekGroups.get(weekKey) || [];
+    existing.push(item);
+    weekGroups.set(weekKey, existing);
+  });
+
+  // Convert groups to GoalStop objects
+  const goalStops: GoalStop[] = [];
+
+  weekGroups.forEach((items, weekKey) => {
+    // Sort items within the week by date
+    items.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    // Calculate progress
+    const progress: GoalStopProgress = {
+      completed: items.filter((i) => i.completed).length,
+      total: items.length,
+    };
+
+    // Use the first item's date for the week label
+    const firstItemDate = items[0].date;
+
+    goalStops.push({
+      id: weekKey,
+      date: getWeekStart(firstItemDate),
+      weekLabel: formatWeekLabel(firstItemDate),
+      items,
+      progress,
+    });
+  });
+
+  // Sort goal stops by date
+  goalStops.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  return goalStops;
+}
+
+// ============ Item Action Functions ============
+
+/**
+ * Mark an application goal as complete (advances posting status)
+ */
+export function completeApplicationGoal(
+  posting: Posting
+): Partial<Posting> {
+  return {
+    applicationGoalDate: undefined,
+    status: posting.status === 'saved' ? 'in_progress' : 'applied',
+    dateModified: Date.now(),
+    dateApplied: posting.status === 'in_progress' ? Date.now() : posting.dateApplied,
+  };
+}
+
+/**
+ * Mark an interview as complete
+ */
+export function completeInterview(
+  posting: Posting,
+  interviewId: string
+): Partial<Posting> {
+  const interviews = posting.interviews?.map((i) =>
+    i.id === interviewId ? { ...i, completed: true } : i
+  );
+  return {
+    interviews,
+    dateModified: Date.now(),
+  };
+}
+
+/**
+ * Mark a follow-up as complete (adds to contact history, clears nextFollowUp)
+ */
+export function completeFollowUp(
+  connection: Connection
+): Partial<Connection> {
+  const now = new Date().toISOString().split('T')[0];
+  return {
+    contactHistory: [
+      ...connection.contactHistory,
+      {
+        id: `event-${Date.now()}`,
+        date: now,
+        type: 'other',
+        notes: 'Follow-up completed',
+      },
+    ],
+    lastContactDate: now,
+    nextFollowUp: undefined,
+    dateModified: Date.now(),
+  };
+}
+
+/**
+ * Mark a goal as complete
+ */
+export function completeGoal(_goal: Goal): Partial<Goal> {
+  return {
+    completed: true,
+    completedAt: Date.now(),
+  };
+}
+
+/**
+ * Snooze an item by pushing its date forward
+ */
+export function snoozeItem(
+  item: GoalStopItem,
+  days: SnoozeDuration
+): { type: 'posting' | 'connection' | 'goal'; id: string; updates: Record<string, unknown> } {
+  const newDate = new Date(item.date);
+  newDate.setDate(newDate.getDate() + days);
+  const newDateStr = newDate.toISOString().split('T')[0];
+
+  switch (item.type) {
+    case 'application-goal':
+      return {
+        type: 'posting',
+        id: item.posting.id,
+        updates: { snoozedUntil: newDateStr },
+      };
+    case 'interview':
+      // Can't really snooze interviews, but we can update the date
+      return {
+        type: 'posting',
+        id: item.posting.id,
+        updates: {
+          interviews: item.posting.interviews?.map((i) =>
+            i.id === item.interview.id ? { ...i, date: newDateStr } : i
+          ),
+        },
+      };
+    case 'offer-deadline':
+      return {
+        type: 'posting',
+        id: item.posting.id,
+        updates: { nextActionDate: newDateStr },
+      };
+    case 'follow-up':
+      return {
+        type: 'connection',
+        id: item.connection.id,
+        updates: { nextFollowUp: newDateStr },
+      };
+    case 'goal':
+      return {
+        type: 'goal',
+        id: item.goal.id,
+        updates: { dueDate: newDateStr },
+      };
+  }
+}
+
+// ============ Goals Storage Functions ============
+
+/**
+ * Get all goals from storage
+ */
 export async function getGoals(): Promise<Goal[]> {
-  const result = await chrome.storage.local.get(ROADMAP_STORAGE_KEYS.GOALS);
-  return result[ROADMAP_STORAGE_KEYS.GOALS] || [];
+  const result = await chrome.storage.local.get(GOALS_STORAGE_KEY);
+  return result[GOALS_STORAGE_KEY] || [];
 }
 
+/**
+ * Save all goals to storage
+ */
 export async function saveGoals(goals: Goal[]): Promise<void> {
-  await chrome.storage.local.set({ [ROADMAP_STORAGE_KEYS.GOALS]: goals });
+  await chrome.storage.local.set({ [GOALS_STORAGE_KEY]: goals });
 }
 
+/**
+ * Save a single goal (creates or updates)
+ */
 export async function saveGoal(goal: Goal): Promise<void> {
   const goals = await getGoals();
   const index = goals.findIndex((g) => g.id === goal.id);
@@ -33,384 +403,112 @@ export async function saveGoal(goal: Goal): Promise<void> {
   await saveGoals(goals);
 }
 
+/**
+ * Delete a goal
+ */
 export async function deleteGoal(id: string): Promise<void> {
   const goals = await getGoals();
   const filtered = goals.filter((g) => g.id !== id);
   await saveGoals(filtered);
 }
 
-export async function completeGoal(id: string): Promise<void> {
-  const goals = await getGoals();
-  const goalIndex = goals.findIndex((g) => g.id === id);
+// ============ Utility Functions ============
 
-  if (goalIndex >= 0) {
-    const goal = goals[goalIndex];
-    const completedGoal = {
-      ...goal,
-      completed: true,
-      completedAt: new Date().toISOString(),
-    };
+/**
+ * Get items that are due soon (within specified days)
+ */
+export function getUpcomingItems(
+  goalStops: GoalStop[],
+  withinDays: number = 7
+): GoalStopItem[] {
+  const now = new Date();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() + withinDays);
 
-    // Update in active goals
-    goals[goalIndex] = completedGoal;
-    await saveGoals(goals);
+  const items: GoalStopItem[] = [];
 
-    // Also add to completed goals archive
-    const completedGoals = await getCompletedGoals();
-    completedGoals.push(completedGoal);
-    await saveCompletedGoals(completedGoals);
+  goalStops.forEach((stop) => {
+    stop.items.forEach((item) => {
+      if (!item.completed && item.date >= now && item.date <= cutoff) {
+        items.push(item);
+      }
+    });
+  });
 
-    // Update analytics
-    await updateGoalAnalyticsOnCompletion(completedGoal);
-  }
+  return items.sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
-// ============ Completed Goals Archive ============
+/**
+ * Get overdue items (past due date, not completed)
+ */
+export function getOverdueItems(goalStops: GoalStop[]): GoalStopItem[] {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
 
-export async function getCompletedGoals(): Promise<Goal[]> {
-  const result = await chrome.storage.local.get(ROADMAP_STORAGE_KEYS.COMPLETED_GOALS);
-  return result[ROADMAP_STORAGE_KEYS.COMPLETED_GOALS] || [];
+  const items: GoalStopItem[] = [];
+
+  goalStops.forEach((stop) => {
+    stop.items.forEach((item) => {
+      if (!item.completed && item.date < now) {
+        items.push(item);
+      }
+    });
+  });
+
+  return items.sort((a, b) => a.date.getTime() - b.date.getTime());
 }
 
-export async function saveCompletedGoals(goals: Goal[]): Promise<void> {
-  await chrome.storage.local.set({ [ROADMAP_STORAGE_KEYS.COMPLETED_GOALS]: goals });
-}
+/**
+ * Get summary stats for the roadmap
+ */
+export function getRoadmapStats(goalStops: GoalStop[]): {
+  totalItems: number;
+  completedItems: number;
+  overdueItems: number;
+  upcomingThisWeek: number;
+} {
+  let totalItems = 0;
+  let completedItems = 0;
 
-// ============ Timeline Events ============
+  goalStops.forEach((stop) => {
+    totalItems += stop.items.length;
+    completedItems += stop.progress.completed;
+  });
 
-export async function getTimelineEvents(): Promise<TimelineEvent[]> {
-  const result = await chrome.storage.local.get(ROADMAP_STORAGE_KEYS.TIMELINE_EVENTS);
-  return result[ROADMAP_STORAGE_KEYS.TIMELINE_EVENTS] || [];
-}
+  const overdueItems = getOverdueItems(goalStops).length;
+  const upcomingThisWeek = getUpcomingItems(goalStops, 7).length;
 
-export async function saveTimelineEvents(events: TimelineEvent[]): Promise<void> {
-  await chrome.storage.local.set({ [ROADMAP_STORAGE_KEYS.TIMELINE_EVENTS]: events });
-}
-
-export async function addTimelineEvent(event: TimelineEvent): Promise<void> {
-  const events = await getTimelineEvents();
-  events.push(event);
-  await saveTimelineEvents(events);
-}
-
-export async function deleteTimelineEvent(id: string): Promise<void> {
-  const events = await getTimelineEvents();
-  const filtered = events.filter((e) => e.id !== id);
-  await saveTimelineEvents(filtered);
-}
-
-// ============ Notification Settings ============
-
-export function getDefaultNotificationSettings(): NotificationSettings {
   return {
-    enabled: true,
-    goalReminders: true,
-    interviewReminders: true,
-    offerDeadlines: true,
-    weeklySummary: false,
-    networkingNudges: false,
-    quietHoursEnabled: false,
-    quietHoursStart: '22:00',
-    quietHoursEnd: '08:00',
-    goalReminderTiming: 1440,  // 1 day = 1440 minutes
-    interviewReminderTiming: 60,  // 1 hour
+    totalItems,
+    completedItems,
+    overdueItems,
+    upcomingThisWeek,
   };
 }
 
+// ============ Notification Settings (Stub) ============
+
+import { NotificationSettings } from '@/types';
+
+const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
+  enabled: true,
+  goalReminders: true,
+  interviewReminders: true,
+  offerDeadlines: true,
+  weeklySummary: false,
+  networkingNudges: false,
+  quietHoursEnabled: false,
+  quietHoursStart: '22:00',
+  quietHoursEnd: '08:00',
+  goalReminderTiming: 1440, // 24 hours
+  interviewReminderTiming: 1440,
+};
+
 export async function getNotificationSettings(): Promise<NotificationSettings> {
-  const result = await chrome.storage.local.get(ROADMAP_STORAGE_KEYS.NOTIFICATION_SETTINGS);
-  return result[ROADMAP_STORAGE_KEYS.NOTIFICATION_SETTINGS] || getDefaultNotificationSettings();
+  const result = await chrome.storage.local.get('notificationSettings');
+  return result.notificationSettings || DEFAULT_NOTIFICATION_SETTINGS;
 }
 
 export async function saveNotificationSettings(settings: NotificationSettings): Promise<void> {
-  await chrome.storage.local.set({ [ROADMAP_STORAGE_KEYS.NOTIFICATION_SETTINGS]: settings });
-}
-
-// ============ Roadmap Settings ============
-
-export function getDefaultRoadmapSettings(): RoadmapSettings {
-  return {
-    defaultZoom: 'month',
-    showConnections: true,
-    showCompletedGoals: false,
-    defaultView: 'timeline',
-  };
-}
-
-export async function getRoadmapSettings(): Promise<RoadmapSettings> {
-  const result = await chrome.storage.local.get(ROADMAP_STORAGE_KEYS.ROADMAP_SETTINGS);
-  return result[ROADMAP_STORAGE_KEYS.ROADMAP_SETTINGS] || getDefaultRoadmapSettings();
-}
-
-export async function saveRoadmapSettings(settings: RoadmapSettings): Promise<void> {
-  await chrome.storage.local.set({ [ROADMAP_STORAGE_KEYS.ROADMAP_SETTINGS]: settings });
-}
-
-// ============ Goal Analytics ============
-
-export function getDefaultGoalAnalytics(): GoalAnalytics {
-  return {
-    totalGoalsCreated: 0,
-    totalGoalsCompleted: 0,
-    completionRate: 0,
-    currentStreak: 0,
-    longestStreak: 0,
-    averageCompletionTime: 0,
-    goalsByType: {
-      application: { created: 0, completed: 0 },
-      networking: { created: 0, completed: 0 },
-      interview: { created: 0, completed: 0 },
-      followup: { created: 0, completed: 0 },
-      custom: { created: 0, completed: 0 },
-    },
-    weeklyCompletions: [],
-  };
-}
-
-export async function getGoalAnalytics(): Promise<GoalAnalytics> {
-  const result = await chrome.storage.local.get(ROADMAP_STORAGE_KEYS.GOAL_ANALYTICS);
-  return result[ROADMAP_STORAGE_KEYS.GOAL_ANALYTICS] || getDefaultGoalAnalytics();
-}
-
-export async function saveGoalAnalytics(analytics: GoalAnalytics): Promise<void> {
-  await chrome.storage.local.set({ [ROADMAP_STORAGE_KEYS.GOAL_ANALYTICS]: analytics });
-}
-
-export async function updateGoalAnalyticsOnCreation(goal: Goal): Promise<void> {
-  const analytics = await getGoalAnalytics();
-
-  analytics.totalGoalsCreated++;
-  analytics.goalsByType[goal.type].created++;
-  analytics.completionRate = analytics.totalGoalsCompleted / analytics.totalGoalsCreated;
-
-  await saveGoalAnalytics(analytics);
-}
-
-export async function updateGoalAnalyticsOnCompletion(goal: Goal): Promise<void> {
-  const analytics = await getGoalAnalytics();
-
-  analytics.totalGoalsCompleted++;
-  analytics.goalsByType[goal.type].completed++;
-  analytics.completionRate = analytics.totalGoalsCompleted / analytics.totalGoalsCreated;
-
-  // Calculate completion time
-  if (goal.completedAt && goal.createdAt) {
-    const completionTime = (new Date(goal.completedAt).getTime() - new Date(goal.createdAt).getTime()) / (1000 * 60 * 60 * 24);
-    const totalCompletionTime = analytics.averageCompletionTime * (analytics.totalGoalsCompleted - 1) + completionTime;
-    analytics.averageCompletionTime = totalCompletionTime / analytics.totalGoalsCompleted;
-  }
-
-  // Update weekly completions
-  const weekStart = getWeekStart(new Date());
-  const weekKey = weekStart.toISOString().split('T')[0];
-  const weekIndex = analytics.weeklyCompletions.findIndex((w) => w.week === weekKey);
-
-  if (weekIndex >= 0) {
-    analytics.weeklyCompletions[weekIndex].count++;
-  } else {
-    analytics.weeklyCompletions.push({ week: weekKey, count: 1 });
-    // Keep only last 12 weeks
-    if (analytics.weeklyCompletions.length > 12) {
-      analytics.weeklyCompletions = analytics.weeklyCompletions.slice(-12);
-    }
-  }
-
-  // Update streak
-  analytics.currentStreak = await calculateCurrentStreak();
-  if (analytics.currentStreak > analytics.longestStreak) {
-    analytics.longestStreak = analytics.currentStreak;
-  }
-
-  await saveGoalAnalytics(analytics);
-}
-
-async function calculateCurrentStreak(): Promise<number> {
-  const completedGoals = await getCompletedGoals();
-  if (completedGoals.length === 0) return 0;
-
-  // Group completions by date
-  const completionDates = new Set<string>();
-  completedGoals.forEach((goal) => {
-    if (goal.completedAt) {
-      completionDates.add(goal.completedAt.split('T')[0]);
-    }
-  });
-
-  // Sort dates descending
-  const sortedDates = Array.from(completionDates).sort().reverse();
-
-  // Count consecutive days from today
-  let streak = 0;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  for (let i = 0; i < sortedDates.length; i++) {
-    const date = new Date(sortedDates[i]);
-    const daysDiff = Math.floor((today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (daysDiff === i) {
-      streak++;
-    } else {
-      break;
-    }
-  }
-
-  return streak;
-}
-
-function getWeekStart(date: Date): Date {
-  const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-// ============ Recurring Goals ============
-
-export async function processRecurringGoals(): Promise<Goal[]> {
-  const goals = await getGoals();
-  const newGoals: Goal[] = [];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  for (const goal of goals) {
-    if (!goal.isRecurring || !goal.recurringPattern || !goal.completed) continue;
-
-    // Check if it's time to create a new instance
-    const { frequency, interval, endDate } = goal.recurringPattern;
-
-    // Don't create if past end date
-    if (endDate && new Date(endDate) < today) continue;
-
-    const completedDate = goal.completedAt ? new Date(goal.completedAt) : today;
-    let nextDueDate: Date;
-
-    switch (frequency) {
-      case 'daily':
-        nextDueDate = new Date(completedDate);
-        nextDueDate.setDate(nextDueDate.getDate() + interval);
-        break;
-      case 'weekly':
-        nextDueDate = new Date(completedDate);
-        nextDueDate.setDate(nextDueDate.getDate() + (interval * 7));
-        break;
-      case 'monthly':
-        nextDueDate = new Date(completedDate);
-        nextDueDate.setMonth(nextDueDate.getMonth() + interval);
-        break;
-      default:
-        continue;
-    }
-
-    // If next due date is today or in the past, create new goal
-    if (nextDueDate <= today) {
-      const newGoal: Goal = {
-        ...goal,
-        id: `${goal.id}-${Date.now()}`,
-        completed: false,
-        completedAt: undefined,
-        currentCount: 0,
-        createdAt: new Date().toISOString(),
-        dueDate: nextDueDate.toISOString(),
-        reminders: goal.reminders.map((r) => ({ ...r, sent: false, dismissed: false })),
-      };
-      newGoals.push(newGoal);
-    }
-  }
-
-  if (newGoals.length > 0) {
-    const updatedGoals = [...goals, ...newGoals];
-    await saveGoals(updatedGoals);
-  }
-
-  return newGoals;
-}
-
-// ============ Recalculate Analytics ============
-
-export async function recalculateGoalAnalytics(): Promise<GoalAnalytics> {
-  const goals = await getGoals();
-  const completedGoals = await getCompletedGoals();
-  const allGoals = [...goals, ...completedGoals];
-
-  const analytics: GoalAnalytics = getDefaultGoalAnalytics();
-
-  // Count goals
-  allGoals.forEach((goal) => {
-    analytics.totalGoalsCreated++;
-    analytics.goalsByType[goal.type].created++;
-
-    if (goal.completed) {
-      analytics.totalGoalsCompleted++;
-      analytics.goalsByType[goal.type].completed++;
-    }
-  });
-
-  // Calculate completion rate
-  analytics.completionRate = analytics.totalGoalsCreated > 0
-    ? analytics.totalGoalsCompleted / analytics.totalGoalsCreated
-    : 0;
-
-  // Calculate average completion time
-  const completionTimes: number[] = [];
-  completedGoals.forEach((goal) => {
-    if (goal.completedAt && goal.createdAt) {
-      const time = (new Date(goal.completedAt).getTime() - new Date(goal.createdAt).getTime()) / (1000 * 60 * 60 * 24);
-      completionTimes.push(time);
-    }
-  });
-
-  analytics.averageCompletionTime = completionTimes.length > 0
-    ? completionTimes.reduce((a, b) => a + b, 0) / completionTimes.length
-    : 0;
-
-  // Calculate weekly completions (last 12 weeks)
-  const weeklyMap = new Map<string, number>();
-  completedGoals.forEach((goal) => {
-    if (goal.completedAt) {
-      const weekStart = getWeekStart(new Date(goal.completedAt));
-      const weekKey = weekStart.toISOString().split('T')[0];
-      weeklyMap.set(weekKey, (weeklyMap.get(weekKey) || 0) + 1);
-    }
-  });
-
-  analytics.weeklyCompletions = Array.from(weeklyMap.entries())
-    .map(([week, count]) => ({ week, count }))
-    .sort((a, b) => a.week.localeCompare(b.week))
-    .slice(-12);
-
-  // Calculate streak
-  analytics.currentStreak = await calculateCurrentStreak();
-
-  // For longest streak, we need to iterate through all completion dates
-  const completionDates = new Set<string>();
-  completedGoals.forEach((goal) => {
-    if (goal.completedAt) {
-      completionDates.add(goal.completedAt.split('T')[0]);
-    }
-  });
-
-  const sortedDates = Array.from(completionDates).sort();
-  let currentStreak = 1;
-  let maxStreak = sortedDates.length > 0 ? 1 : 0;
-
-  for (let i = 1; i < sortedDates.length; i++) {
-    const prevDate = new Date(sortedDates[i - 1]);
-    const currDate = new Date(sortedDates[i]);
-    const daysDiff = Math.floor((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (daysDiff === 1) {
-      currentStreak++;
-      maxStreak = Math.max(maxStreak, currentStreak);
-    } else {
-      currentStreak = 1;
-    }
-  }
-
-  analytics.longestStreak = maxStreak;
-
-  await saveGoalAnalytics(analytics);
-  return analytics;
+  await chrome.storage.local.set({ notificationSettings: settings });
 }

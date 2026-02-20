@@ -229,13 +229,13 @@ export const ThisWeek: React.FC<ThisWeekProps> = ({
         type: 'goal',
         date: dueDate < today ? today : dueDate, // Show overdue goals on today
         title: goal.title,
-        subtitle: goal.targetCount ? `${goal.currentCount}/${goal.targetCount} completed` : undefined,
+        subtitle: goal.targetCount ? `${goal.currentCount ?? 0}/${goal.targetCount} completed` : undefined,
         iconType: 'goal',
-        goalType: goal.type,
+        goalType: goal.type ?? 'custom',
         color: dueDate < today ? 'bg-flatred' : 'bg-teal',
         goalId: goal.id,
         isOverdue: dueDate < today,
-        progress: goal.targetCount ? { current: goal.currentCount, target: goal.targetCount } : undefined,
+        progress: goal.targetCount ? { current: goal.currentCount ?? 0, target: goal.targetCount } : undefined,
       });
     });
 

@@ -5,25 +5,125 @@
     "src": "../../../../@crx/manifest",
     "isEntry": true
   },
+  "_ConnectionCard-Bn5lTwUv.js": {
+    "file": "assets/ConnectionCard-Bn5lTwUv.js",
+    "name": "ConnectionCard",
+    "imports": [
+      "_extractor-BlsyOXNW.js",
+      "index.html"
+    ]
+  },
   "_extractor-BlsyOXNW.js": {
     "file": "assets/extractor-BlsyOXNW.js",
     "name": "extractor"
   },
   "index.html": {
-    "file": "assets/index-CP3IFTRX.js",
+    "file": "assets/index-mMT86OmR.js",
     "name": "index",
     "src": "index.html",
     "isEntry": true,
     "imports": [
       "_extractor-BlsyOXNW.js"
     ],
+    "dynamicImports": [
+      "src/components/dashboard/PostingDetailPanel.tsx",
+      "src/components/posting/EditPostingModal.tsx",
+      "src/components/connections/ConnectionsList.tsx",
+      "src/components/connections/ConnectionFormModal.tsx",
+      "src/components/connections/ConnectionDetailPanel.tsx",
+      "src/components/keywords/CompareKeywordsModal.tsx",
+      "src/components/common/KeyboardShortcutsModal.tsx",
+      "src/components/roadmap/RoadmapPage.tsx"
+    ],
     "css": [
-      "assets/index-C4brViN3.css"
+      "assets/index-DlS-9to6.css"
     ]
   },
   "scraper.ts-loader.js": {
     "file": "assets/scraper.ts-loader-DKzQ9U_S.js",
     "src": "scraper.ts-loader.js"
+  },
+  "src/components/common/KeyboardShortcutsModal.tsx": {
+    "file": "assets/KeyboardShortcutsModal-DwC0At3L.js",
+    "name": "KeyboardShortcutsModal",
+    "src": "src/components/common/KeyboardShortcutsModal.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_extractor-BlsyOXNW.js",
+      "index.html"
+    ]
+  },
+  "src/components/connections/ConnectionDetailPanel.tsx": {
+    "file": "assets/ConnectionDetailPanel-MkIqR_D6.js",
+    "name": "ConnectionDetailPanel",
+    "src": "src/components/connections/ConnectionDetailPanel.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_extractor-BlsyOXNW.js",
+      "index.html"
+    ]
+  },
+  "src/components/connections/ConnectionFormModal.tsx": {
+    "file": "assets/ConnectionFormModal-Bc0yQGXf.js",
+    "name": "ConnectionFormModal",
+    "src": "src/components/connections/ConnectionFormModal.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_extractor-BlsyOXNW.js",
+      "index.html"
+    ]
+  },
+  "src/components/connections/ConnectionsList.tsx": {
+    "file": "assets/ConnectionsList-DErg_3Pt.js",
+    "name": "ConnectionsList",
+    "src": "src/components/connections/ConnectionsList.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_extractor-BlsyOXNW.js",
+      "_ConnectionCard-Bn5lTwUv.js",
+      "index.html"
+    ]
+  },
+  "src/components/dashboard/PostingDetailPanel.tsx": {
+    "file": "assets/PostingDetailPanel-CnprEx31.js",
+    "name": "PostingDetailPanel",
+    "src": "src/components/dashboard/PostingDetailPanel.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_extractor-BlsyOXNW.js",
+      "index.html",
+      "_ConnectionCard-Bn5lTwUv.js"
+    ]
+  },
+  "src/components/keywords/CompareKeywordsModal.tsx": {
+    "file": "assets/CompareKeywordsModal-8eECAj6l.js",
+    "name": "CompareKeywordsModal",
+    "src": "src/components/keywords/CompareKeywordsModal.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_extractor-BlsyOXNW.js",
+      "index.html"
+    ]
+  },
+  "src/components/posting/EditPostingModal.tsx": {
+    "file": "assets/EditPostingModal-DivOKD3c.js",
+    "name": "EditPostingModal",
+    "src": "src/components/posting/EditPostingModal.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_extractor-BlsyOXNW.js",
+      "index.html"
+    ]
+  },
+  "src/components/roadmap/RoadmapPage.tsx": {
+    "file": "assets/RoadmapPage-BkrH_rI-.js",
+    "name": "RoadmapPage",
+    "src": "src/components/roadmap/RoadmapPage.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_extractor-BlsyOXNW.js",
+      "index.html"
+    ]
   },
   "src/content/scraper.ts": {
     "file": "assets/scraper.ts-nbhqk1XY.js",

@@ -1,530 +1,302 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { Posting, Goal, TimelineEvent, Connection, GoalAnalytics, RoadmapSettings } from '@/types';
-import { Timeline, ZoomLevel } from './Timeline';
-import { GoalsList } from './GoalsList';
-import { ThisWeek } from './ThisWeek';
-import { GoalModal } from './GoalModal';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Posting, Connection, Goal, GoalStopItem, SnoozeDuration } from '@/types';
+import { Timeline } from './Timeline';
 import {
-  getGoals,
-  saveGoal,
-  deleteGoal,
+  aggregateGoalStops,
+  completeApplicationGoal,
+  completeInterview,
+  completeFollowUp,
   completeGoal,
-  getTimelineEvents,
-  getGoalAnalytics,
-  getRoadmapSettings,
-  saveRoadmapSettings,
-  updateGoalAnalyticsOnCreation,
-  recalculateGoalAnalytics,
+  snoozeItem,
+  getGoals,
+  saveGoals,
+  getRoadmapStats,
 } from '@/services/roadmapStorage';
+import { getPostings, savePosting, getConnections, saveConnection } from '@/services/storage';
 
 interface RoadmapPageProps {
   postings: Posting[];
   connections: Connection[];
-  onPostingClick?: (postingId: string) => void;
-  onConnectionClick?: (connectionId: string) => void;
+  onPostingsChange: (postings: Posting[]) => void;
+  onConnectionsChange: (connections: Connection[]) => void;
+  onNavigateToPosting: (postingId: string) => void;
+  onNavigateToConnection: (connectionId: string) => void;
 }
 
-type ViewMode = 'timeline' | 'board';
-
-export const RoadmapPage: React.FC<RoadmapPageProps> = ({
+export function RoadmapPage({
   postings,
   connections,
-  onPostingClick,
-  onConnectionClick,
-}) => {
-  // Data state
+  onPostingsChange,
+  onConnectionsChange,
+  onNavigateToPosting,
+  onNavigateToConnection,
+}: RoadmapPageProps) {
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [events, setEvents] = useState<TimelineEvent[]>([]);
-  const [analytics, setAnalytics] = useState<GoalAnalytics | null>(null);
-  const [settings, setSettings] = useState<RoadmapSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // UI state
-  const [viewMode, setViewMode] = useState<ViewMode>('timeline');
-  const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('month');
-  const [showCompleted, setShowCompleted] = useState(false);
-  const [goalModalOpen, setGoalModalOpen] = useState(false);
-  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
-  const [defaultGoalDate, setDefaultGoalDate] = useState<string | undefined>();
-
-  // Load data
+  // Load goals on mount
   useEffect(() => {
-    const loadData = async () => {
+    const loadGoals = async () => {
       try {
-        const [loadedGoals, loadedEvents, loadedAnalytics, loadedSettings] = await Promise.all([
-          getGoals(),
-          getTimelineEvents(),
-          getGoalAnalytics(),
-          getRoadmapSettings(),
-        ]);
-
+        const loadedGoals = await getGoals();
         setGoals(loadedGoals);
-        setEvents(loadedEvents);
-        setAnalytics(loadedAnalytics);
-        setSettings(loadedSettings);
-        setZoomLevel(loadedSettings.defaultZoom);
-        setViewMode(loadedSettings.defaultView);
-        setShowCompleted(loadedSettings.showCompletedGoals);
-      } catch (error) {
-        console.error('Failed to load roadmap data:', error);
+      } catch (err) {
+        console.error('Failed to load goals:', err);
+        setError('Failed to load goals');
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadData();
+    loadGoals();
   }, []);
 
-  // Save goal handler
-  const handleSaveGoal = useCallback(async (goal: Goal) => {
-    try {
-      const isNew = !goals.find((g) => g.id === goal.id);
-      await saveGoal(goal);
+  // Aggregate goal stops from all data sources
+  const goalStops = useMemo(() => {
+    return aggregateGoalStops(postings, connections, goals);
+  }, [postings, connections, goals]);
 
-      if (isNew) {
-        await updateGoalAnalyticsOnCreation(goal);
+  // Get roadmap stats
+  const stats = useMemo(() => {
+    return getRoadmapStats(goalStops);
+  }, [goalStops]);
+
+  // Handle item click - navigate to the relevant detail view
+  const handleItemClick = useCallback(
+    (item: GoalStopItem) => {
+      switch (item.type) {
+        case 'application-goal':
+        case 'interview':
+        case 'offer-deadline':
+          onNavigateToPosting(item.posting.id);
+          break;
+        case 'follow-up':
+          onNavigateToConnection(item.connection.id);
+          break;
+        case 'goal':
+          // Could open a goal detail modal here
+          console.log('Goal clicked:', item.goal);
+          break;
       }
+    },
+    [onNavigateToPosting, onNavigateToConnection]
+  );
 
-      // Refresh data
-      const [updatedGoals, updatedAnalytics] = await Promise.all([
-        getGoals(),
-        getGoalAnalytics(),
-      ]);
+  // Handle item completion
+  const handleItemComplete = useCallback(
+    async (item: GoalStopItem) => {
+      try {
+        switch (item.type) {
+          case 'application-goal': {
+            const updates = completeApplicationGoal(item.posting);
+            const updatedPosting = { ...item.posting, ...updates };
+            await savePosting(updatedPosting);
+            const freshPostings = await getPostings();
+            onPostingsChange(freshPostings);
+            break;
+          }
+
+          case 'interview': {
+            const updates = completeInterview(item.posting, item.interview.id);
+            const updatedPosting = { ...item.posting, ...updates };
+            await savePosting(updatedPosting);
+            const freshPostings = await getPostings();
+            onPostingsChange(freshPostings);
+            break;
+          }
+
+          case 'offer-deadline': {
+            // For offer deadlines, we might want to advance to accepted/rejected
+            // For now, just navigate to the posting for manual handling
+            onNavigateToPosting(item.posting.id);
+            break;
+          }
+
+          case 'follow-up': {
+            const updates = completeFollowUp(item.connection);
+            const updatedConnection = { ...item.connection, ...updates };
+            await saveConnection(updatedConnection);
+            const freshConnections = await getConnections();
+            onConnectionsChange(freshConnections);
+            break;
+          }
+
+          case 'goal': {
+            const updates = completeGoal(item.goal);
+            const updatedGoal = { ...item.goal, ...updates };
+            const updatedGoals = goals.map((g) =>
+              g.id === updatedGoal.id ? updatedGoal : g
+            );
+            await saveGoals(updatedGoals);
+            setGoals(updatedGoals);
+            break;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to complete item:', err);
+        setError('Failed to complete item');
+      }
+    },
+    [goals, onPostingsChange, onConnectionsChange, onNavigateToPosting]
+  );
+
+  // Handle item snooze
+  const handleItemSnooze = useCallback(
+    async (item: GoalStopItem, days: SnoozeDuration) => {
+      try {
+        const snoozeResult = snoozeItem(item, days);
+
+        switch (snoozeResult.type) {
+          case 'posting': {
+            const posting = postings.find((p) => p.id === snoozeResult.id);
+            if (posting) {
+              const updatedPosting = { ...posting, ...snoozeResult.updates, dateModified: Date.now() };
+              await savePosting(updatedPosting);
+              const freshPostings = await getPostings();
+              onPostingsChange(freshPostings);
+            }
+            break;
+          }
+
+          case 'connection': {
+            const connection = connections.find((c) => c.id === snoozeResult.id);
+            if (connection) {
+              const updatedConnection = { ...connection, ...snoozeResult.updates, dateModified: Date.now() };
+              await saveConnection(updatedConnection);
+              const freshConnections = await getConnections();
+              onConnectionsChange(freshConnections);
+            }
+            break;
+          }
+
+          case 'goal': {
+            const goal = goals.find((g) => g.id === snoozeResult.id);
+            if (goal) {
+              const updatedGoal = { ...goal, ...snoozeResult.updates };
+              const updatedGoals = goals.map((g) =>
+                g.id === updatedGoal.id ? updatedGoal : g
+              );
+              await saveGoals(updatedGoals);
+              setGoals(updatedGoals);
+            }
+            break;
+          }
+        }
+      } catch (err) {
+        console.error('Failed to snooze item:', err);
+        setError('Failed to snooze item');
+      }
+    },
+    [postings, connections, goals, onPostingsChange, onConnectionsChange]
+  );
+
+  // Handle adding a new goal
+  const handleAddGoal = useCallback(async () => {
+    const newGoal: Goal = {
+      id: `goal-${Date.now()}`,
+      title: 'New Goal',
+      notes: '',
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 1 week from now
+      completed: false,
+      createdAt: Date.now(),
+    };
+
+    try {
+      const updatedGoals = [...goals, newGoal];
+      await saveGoals(updatedGoals);
       setGoals(updatedGoals);
-      setAnalytics(updatedAnalytics);
-    } catch (error) {
-      console.error('Failed to save goal:', error);
+    } catch (err) {
+      console.error('Failed to add goal:', err);
+      setError('Failed to add goal');
     }
   }, [goals]);
-
-  // Delete goal handler
-  const handleDeleteGoal = useCallback(async (goalId: string) => {
-    if (!confirm('Are you sure you want to delete this goal?')) return;
-
-    try {
-      await deleteGoal(goalId);
-      setGoals((prev) => prev.filter((g) => g.id !== goalId));
-    } catch (error) {
-      console.error('Failed to delete goal:', error);
-    }
-  }, []);
-
-  // Complete goal handler
-  const handleCompleteGoal = useCallback(async (goalId: string) => {
-    try {
-      await completeGoal(goalId);
-
-      // Refresh data
-      const [updatedGoals, updatedAnalytics] = await Promise.all([
-        getGoals(),
-        getGoalAnalytics(),
-      ]);
-      setGoals(updatedGoals);
-      setAnalytics(updatedAnalytics);
-    } catch (error) {
-      console.error('Failed to complete goal:', error);
-    }
-  }, []);
-
-  // Update goal handler
-  const handleUpdateGoal = useCallback(async (goalId: string, updates: Partial<Goal>) => {
-    const goal = goals.find((g) => g.id === goalId);
-    if (!goal) return;
-
-    const updatedGoal = { ...goal, ...updates };
-    await handleSaveGoal(updatedGoal);
-  }, [goals, handleSaveGoal]);
-
-  // Snooze goal handler
-  const handleSnoozeGoal = useCallback(async (goalId: string, days: number) => {
-    const goal = goals.find((g) => g.id === goalId);
-    if (!goal) return;
-
-    const newDueDate = new Date(goal.dueDate);
-    newDueDate.setDate(newDueDate.getDate() + days);
-
-    await handleUpdateGoal(goalId, { dueDate: newDueDate.toISOString() });
-  }, [goals, handleUpdateGoal]);
-
-  // Goal drag and drop on timeline
-  const handleGoalDrop = useCallback(async (goalId: string, newDate: string) => {
-    await handleUpdateGoal(goalId, { dueDate: newDate });
-  }, [handleUpdateGoal]);
-
-  // Open goal modal for creation
-  const handleAddGoal = useCallback((date?: string) => {
-    setEditingGoal(null);
-    setDefaultGoalDate(date);
-    setGoalModalOpen(true);
-  }, []);
-
-  // Open goal modal for editing
-  const handleEditGoal = useCallback((goalId: string) => {
-    const goal = goals.find((g) => g.id === goalId);
-    if (goal) {
-      setEditingGoal(goal);
-      setGoalModalOpen(true);
-    }
-  }, [goals]);
-
-  // Handle zoom change
-  const handleZoomChange = useCallback(async (zoom: ZoomLevel) => {
-    setZoomLevel(zoom);
-    if (settings) {
-      const updatedSettings = { ...settings, defaultZoom: zoom };
-      await saveRoadmapSettings(updatedSettings);
-      setSettings(updatedSettings);
-    }
-  }, [settings]);
-
-  // Handle show completed change
-  const handleShowCompletedChange = useCallback(async (show: boolean) => {
-    setShowCompleted(show);
-    if (settings) {
-      const updatedSettings = { ...settings, showCompletedGoals: show };
-      await saveRoadmapSettings(updatedSettings);
-      setSettings(updatedSettings);
-    }
-  }, [settings]);
-
-  // Filter goals based on settings
-  const filteredGoals = useMemo(() => {
-    if (showCompleted) return goals;
-    return goals.filter((g) => !g.completed);
-  }, [goals, showCompleted]);
-
-  // Recalculate analytics on demand
-  const handleRecalculateAnalytics = useCallback(async () => {
-    try {
-      const updated = await recalculateGoalAnalytics();
-      setAnalytics(updated);
-    } catch (error) {
-      console.error('Failed to recalculate analytics:', error);
-    }
-  }, []);
 
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-wine border-t-transparent"></div>
-          <p className="mt-2 text-wine/70">Loading roadmap...</p>
-        </div>
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-wine border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-wine/10 bg-white px-6 py-4">
-        <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold text-wine flex items-center gap-2">
-            <svg className="h-6 w-6 text-wine" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            Your Job Search Roadmap
-          </h1>
-          <div className="flex rounded-lg border border-wine/20 bg-champagne-50 p-0.5">
-            <button
-              onClick={() => setViewMode('timeline')}
-              className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
-                viewMode === 'timeline'
-                  ? 'bg-white text-wine shadow-sm'
-                  : 'text-wine/60 hover:text-wine'
-              }`}
-            >
-              Timeline
-            </button>
-            <button
-              onClick={() => setViewMode('board')}
-              className={`rounded px-3 py-1 text-sm font-medium transition-colors ${
-                viewMode === 'board'
-                  ? 'bg-white text-wine shadow-sm'
-                  : 'text-wine/60 hover:text-wine'
-              }`}
-            >
-              Board
-            </button>
+    <div className="flex h-full flex-col bg-champagne-50">
+      {/* Page header */}
+      <div className="border-b border-champagne-200 bg-white px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Roadmap</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Track your job search milestones and upcoming actions
+            </p>
           </div>
-        </div>
-        <button
-          onClick={() => handleAddGoal()}
-          className="flex items-center gap-2 rounded-lg bg-wine px-4 py-2 text-sm font-medium text-white hover:bg-wine/90 transition-colors"
-        >
-          <span>+</span>
-          <span>Add Goal</span>
-        </button>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        {viewMode === 'timeline' ? (
-          <div className="h-full flex flex-col lg:flex-row">
-            {/* Timeline Section */}
-            <div className="flex-1 overflow-auto p-6">
-              <Timeline
-                postings={postings}
-                goals={filteredGoals}
-                events={events}
-                zoomLevel={zoomLevel}
-                onZoomChange={handleZoomChange}
-                onPostingClick={onPostingClick}
-                onGoalClick={handleEditGoal}
-                onEventClick={(eventId) => console.log('Event clicked:', eventId)}
-                onCreateGoal={handleAddGoal}
-                onGoalDrop={handleGoalDrop}
-              />
+          {/* Quick stats */}
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-wine">{stats.upcomingThisWeek}</p>
+              <p className="text-xs text-gray-500">This week</p>
             </div>
-
-            {/* Side Panels */}
-            <div className="w-full lg:w-96 border-t lg:border-t-0 lg:border-l border-wine/10 bg-champagne-50 overflow-auto">
-              <div className="p-4 space-y-6">
-                {/* This Week */}
-                <div className="rounded-lg bg-white p-4 shadow-sm">
-                  <ThisWeek
-                    postings={postings}
-                    goals={filteredGoals}
-                    events={events}
-                    connections={connections}
-                    onPostingClick={onPostingClick}
-                    onGoalClick={handleEditGoal}
-                    onGoalComplete={handleCompleteGoal}
-                    onConnectionClick={onConnectionClick}
-                    onSnoozeGoal={handleSnoozeGoal}
-                  />
-                </div>
-
-                {/* Goals Summary */}
-                <div className="rounded-lg bg-white p-4 shadow-sm">
-                  <div className="flex items-center justify-end mb-2">
-                    <button
-                      onClick={handleRecalculateAnalytics}
-                      className="text-xs text-wine/60 hover:text-wine"
-                      title="Refresh analytics"
-                    >
-                      Refresh Stats
-                    </button>
-                  </div>
-                  <GoalsList
-                    goals={goals}
-                    analytics={analytics || undefined}
-                    onGoalClick={handleEditGoal}
-                    onGoalComplete={handleCompleteGoal}
-                    onGoalDelete={handleDeleteGoal}
-                    onGoalUpdate={handleUpdateGoal}
-                    onAddGoal={() => handleAddGoal()}
-                    showCompleted={showCompleted}
-                    onShowCompletedChange={handleShowCompletedChange}
-                  />
-                </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-gray-900">{stats.completedItems}</p>
+              <p className="text-xs text-gray-500">Completed</p>
+            </div>
+            {stats.overdueItems > 0 && (
+              <div className="text-center">
+                <p className="text-2xl font-bold text-flatred">{stats.overdueItems}</p>
+                <p className="text-xs text-gray-500">Overdue</p>
               </div>
-            </div>
+            )}
           </div>
-        ) : (
-          /* Board View - Kanban-style goals */
-          <div className="h-full overflow-auto p-6">
-            <BoardView
-              goals={filteredGoals}
-              onGoalClick={handleEditGoal}
-              onGoalComplete={handleCompleteGoal}
-              onGoalDelete={handleDeleteGoal}
-              onGoalUpdate={handleUpdateGoal}
-              onAddGoal={handleAddGoal}
-            />
-          </div>
-        )}
-      </div>
 
-      {/* Goal Modal */}
-      <GoalModal
-        isOpen={goalModalOpen}
-        onClose={() => {
-          setGoalModalOpen(false);
-          setEditingGoal(null);
-          setDefaultGoalDate(undefined);
-        }}
-        onSave={handleSaveGoal}
-        goal={editingGoal}
-        postings={postings}
-        connections={connections}
-        existingGoals={goals}
-        defaultDate={defaultGoalDate}
-      />
-    </div>
-  );
-};
-
-// Board View Component
-interface BoardViewProps {
-  goals: Goal[];
-  onGoalClick: (goalId: string) => void;
-  onGoalComplete: (goalId: string) => void;
-  onGoalDelete: (goalId: string) => void;
-  onGoalUpdate: (goalId: string, updates: Partial<Goal>) => void;
-  onAddGoal: (date?: string) => void;
-}
-
-const BoardView: React.FC<BoardViewProps> = ({
-  goals,
-  onGoalClick,
-  onGoalComplete,
-  onGoalDelete: _onGoalDelete,
-  onGoalUpdate: _onGoalUpdate,
-  onAddGoal,
-}) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const endOfWeek = new Date(today);
-  endOfWeek.setDate(endOfWeek.getDate() + 7);
-
-  const endOfNextWeek = new Date(endOfWeek);
-  endOfNextWeek.setDate(endOfNextWeek.getDate() + 7);
-
-  // Categorize goals
-  const columns = useMemo(() => {
-    const thisWeek: Goal[] = [];
-    const nextWeek: Goal[] = [];
-    const later: Goal[] = [];
-    const completed: Goal[] = [];
-
-    goals.forEach((goal) => {
-      if (goal.completed) {
-        completed.push(goal);
-        return;
-      }
-
-      const dueDate = new Date(goal.dueDate);
-      dueDate.setHours(0, 0, 0, 0);
-
-      if (dueDate < endOfWeek) {
-        thisWeek.push(goal);
-      } else if (dueDate < endOfNextWeek) {
-        nextWeek.push(goal);
-      } else {
-        later.push(goal);
-      }
-    });
-
-    // Sort each column by due date
-    const sortByDueDate = (a: Goal, b: Goal) =>
-      new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-
-    return {
-      thisWeek: thisWeek.sort(sortByDueDate),
-      nextWeek: nextWeek.sort(sortByDueDate),
-      later: later.sort(sortByDueDate),
-      completed: completed.slice(0, 5), // Show only recent 5 completed
-    };
-  }, [goals, endOfWeek, endOfNextWeek]);
-
-  const renderColumn = (
-    title: string,
-    goals: Goal[],
-    _columnKey: string,
-    showAdd: boolean = true
-  ) => (
-    <div className="flex flex-col min-w-[280px] max-w-[320px] bg-champagne-50 rounded-lg p-3">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-wine flex items-center gap-2">
-          {title}
-          <span className="rounded-full bg-wine/10 px-2 py-0.5 text-xs">
-            {goals.length}
-          </span>
-        </h3>
-        {showAdd && (
+          {/* Add goal button */}
           <button
-            onClick={() => onAddGoal()}
-            className="rounded p-1 text-wine/60 hover:bg-wine/10 hover:text-wine"
+            onClick={handleAddGoal}
+            className="flex items-center gap-2 rounded-lg bg-wine px-4 py-2 text-white hover:bg-wine/90 focus:outline-none focus:ring-2 focus:ring-wine/50 focus:ring-offset-2"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
+            Add Goal
           </button>
-        )}
+        </div>
       </div>
 
-      <div className="flex-1 space-y-2 overflow-y-auto">
-        {goals.map((goal) => {
-          const dueDate = new Date(goal.dueDate);
-          const isOverdue = !goal.completed && dueDate < today;
-          const progress = goal.targetCount
-            ? Math.round((goal.currentCount / goal.targetCount) * 100)
-            : null;
-
-          return (
-            <div
-              key={goal.id}
-              className={`rounded-lg border bg-white p-3 shadow-sm cursor-pointer transition-all hover:shadow-md ${
-                isOverdue ? 'border-flatred-200' : 'border-wine/10'
-              } ${goal.completed ? 'opacity-60' : ''}`}
-              onClick={() => onGoalClick(goal.id)}
+      {/* Error message */}
+      {error && (
+        <div className="mx-6 mt-4 rounded-lg bg-flatred/10 px-4 py-3 text-flatred">
+          <div className="flex items-center gap-2">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>{error}</span>
+            <button
+              onClick={() => setError(null)}
+              className="ml-auto text-sm underline hover:no-underline"
             >
-              <div className="flex items-start gap-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!goal.completed) onGoalComplete(goal.id);
-                  }}
-                  className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                    goal.completed
-                      ? 'border-teal-500 bg-teal-500 text-white'
-                      : 'border-sage-300 hover:border-wine'
-                  }`}
-                >
-                  {goal.completed && (
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </button>
-                <div className="flex-1 min-w-0">
-                  <div className={`font-medium text-sm ${goal.completed ? 'line-through text-wine/40' : 'text-wine'}`}>
-                    {goal.title}
-                  </div>
-                  <div className={`text-xs mt-1 ${isOverdue ? 'text-flatred' : 'text-wine/60'}`}>
-                    {isOverdue ? 'Overdue: ' : ''}
-                    {dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </div>
-                  {progress !== null && (
-                    <div className="mt-2">
-                      <div className="h-1.5 w-full rounded-full bg-champagne-200">
-                        <div
-                          className={`h-full rounded-full ${
-                            goal.completed ? 'bg-teal-500' : isOverdue ? 'bg-flatred-400' : 'bg-wine'
-                          }`}
-                          style={{ width: `${Math.min(100, progress)}%` }}
-                        />
-                      </div>
-                      <div className="text-xs text-wine/50 mt-0.5">
-                        {goal.currentCount}/{goal.targetCount}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-
-        {goals.length === 0 && (
-          <div className="py-8 text-center text-sm text-wine/40">
-            No goals
+              Dismiss
+            </button>
           </div>
-        )}
+        </div>
+      )}
+
+      {/* Timeline */}
+      <div className="flex-1 overflow-hidden">
+        <Timeline
+          goalStops={goalStops}
+          onItemClick={handleItemClick}
+          onItemComplete={handleItemComplete}
+          onItemSnooze={handleItemSnooze}
+        />
       </div>
     </div>
   );
-
-  return (
-    <div className="flex gap-4 h-full overflow-x-auto pb-4">
-      {renderColumn('This Week', columns.thisWeek, 'thisWeek')}
-      {renderColumn('Next Week', columns.nextWeek, 'nextWeek')}
-      {renderColumn('Later', columns.later, 'later')}
-      {renderColumn('Completed', columns.completed, 'completed', false)}
-    </div>
-  );
-};
+}
 
 export default RoadmapPage;

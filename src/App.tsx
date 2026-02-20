@@ -18,6 +18,7 @@ const ConnectionFormModal = lazy(() => import('@/components/connections/Connecti
 const ConnectionDetailPanel = lazy(() => import('@/components/connections/ConnectionDetailPanel'));
 const CompareKeywordsModal = lazy(() => import('@/components/keywords/CompareKeywordsModal'));
 const KeyboardShortcutsModal = lazy(() => import('@/components/common/KeyboardShortcutsModal'));
+const RoadmapPage = lazy(() => import('@/components/roadmap/RoadmapPage'));
 
 // Loading fallback component
 function LoadingFallback() {
@@ -28,7 +29,7 @@ function LoadingFallback() {
   );
 }
 
-type AppPage = 'jobs' | 'connections';
+type AppPage = 'jobs' | 'connections' | 'roadmap';
 import {
   getPostings,
   savePostings as persistPostings,
@@ -621,7 +622,7 @@ function App() {
 
   // Handle sidebar navigation (must be before early return)
   const handleSidebarNavigate = useCallback((page: string) => {
-    if (page === 'jobs' || page === 'connections') {
+    if (page === 'jobs' || page === 'connections' || page === 'roadmap') {
       setCurrentPage(page as AppPage);
     } else if (page === 'settings') {
       // Future: open settings modal
@@ -805,13 +806,32 @@ function App() {
             />
           </Suspense>
         </>
-      ) : (
+      ) : currentPage === 'connections' ? (
           <Suspense fallback={<LoadingFallback />}>
             <ConnectionsList
               connections={connections}
               onSelectConnection={handleConnectionSelect}
               onAddConnection={handleAddConnection}
               onEditConnection={handleEditConnection}
+            />
+          </Suspense>
+        ) : (
+          <Suspense fallback={<LoadingFallback />}>
+            <RoadmapPage
+              postings={postings}
+              connections={connections}
+              onPostingsChange={(newPostings: Posting[]) => savePostings(newPostings)}
+              onConnectionsChange={(newConnections: Connection[]) => setConnections(newConnections)}
+              onNavigateToPosting={(postingId: string) => {
+                setSelectedPostingId(postingId);
+                setDetailPanelOpen(true);
+                setCurrentPage('jobs');
+              }}
+              onNavigateToConnection={(connectionId: string) => {
+                setSelectedConnectionId(connectionId);
+                setConnectionDetailOpen(true);
+                setCurrentPage('connections');
+              }}
             />
           </Suspense>
         )}
