@@ -125,7 +125,10 @@ export class ConnectionPanel {
   }
 
   private mount(html: string): HTMLElement {
-    this.clear();
+    // Swap the card DOM only — must NOT reset currentEmail (clear() does that),
+    // or the render itself would wipe the email the Save handlers need.
+    const existing = this.root.querySelector('.card');
+    if (existing) existing.remove();
     const wrap = document.createElement('div');
     wrap.innerHTML = html;
     const card = wrap.firstElementChild as HTMLElement;
