@@ -18,6 +18,7 @@ export {
   buildConnectionFromEmail,
   logEmailToConnection,
   createConnectionFromEmail,
+  setConnectionFollowUp,
   nameFromEmail,
   companyFromEmail,
 } from './email';

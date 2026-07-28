@@ -164,3 +164,16 @@ function maxDate(a: string | undefined, b: string): string {
   if (!a) return b;
   return new Date(a).getTime() >= new Date(b).getTime() ? a : b;
 }
+
+/** Set (or clear, with an empty date) a connection's next follow-up date. */
+export async function setConnectionFollowUp(
+  connectionId: string,
+  date: string | undefined
+): Promise<Connection | null> {
+  const connections = await getConnections();
+  const connection = connections.find((c) => c.id === connectionId);
+  if (!connection) return null;
+  const updated: Connection = { ...connection, nextFollowUp: date || undefined };
+  await saveConnection(updated);
+  return updated;
+}
