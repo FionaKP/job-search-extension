@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react';
 import { Connection } from '@/types';
 import { ConnectionCard } from './ConnectionCard';
+import { TouchpointsBanner } from './TouchpointsBanner';
 
 interface ConnectionsListProps {
   connections: Connection[];
   onSelectConnection: (id: string) => void;
   onEditConnection: (id: string) => void;
   onAddConnection: () => void;
+  onSnoozeTouchpoint?: (id: string) => void;
 }
 
 type FilterType = 'all' | 'follow-up-due' | 'has-postings' | 'no-postings';
@@ -16,6 +18,7 @@ export function ConnectionsList({
   onSelectConnection,
   onEditConnection,
   onAddConnection,
+  onSnoozeTouchpoint,
 }: ConnectionsListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('all');
@@ -102,6 +105,15 @@ export function ConnectionsList({
           Add Connection
         </button>
       </div>
+
+      {/* Suggested touchpoints */}
+      {onSnoozeTouchpoint && (
+        <TouchpointsBanner
+          connections={connections}
+          onSelectConnection={onSelectConnection}
+          onSnooze={onSnoozeTouchpoint}
+        />
+      )}
 
       {/* Filters */}
       <div className="mb-4 flex flex-wrap items-center gap-3">

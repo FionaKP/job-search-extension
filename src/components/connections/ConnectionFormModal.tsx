@@ -4,6 +4,7 @@ import {
   RelationshipType,
   RELATIONSHIP_TYPE_LABELS,
   RELATIONSHIP_STRENGTH_LABELS,
+  CADENCE_PRESETS,
   Posting,
 } from '@/types';
 
@@ -37,6 +38,7 @@ export function ConnectionFormModal({
     relationshipStrength: 2 as 1 | 2 | 3,
     notes: '',
     nextFollowUp: '',
+    cadenceDays: '' as string, // '' = auto (derive from strength)
     linkedPostingIds: [] as string[],
   });
 
@@ -57,6 +59,7 @@ export function ConnectionFormModal({
           relationshipStrength: connection.relationshipStrength,
           notes: connection.notes,
           nextFollowUp: connection.nextFollowUp || '',
+          cadenceDays: connection.cadenceDays ? String(connection.cadenceDays) : '',
           linkedPostingIds: connection.linkedPostingIds,
         });
       } else {
@@ -71,6 +74,7 @@ export function ConnectionFormModal({
           relationshipStrength: 2,
           notes: '',
           nextFollowUp: '',
+          cadenceDays: '',
           linkedPostingIds: [],
         });
       }
@@ -139,7 +143,10 @@ export function ConnectionFormModal({
       notes: formData.notes,
       lastContactDate: connection?.lastContactDate,
       nextFollowUp: formData.nextFollowUp || undefined,
+      cadenceDays: formData.cadenceDays ? Number(formData.cadenceDays) : undefined,
       contactHistory: connection?.contactHistory || [],
+      emailAddresses: connection?.emailAddresses,
+      touchpointSnoozeUntil: connection?.touchpointSnoozeUntil,
       linkedPostingIds: formData.linkedPostingIds,
       dateAdded: connection?.dateAdded || now,
       dateModified: now,
@@ -333,18 +340,38 @@ export function ConnectionFormModal({
               </div>
             </div>
 
-            {/* Next Follow-up */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Next Follow-up Date
-              </label>
-              <input
-                type="date"
-                name="nextFollowUp"
-                value={formData.nextFollowUp}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+            {/* Next Follow-up + Cadence */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Next Follow-up Date
+                </label>
+                <input
+                  type="date"
+                  name="nextFollowUp"
+                  value={formData.nextFollowUp}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Keep-in-touch cadence
+                </label>
+                <select
+                  name="cadenceDays"
+                  value={formData.cadenceDays}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="">Auto (by strength)</option>
+                  {CADENCE_PRESETS.map((preset) => (
+                    <option key={preset.days} value={preset.days}>
+                      {preset.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Notes */}

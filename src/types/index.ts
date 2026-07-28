@@ -346,11 +346,27 @@ export type RelationshipType = 'recruiter' | 'employee' | 'referral' | 'alumni' 
 
 export type ContactEventType = 'email' | 'call' | 'meeting' | 'linkedin' | 'other';
 
+/** Direction of a communication relative to the user. */
+export type ContactDirection = 'inbound' | 'outbound';
+
+/** Where a contact event originated. Used to distinguish auto-captured vs manual. */
+export type ContactSource = 'manual' | 'gmail';
+
 export interface ContactEvent {
   id: string;
   date: string; // ISO date string
   type: ContactEventType;
   notes?: string;
+
+  // Email / communication context (Phase 6 — Connections & Email)
+  direction?: ContactDirection;
+  subject?: string;
+  source?: ContactSource; // defaults to 'manual' when absent
+  /**
+   * Stable identifier for the source item (e.g. Gmail message-id / rfc822 id).
+   * Used to de-duplicate the same email being logged more than once.
+   */
+  externalId?: string;
 }
 
 export interface Connection {
@@ -371,6 +387,20 @@ export interface Connection {
   lastContactDate?: string;
   nextFollowUp?: string;
   contactHistory: ContactEvent[];
+
+  // Email & touchpoints (Phase 6 — Connections & Email)
+  /**
+   * All known email addresses for this person (aliases included). The primary
+   * `email` field is kept for backwards compatibility and mirrors the first entry.
+   */
+  emailAddresses?: string[];
+  /**
+   * Desired days between touchpoints. When set, drives touchpoint suggestions.
+   * When absent, a default is derived from relationshipStrength.
+   */
+  cadenceDays?: number;
+  /** Suggestions are hidden until this ISO date (user chose "snooze"/"not now"). */
+  touchpointSnoozeUntil?: string;
 
   // Links
   linkedPostingIds: string[];
@@ -400,6 +430,71 @@ export const CONTACT_EVENT_TYPE_LABELS: Record<ContactEventType, string> = {
   meeting: 'Meeting',
   linkedin: 'LinkedIn',
   other: 'Other',
+};
+
+// ============ Email Touchpoints (Phase 6) ============
+
+/**
+ * A parsed representation of an email the user is currently viewing. Produced by
+ * the Gmail content-script parser and consumed by the matching/logging services.
+ * Deliberately source-agnostic so a future Gmail-API layer can produce the same shape.
+ */
+export interface EmailContext {
+  /** Best-effort display name of the other party (sender for inbound, recipient for outbound). */
+  name: string | null;
+  /** Email address of the other party. */
+  email: string | null;
+  /** All participant email addresses seen on the message (from + to + cc). */
+  participants: string[];
+  subject: string | null;
+  /** ISO date string when the email was sent/received, if detectable. */
+  date: string | null;
+  /** Short preview/snippet of the body. */
+  snippet: string | null;
+  /** Whether the user sent this (outbound) or received it (inbound). */
+  direction: ContactDirection;
+  /** Stable per-message id for de-duplication, when available. */
+  messageId: string | null;
+  /** The current user's own email address, if known (used to infer direction). */
+  selfEmail?: string | null;
+}
+
+/** Preset cadences offered in the UI, in days. */
+export const CADENCE_PRESETS: { label: string; days: number }[] = [
+  { label: 'Weekly', days: 7 },
+  { label: 'Every 2 weeks', days: 14 },
+  { label: 'Monthly', days: 30 },
+  { label: 'Quarterly', days: 90 },
+  { label: 'Twice a year', days: 182 },
+];
+
+/** Default cadence (days) derived from relationship strength when none is set. */
+export const DEFAULT_CADENCE_BY_STRENGTH: Record<1 | 2 | 3, number> = {
+  1: 90, // weak — quarterly nudge
+  2: 45, // moderate — every ~6 weeks
+  3: 21, // strong — every ~3 weeks
+};
+
+export type TouchpointReason =
+  | 'overdue_followup' // an explicit nextFollowUp date has passed
+  | 'cadence_due' // time since last contact exceeds the cadence
+  | 'never_contacted'; // no contact logged yet
+
+export interface TouchpointSuggestion {
+  connectionId: string;
+  reason: TouchpointReason;
+  /** How many days overdue (0 = due today; negative values are filtered out). */
+  daysOverdue: number;
+  /** ISO date the touchpoint became/becomes due. */
+  dueDate: string;
+  /** Last contact ISO date, if any. */
+  lastContactDate?: string;
+}
+
+export const TOUCHPOINT_REASON_LABELS: Record<TouchpointReason, string> = {
+  overdue_followup: 'Follow-up due',
+  cadence_due: 'Time to reconnect',
+  never_contacted: 'Reach out',
 };
 
 // ============ App State ============
