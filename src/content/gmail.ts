@@ -19,6 +19,20 @@ declare global {
   }
 }
 
+/**
+ * Whether this injected script still belongs to a live extension. After the
+ * extension is reloaded/updated, previously-injected scripts are orphaned and
+ * every chrome.* call throws "Extension context invalidated". chrome.runtime.id
+ * becomes undefined in that state, so we can detect it without throwing.
+ */
+function isContextValid(): boolean {
+  try {
+    return !!chrome.runtime?.id;
+  } catch {
+    return false;
+  }
+}
+
 if (typeof window.__jobflowGmailLoaded === 'undefined') {
   window.__jobflowGmailLoaded = true;
 
@@ -26,8 +40,22 @@ if (typeof window.__jobflowGmailLoaded === 'undefined') {
   let lastKey = '';
   let scheduled = false;
 
+  // Observe the whole document; Gmail is a SPA so navigation is DOM-driven.
+  const observer = new MutationObserver(schedule);
+
+  /** Stop everything cleanly when this script has been orphaned. */
+  function teardown(): void {
+    observer.disconnect();
+    window.removeEventListener('hashchange', schedule);
+  }
+
   function evaluate(): void {
     scheduled = false;
+    // If the extension was reloaded, go silent instead of spamming errors.
+    if (!isContextValid()) {
+      teardown();
+      return;
+    }
     let email = null;
     try {
       email = parseOpenEmail(document);
@@ -38,7 +66,10 @@ if (typeof window.__jobflowGmailLoaded === 'undefined') {
     const key = emailKey(email);
     if (key === lastKey) return;
     lastKey = key;
-    void panel.update(email, key);
+    panel.update(email, key).catch((err) => {
+      if (!isContextValid()) teardown();
+      else console.error('JobFlow Gmail: update error', err);
+    });
   }
 
   function schedule(): void {
@@ -48,8 +79,6 @@ if (typeof window.__jobflowGmailLoaded === 'undefined') {
     setTimeout(evaluate, 350);
   }
 
-  // Observe the whole document; Gmail is a SPA so navigation is DOM-driven.
-  const observer = new MutationObserver(schedule);
   observer.observe(document.body, { childList: true, subtree: true });
 
   // Also react to Gmail's hash-based navigation between messages/inbox.
