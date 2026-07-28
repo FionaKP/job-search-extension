@@ -23,11 +23,11 @@
       "matches": ["<all_urls>"],
       "js": ["src/content/scraper.ts"],
       "run_at": "document_idle"
-    },
-    {
-      "matches": ["https://mail.google.com/*"],
-      "js": ["src/content/gmail.ts"]
     }
   ],
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
+  },
   "options_page": "index.html"
 }

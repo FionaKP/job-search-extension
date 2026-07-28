@@ -189,6 +189,10 @@ function normalizeConnection(c: Partial<Connection> & { relationshipNotes?: stri
     lastContactDate: c.lastContactDate || undefined,
     nextFollowUp: c.nextFollowUp || undefined,
     contactHistory: c.contactHistory || [],
+    // Email touchpoint fields (Phase 6) — preserve on import so backups are lossless
+    emailAddresses: c.emailAddresses || undefined,
+    cadenceDays: c.cadenceDays || undefined,
+    touchpointSnoozeUntil: c.touchpointSnoozeUntil || undefined,
     linkedPostingIds: c.linkedPostingIds || [],
     dateAdded: c.dateAdded || Date.now(),
     dateModified: c.dateModified || Date.now(),
