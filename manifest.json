@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "JobFlow - Job Application Tracker",
   "version": "1.0.1",
-  "description": "Save jobs with one click, track applications on a Kanban board, and manage your entire job search in one place.",
+  "description": "Save jobs with one click, track applications on a Kanban board, and manage your network — log email touchpoints and nurture connections, all in one place.",
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["<all_urls>"],
   "action": {
@@ -23,6 +23,10 @@
       "matches": ["<all_urls>"],
       "js": ["src/content/scraper.ts"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["src/content/gmail.ts"]
     }
   ],
   "options_page": "index.html"

@@ -8,6 +8,7 @@ import {
   CONTACT_EVENT_TYPE_LABELS,
   Posting,
 } from '@/types';
+import { getCadenceDays } from '@/services/connections';
 
 interface ConnectionDetailPanelProps {
   connection: Connection;
@@ -134,6 +135,18 @@ export function ConnectionDetailPanel({
                 {connection.email}
               </a>
             )}
+            {(connection.emailAddresses || [])
+              .filter((e) => e && e !== connection.email)
+              .map((extra) => (
+                <a
+                  key={extra}
+                  href={`mailto:${extra}`}
+                  className="flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600"
+                >
+                  <span className="w-4 h-4 flex-shrink-0" />
+                  {extra}
+                </a>
+              ))}
             {connection.linkedInUrl && (
               <a
                 href={connection.linkedInUrl}
@@ -167,7 +180,13 @@ export function ConnectionDetailPanel({
 
           {/* Next Follow-up */}
           <div>
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Next Follow-up</h3>
+            <h3 className="text-sm font-medium text-gray-500 mb-2">
+              Next Follow-up
+              <span className="ml-2 font-normal text-gray-400">
+                · Cadence: every {getCadenceDays(connection)} days
+                {!connection.cadenceDays && ' (auto)'}
+              </span>
+            </h3>
             <div className="flex items-center gap-3">
               <input
                 type="date"
@@ -269,12 +288,27 @@ export function ConnectionDetailPanel({
                       </span>
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-medium text-gray-700">
                           {CONTACT_EVENT_TYPE_LABELS[event.type]}
                         </span>
+                        {event.direction && (
+                          <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
+                            {event.direction === 'outbound' ? '↗ Sent' : '↘ Received'}
+                          </span>
+                        )}
+                        {event.source === 'gmail' && (
+                          <span className="text-xs px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-500">
+                            Gmail
+                          </span>
+                        )}
                         <span className="text-xs text-gray-400">{formatDate(event.date)}</span>
                       </div>
+                      {event.subject && (
+                        <p className="text-sm text-gray-700 mt-0.5 font-medium truncate">
+                          {event.subject}
+                        </p>
+                      )}
                       {event.notes && <p className="text-sm text-gray-600 mt-0.5">{event.notes}</p>}
                     </div>
                   </div>

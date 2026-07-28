@@ -604,6 +604,17 @@ function App() {
     []
   );
 
+  // Snooze a suggested touchpoint for one week
+  const handleSnoozeTouchpoint = useCallback(
+    async (connectionId: string) => {
+      const snoozeUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0];
+      await handleConnectionUpdate(connectionId, { touchpointSnoozeUntil: snoozeUntil });
+    },
+    [handleConnectionUpdate]
+  );
+
   // Get postings linked to a connection (must be defined before early return)
   const getLinkedPostingsForConnection = useCallback(
     (connectionId: string): Posting[] => {
@@ -813,6 +824,7 @@ function App() {
               onSelectConnection={handleConnectionSelect}
               onAddConnection={handleAddConnection}
               onEditConnection={handleEditConnection}
+              onSnoozeTouchpoint={handleSnoozeTouchpoint}
             />
           </Suspense>
         ) : (
