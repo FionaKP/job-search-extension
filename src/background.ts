@@ -45,3 +45,11 @@ function injectExistingTabs(): void {
 
 chrome.runtime.onInstalled.addListener(injectExistingTabs);
 chrome.runtime.onStartup.addListener(injectExistingTabs);
+
+// Open the dashboard when the injected Gmail panel requests it (a content
+// script/web page can't navigate to a chrome-extension:// URL itself).
+chrome.runtime.onMessage.addListener((message) => {
+  if (message?.type === 'jobflow:open-dashboard') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('index.html') });
+  }
+});

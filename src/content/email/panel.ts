@@ -309,10 +309,12 @@ export class ConnectionPanel {
     `);
     card.querySelector('[data-act="close"]')?.addEventListener('click', () => this.clear());
     card.querySelector('[data-act="open"]')?.addEventListener('click', () => {
+      // A web page can't open a chrome-extension:// URL directly, so ask the
+      // background worker to open the dashboard tab.
       try {
-        window.open(chrome.runtime.getURL('index.html'), '_blank');
+        chrome.runtime.sendMessage({ type: 'jobflow:open-dashboard' });
       } catch {
-        /* no-op if not available */
+        /* extension context gone — ignore */
       }
     });
   }
