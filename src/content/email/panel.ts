@@ -266,15 +266,20 @@ export class ConnectionPanel {
 
   /** Surface a write failure both in the panel and the console for debugging. */
   private reportError(err: unknown): void {
-    const message = err instanceof Error ? err.message : String(err);
+    const raw = err instanceof Error ? err.message : String(err);
     console.error('[JobFlow] Failed to save connection:', err);
+    // This orphaned-content-script error happens when the extension is
+    // reloaded/updated while Gmail is already open — the fix is a page refresh.
+    const isStale = /context invalidated/i.test(raw);
+    const message = isStale
+      ? 'JobFlow was updated — refresh this Gmail tab to reconnect.'
+      : `Couldn't save: ${raw}`;
     const banner = this.root.querySelector<HTMLElement>('.jf-error');
     if (banner) {
-      banner.textContent = `Couldn't save: ${message}`;
+      banner.textContent = message;
       banner.style.display = 'block';
     } else {
-      // Fallback if the error element isn't present in this view.
-      alert(`JobFlow couldn't save: ${message}`);
+      alert(`JobFlow: ${message}`);
     }
   }
 
