@@ -69,6 +69,7 @@ const STYLES = `
   .matchitem .mname { font-size: 13px; font-weight: 500; }
   .matchitem .mmeta { font-size: 11px; color: #5f6368; }
   .hidden { display: none; }
+  .jf-error { display: none; margin-top: 10px; padding: 8px 10px; border-radius: 6px; background: #fce8e6; color: #a50e0e; font-size: 12px; }
 `;
 
 function initials(name: string): string {
@@ -187,6 +188,7 @@ export class ConnectionPanel {
           }
           <label>Add a note (optional)</label>
           <textarea id="f-note" placeholder="Context for this touchpoint..."></textarea>
+          <div class="jf-error"></div>
           <div class="actions">
             <button class="btn ghost" data-act="snooze">Not now</button>
             <button class="btn primary" data-act="${hasMatch ? 'log' : 'create'}">
@@ -227,31 +229,53 @@ export class ConnectionPanel {
 
   private async handleLog(): Promise<void> {
     if (!this.currentEmail || !this.selectedMatchId) return;
-    const note = this.getNote();
-    const result = await logEmailToConnection(this.selectedMatchId, this.currentEmail, {
-      notes: note,
-    });
-    if (!result) return;
-    const name = result.connection.name;
-    this.renderSuccess(
-      result.wasNew ? `Logged to ${name}` : `Already logged to ${name}`
-    );
+    try {
+      const note = this.getNote();
+      const result = await logEmailToConnection(this.selectedMatchId, this.currentEmail, {
+        notes: note,
+      });
+      if (!result) return;
+      const name = result.connection.name;
+      this.renderSuccess(
+        result.wasNew ? `Logged to ${name}` : `Already logged to ${name}`
+      );
+    } catch (err) {
+      this.reportError(err);
+    }
   }
 
   private async handleCreate(): Promise<void> {
     if (!this.currentEmail) return;
-    const nameEl = this.root.querySelector<HTMLInputElement>('#f-name');
-    const companyEl = this.root.querySelector<HTMLInputElement>('#f-company');
-    const note = this.getNote();
-    const connection = await createConnectionFromEmail(
-      this.currentEmail,
-      {
-        name: nameEl?.value.trim() || this.currentEmail.name || 'Unknown',
-        company: companyEl?.value.trim() || '',
-      },
-      { notes: note }
-    );
-    this.renderSuccess(`Added ${connection.name}`);
+    try {
+      const nameEl = this.root.querySelector<HTMLInputElement>('#f-name');
+      const companyEl = this.root.querySelector<HTMLInputElement>('#f-company');
+      const note = this.getNote();
+      const connection = await createConnectionFromEmail(
+        this.currentEmail,
+        {
+          name: nameEl?.value.trim() || this.currentEmail.name || 'Unknown',
+          company: companyEl?.value.trim() || '',
+        },
+        { notes: note }
+      );
+      this.renderSuccess(`Added ${connection.name}`);
+    } catch (err) {
+      this.reportError(err);
+    }
+  }
+
+  /** Surface a write failure both in the panel and the console for debugging. */
+  private reportError(err: unknown): void {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[JobFlow] Failed to save connection:', err);
+    const banner = this.root.querySelector<HTMLElement>('.jf-error');
+    if (banner) {
+      banner.textContent = `Couldn't save: ${message}`;
+      banner.style.display = 'block';
+    } else {
+      // Fallback if the error element isn't present in this view.
+      alert(`JobFlow couldn't save: ${message}`);
+    }
   }
 
   private renderSuccess(message: string): void {
